@@ -398,19 +398,18 @@ bool generateIcosahedron(PolyhedralMesh& mesh) {
 	
 	double norm = sqrt(10.0+2.0*sqrt(5.0))/2.0;
     mesh.Cell0DsCoordinates(0, 0) = 0.0; mesh.Cell0DsCoordinates(1, 0) = r / norm; mesh.Cell0DsCoordinates(2, 0) = phi / norm;
-    mesh.Cell0DsCoordinates(0, 1) = 0.0; mesh.Cell0DsCoordinates(1, 1) = -r / norm; mesh.Cell0DsCoordinates(2, 1) = phi / norm;
-    mesh.Cell0DsCoordinates(0, 2) = 0.0; mesh.Cell0DsCoordinates(1, 2) = r / norm; mesh.Cell0DsCoordinates(2, 2) = -phi / norm;
-    mesh.Cell0DsCoordinates(0, 3) = 0.0; mesh.Cell0DsCoordinates(1, 3) = -r / norm; mesh.Cell0DsCoordinates(2, 3) = -phi / norm;
-    mesh.Cell0DsCoordinates(0, 4) = r / norm; mesh.Cell0DsCoordinates(1, 4) = phi/ norm; mesh.Cell0DsCoordinates(2, 4) = 0.0;
-    mesh.Cell0DsCoordinates(0, 5) = -r / norm; mesh.Cell0DsCoordinates(1, 5) = phi / norm; mesh.Cell0DsCoordinates(2, 5) = 0.0;
-    mesh.Cell0DsCoordinates(0, 6) = r / norm; mesh.Cell0DsCoordinates(1, 6) = -phi / norm; mesh.Cell0DsCoordinates(2, 6) = 0.0;
-    mesh.Cell0DsCoordinates(0, 7) = -r / norm; mesh.Cell0DsCoordinates(1, 7) = -phi / norm; mesh.Cell0DsCoordinates(2, 7) = 0.0;
-    mesh.Cell0DsCoordinates(0, 8) = phi / norm; mesh.Cell0DsCoordinates(1, 8) = 0.0; mesh.Cell0DsCoordinates(2, 8) = r / norm;
-    mesh.Cell0DsCoordinates(0, 9) = -phi / norm; mesh.Cell0DsCoordinates(1, 9) = 0.0; mesh.Cell0DsCoordinates(2, 9) = r / norm;
-    mesh.Cell0DsCoordinates(0, 10) = phi / norm; mesh.Cell0DsCoordinates(1, 10) = 0.0; mesh.Cell0DsCoordinates(2, 10) = -r / norm;
-    mesh.Cell0DsCoordinates(0, 11) = -phi / norm; mesh.Cell0DsCoordinates(1, 11) = 0.0; mesh.Cell0DsCoordinates(2, 11) = -r / norm;
-	
-	
+    mesh.Cell0DsCoordinates(0, 1) = 0.0; mesh.Cell0DsCoordinates(1, 1) = -r / norm; mesh.Cell0DsCoordinates(2, 1) = phi/ norm;
+    mesh.Cell0DsCoordinates(0, 2) = 0.0; mesh.Cell0DsCoordinates(1, 2) = r/ norm; mesh.Cell0DsCoordinates(2, 2) = -phi/ norm;
+    mesh.Cell0DsCoordinates(0, 3) = 0.0; mesh.Cell0DsCoordinates(1, 3) = -r/ norm; mesh.Cell0DsCoordinates(2, 3) = -phi/ norm;
+    mesh.Cell0DsCoordinates(0, 4) = r/ norm; mesh.Cell0DsCoordinates(1, 4) = phi/ norm; mesh.Cell0DsCoordinates(2, 4) = 0.0;
+    mesh.Cell0DsCoordinates(0, 5) = -r/ norm; mesh.Cell0DsCoordinates(1, 5) = phi/ norm; mesh.Cell0DsCoordinates(2, 5) = 0.0;
+    mesh.Cell0DsCoordinates(0, 6) = r/ norm; mesh.Cell0DsCoordinates(1, 6) = -phi/ norm; mesh.Cell0DsCoordinates(2, 6) = 0.0;
+    mesh.Cell0DsCoordinates(0, 7) = -r/ norm; mesh.Cell0DsCoordinates(1, 7) = -phi/ norm; mesh.Cell0DsCoordinates(2, 7) = 0.0;
+    mesh.Cell0DsCoordinates(0, 8) = phi/ norm; mesh.Cell0DsCoordinates(1, 8) = 0.0; mesh.Cell0DsCoordinates(2, 8) = r/ norm;
+    mesh.Cell0DsCoordinates(0, 9) = -phi/ norm; mesh.Cell0DsCoordinates(1, 9) = 0.0; mesh.Cell0DsCoordinates(2, 9) = r/ norm;
+    mesh.Cell0DsCoordinates(0, 10) = phi/ norm; mesh.Cell0DsCoordinates(1, 10) = 0.0; mesh.Cell0DsCoordinates(2, 10) = -r/ norm;
+    mesh.Cell0DsCoordinates(0, 11) = -phi/ norm; mesh.Cell0DsCoordinates(1, 11) = 0.0; mesh.Cell0DsCoordinates(2, 11) = -r/ norm;
+/ norm
     mesh.Cell0DsId = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     // LATI
@@ -513,5 +512,121 @@ bool generateIcosahedron(PolyhedralMesh& mesh) {
     
     return true;
 }
- 
+
+
+bool subdivideTriangle(PolyhedralMesh& mesh, unsigned int b, unsigned int c) {
+    if ((b == 0 && c == 0) || (b != 0 && c != 0)) return false;
+
+    std::ofstream output0D("Cell0Ds.txt");
+    std::ofstream output1D("Cell1Ds.txt");
+    std::ofstream output2D("Cell2Ds.txt");
+    std::ofstream output3D("Cell3Ds.txt");
+
+    if (!output0D || !output1D || !output2D || !output3D) return false;
+
+    std::vector<Eigen::Vector2d> vertices;
+    std::vector<std::array<int, 3>> triangles;
+
+    for (const auto& face : mesh.Cell2DsVertices) {
+        Eigen::Vector2d A = mesh.Cell0DsCoordinates.row(face[0]);
+        Eigen::Vector2d B = mesh.Cell0DsCoordinates.row(face[1]);
+        Eigen::Vector2d C = mesh.Cell0DsCoordinates.row(face[2]);
+
+        std::vector<std::vector<int>> vertexGrid;
+		
+		if (c == 0){
+        for (int i = 0; i <= b; ++i) {
+            std::vector<int> row;
+            Eigen::Vector2d start = ((double)i / b) * A + ((double)(b - i) / b) * C;
+            Eigen::Vector2d end = ((double)i / b) * B + ((double)(b - i) / b) * C;
+            for (int j = 0; j <= i; ++j) {
+                Eigen::Vector2d point;
+                if (i == 0) {
+                    point = C;
+                } else {
+                    point = ((double)j / i) * end + ((double)(i - j) / i) * start;
+                }
+                vertices.push_back(point);
+                row.push_back(vertices.size() - 1);
+            }
+            vertexGrid.push_back(row);
+        }
+
+        // Ora costruiamo i triangoli
+        for (int i = 0; i < b; ++i) {
+            for (int j = 0; j < i; ++j) {
+                int v1 = vertexGrid[i][j];
+                int v2 = vertexGrid[i + 1][j];
+                int v3 = vertexGrid[i + 1][j + 1];
+                triangles.push_back({v1, v2, v3});
+
+                int v4 = vertexGrid[i][j];
+                int v5 = vertexGrid[i + 1][j + 1];
+                int v6 = vertexGrid[i][j + 1];
+                triangles.push_back({v4, v5, v6});
+            }
+            // Triangolo in fondo a sinistra
+            int v1 = vertexGrid[i][i];
+            int v2 = vertexGrid[i + 1][i];
+            int v3 = vertexGrid[i + 1][i + 1];
+            triangles.push_back({v1, v2, v3});
+        }
+		}
+		else {
+		for (int i = 0; i <= c; ++i) {
+			std::vector<int> row;
+			Eigen::Vector2d start = ((double)i / c) * A + ((double)(c - i) / c) * B;
+			Eigen::Vector2d end   = ((double)i / c) * C + ((double)(c - i) / c) * B;
+
+			for (int j = 0; j <= i; ++j) {
+				Eigen::Vector2d point;
+				if (i == 0) {
+					point = B;
+				} else {
+					point = ((double)j / i) * end + ((double)(i - j) / i) * start;
+				}
+				vertices.push_back(point);
+				row.push_back(vertices.size() - 1);
+			}
+			vertexGrid.push_back(row);
+		}
+
+		// Triangoli
+		for (int i = 0; i < c; ++i) {
+			for (int j = 0; j < i; ++j) {
+				int v1 = vertexGrid[i][j];
+				int v2 = vertexGrid[i + 1][j];
+				int v3 = vertexGrid[i + 1][j + 1];
+				triangles.push_back({v1, v2, v3});
+
+				int v4 = vertexGrid[i][j];
+				int v5 = vertexGrid[i + 1][j + 1];
+				int v6 = vertexGrid[i][j + 1];
+				triangles.push_back({v4, v5, v6});
+			}
+			// Triangolo finale a sinistra
+			int v1 = vertexGrid[i][i];
+			int v2 = vertexGrid[i + 1][i];
+			int v3 = vertexGrid[i + 1][i + 1];
+			triangles.push_back({v1, v2, v3});
+		}
+		}
+    }
+
+    // Scrittura su file output (esempio Cell0Ds)
+    for (size_t i = 0; i < vertices.size(); ++i) {
+        output0D << i << " " << vertices[i].x() << " " << vertices[i].y() << std::endl;
+    }
+
+    for (size_t i = 0; i < triangles.size(); ++i) {
+        output2D << i << " " << triangles[i][0] << " " << triangles[i][1] << " " << triangles[i][2] << std::endl;
+    }
+
+    output0D.close();
+    output1D.close();
+    output2D.close();
+    output3D.close();
+    return true;
+}
+
 }
