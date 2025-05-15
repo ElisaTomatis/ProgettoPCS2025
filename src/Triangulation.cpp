@@ -1,10 +1,6 @@
-#include <iostream>
-#include <fstream>
 #include <vector>
 #include <array>
-#include <map>
 #include <Eigen/Dense>
-#include <tuple>
 
 using namespace std;
 using namespace Eigen;
@@ -88,7 +84,7 @@ void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh meshTriangulated, 
                 int v3 = vertexGrid[i + 1][j + 1];
 
                 array<int, 3> verts1 = {v1, v2, v3};
-                meshTriangulated.Cell2DsVertices << v1, v2, v3;
+                meshTriangulated.Cell2DsVertices.push_back(verts1);
                 meshTriangulated.Cell2DsId(k3)=k3;
                 
                 for (int e = 0; e < 3; ++e) {
@@ -97,15 +93,15 @@ void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh meshTriangulated, 
                     FindAddEdge(a, b, meshTriangulated, k2, k3)
 		        }
 		        
-		        k3 ++;
+		        k3++;
                     
                 int v4 = vertexGrid[i][j];
                 int v5 = vertexGrid[i + 1][j + 1];
                 int v6 = vertexGrid[i][j + 1];
 
                 array<int, 3> verts2 = {v4, v5, v6};
-                meshTriangulated.Cell2DsVertices << v4, v5, v6;
-                meshTriangulated.Cell2DsId(k2)=k2;
+                meshTriangulated.Cell2DsVertices.push_back(verts2);
+                meshTriangulated.Cell2DsId(k3)=k3;
                 
                 for (int e = 0; e < 3; ++e) {
                     int a = verts2[e];
@@ -120,8 +116,8 @@ void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh meshTriangulated, 
             int v3 = vertexGrid[i + 1][i + 1];
 
             array<int, 3> verts = {v1, v2, v3};
-            meshTriangulated.Cell2DsVertices << v1, v2, v3;
-            meshTriangulated.Cell2DsId(k2)=k2;
+            meshTriangulated.Cell2DsVertices.push_back(verts);
+            meshTriangulated.Cell2DsId(k3)=k3;
             
             for (int e = 0; e < 3; ++e) {
                 int a = verts[e];
@@ -140,35 +136,45 @@ void FindAddEdge(
     unsigned int& k2,
     unsigned int k3)
 {
-    for (int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
-        if (!(meshTriangulated.Cell1DsExtrema(i, 0) == a && meshTriangulated.Cell1DsExtrema(i, 1) == b ||
-              meshTriangulated.Cell1DsExtrema(i, 0) == b && meshTriangulated.Cell1DsExtrema(i, 1) == a)) {
+    bool found = false;
 
-            meshTriangulated.Cell1DsExtrema.row(k2) << a, b;
-            meshTriangulated.Cell1DsId(k2) = k2;
-            const auto& c = meshTriangulated.Cell0DsFlag[a];
-            const auto& d = meshTriangulated.Cell0DsFlag[b];
-
-            bool foundCommon = false;
-            for (int s = 0; s < c.size(); ++s) {
-                for (int t = 0; t < d.size(); ++t) {
-                    if (c[s] == d[t]) {
-                        meshTriangulated.Cell1DsFlag[k2] = {c[s]};
-                        foundCommon = true;
-                        break;
-                    }
-                }
-                if (foundCommon) break;
-            }
-
-            if (!foundCommon) {
-                meshTriangulated.Cell1DsFlag[k2] = {-1};
-            }
-
-            meshTriangulated.Cell2DsEdges[k3].push_back(k2);
-            ++k2;
-        } else {
-            meshTriangulated.Cell2DsEdges[k3].push_back(i);
-        }
-    }
+	for (int i = 0; i < k2; ++i) {  // Scorri solo fino all'ultimo edge inserito
+		if ((meshTriangulated.Cell1DsExtrema(i, 0) == a && meshTriangulated.Cell1DsExtrema(i, 1) == b) ||
+			(meshTriangulated.Cell1DsExtrema(i, 0) == b && meshTriangulated.Cell1DsExtrema(i, 1) == a)) {
+			
+			// Edge già presente ⇒ usalo
+			meshTriangulated.Cell2DsEdges[k3].push_back(i);
+			found = true;
+			break;
+		}
+	}
+	
+	if (!found) {
+		// Edge non esiste ⇒ lo creiamo
+		meshTriangulated.Cell1DsExtrema.row(k2) << a, b;
+		meshTriangulated.Cell1DsId(k2) = k2;
+	
+		const auto& c = meshTriangulated.Cell0DsFlag[a];
+		const auto& d = meshTriangulated.Cell0DsFlag[b];
+	
+		bool common = false;
+		for (int s = 0; s < c.size(); ++s) {
+			for (int t = 0; t < d.size(); ++t) {
+				if (c[s] == d[t]) {
+					meshTriangulated.Cell1DsFlag[k2] = {c[s]};
+					common = true;
+					break;
+				}
+			}
+			if (common) break;
+		}
+	
+		if (!common) {
+			meshTriangulated.Cell1DsFlag[k2] = {-1};
+		}
+	
+		meshTriangulated.Cell2DsEdges[k3].push_back(k2);
+		++k2;
+	}
 }
+
