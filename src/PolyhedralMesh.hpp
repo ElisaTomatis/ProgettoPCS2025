@@ -14,13 +14,13 @@ struct PolyhedralMesh
     unsigned int NumCell0Ds = 0; // numero di celle 0D
     vector<unsigned int> Cell0DsId = {}; // id celle 0D
     Eigen::MatrixXd Cell0DsCoordinates = {}; // coordinate celle 0D
-    vector<vector<int>> Cell0DsFlag = {}; // flag celle 0D
-    
+	vector<vector<unsigned int>> Cell0DsFlag= {}; // flag celle 0D
+
     // LATI/SPIGOLI
     unsigned int NumCell1Ds = 0; // numero di celle 1D
     vector<unsigned int> Cell1DsId = {}; // id celle 1D
     MatrixXi Cell1DsExtrema = {}; // id dei vertici (partenza, arrivo) celle 1D
-    vector<vector<int>> Cell01DsFlag = {}; // flag celle 0D
+    vector<vector<unsigned int>> Cell1DsFlag= {}; // flag celle 1D
     
     // FACCE
     unsigned int NumCell2Ds = 0; // numero celle 2D

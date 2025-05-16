@@ -46,20 +46,20 @@ list(APPEND ${PROJECT_NAME}_LINKED_LIBRARIES PRIVATE GTest::gmock_main)
 
 ###################### Add subdirectory ##################################
 add_subdirectory(src)
-add_subdirectory(src_test)
+#add_subdirectory(src_test)
 add_subdirectory(ExportParaview)
 
 list(APPEND ${PROJECT_NAME}_sources ${src_sources} ${src_paraview_sources})
 list(APPEND ${PROJECT_NAME}_headers ${src_headers} ${src_paraview_headers})
 list(APPEND ${PROJECT_NAME}_includes ${src_includes} ${src_paraview_includes})
 
-list(APPEND ${PROJECT_NAME}_TEST_sources ${${PROJECT_NAME}_sources} ${src_test_sources})
-list(APPEND ${PROJECT_NAME}_TEST_headers ${${PROJECT_NAME}_headers} ${src_test_headers})
-list(APPEND ${PROJECT_NAME}_TEST_includes ${${PROJECT_NAME}_includes} ${src_test_includes})
+#list(APPEND ${PROJECT_NAME}_TEST_sources ${${PROJECT_NAME}_sources} ${src_test_sources})
+#list(APPEND ${PROJECT_NAME}_TEST_headers ${${PROJECT_NAME}_headers} ${src_test_headers})
+#list(APPEND ${PROJECT_NAME}_TEST_includes ${${PROJECT_NAME}_includes} ${src_test_includes})
 
 #################### Copy file ################################
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ListPolyhedra DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/ListPolyhedra DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 ############################## Add executable ##################################################
 
@@ -73,11 +73,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${${CMAKE_PROJECT_NAME}_includ
 target_link_libraries(${PROJECT_NAME} PUBLIC ${${PROJECT_NAME}_LINKED_LIBRARIES})
 target_compile_options(${PROJECT_NAME} PUBLIC -fPIC)
 
-add_executable(${PROJECT_NAME}_TEST main_test.cpp
-      ${${PROJECT_NAME}_TEST_sources}
-      ${${PROJECT_NAME}_TEST_headers})
+#add_executable(${PROJECT_NAME}_TEST main_test.cpp
+      #${${PROJECT_NAME}_TEST_sources}
+      #${${PROJECT_NAME}_TEST_headers})
 
-target_include_directories(${PROJECT_NAME}_TEST PUBLIC ${${CMAKE_PROJECT_NAME}_TEST_includes})
-target_link_libraries(${PROJECT_NAME}_TEST PUBLIC ${${PROJECT_NAME}_LINKED_LIBRARIES})
-target_compile_options(${PROJECT_NAME}_TEST PUBLIC -fPIC)
+#target_include_directories(${PROJECT_NAME}_TEST PUBLIC ${${CMAKE_PROJECT_NAME}_TEST_includes})
+#target_link_libraries(${PROJECT_NAME}_TEST PUBLIC ${${PROJECT_NAME}_LINKED_LIBRARIES})
+#target_compile_options(${PROJECT_NAME}_TEST PUBLIC -fPIC)
 
