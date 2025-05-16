@@ -69,4 +69,81 @@ namespace PolyhedralLibrary
 		
 		return result;
 	}
+	
+	void RemoveDuplicatedVertices(
+    Eigen::MatrixXd& Cell0DsCoordinates,
+    vector<vector<unsigned int>>& Cell0DsFlag)
+	{
+		double tol = 1e-12;
+		unsigned int maxFlag = numeric_limits<unsigned int>::max();
+		size_t n = Cell0DsCoordinates.cols(); // Numero di vertici
+	
+		for (size_t i = 0; i < n; ++i) {
+			if (Cell0DsFlag[i][0] == maxFlag)
+				continue;
+	
+			for (size_t j = i + 1; j < n; ++j) {
+				if (Cell0DsFlag[j][0] == maxFlag)
+					continue;
+	
+				// Verifica se condividono almeno un lato
+				bool commonSide = false;
+				for (unsigned int fi : Cell0DsFlag[i]) {
+					for (unsigned int fj : Cell0DsFlag[j]) {
+						if (fi == fj) {
+							commonSide = true;
+							break;
+						}
+					}
+					if (commonSide) break;
+				}
+	
+				if (commonSide) {
+					if ((Cell0DsCoordinates.col(i) - Cell0DsCoordinates.col(j)).norm() < tol) {
+						Cell0DsFlag[j] = {maxFlag};
+					}
+				}
+			}
+		}
+	}
+	
+	void RemoveDuplicatedEdges(
+    Eigen::MatrixXi& Cell1DsExtrema,
+    vector<vector<unsigned int>>& Cell1DsFlag)
+	{
+		unsigned int maxFlag = std::numeric_limits<unsigned int>::max();
+		size_t n = Cell1DsExtrema.rows(); // Numero di lati
+	
+		for (size_t i = 0; i < n; ++i) {
+			if (Cell1DsFlag[i][0] == maxFlag)
+				continue;
+	
+			for (size_t j = i + 1; j < n; ++j) {
+				if (Cell1DsFlag[j][0] == maxFlag)
+					continue;
+	
+				bool commonFlag = false;
+				for (unsigned int fi : Cell1DsFlag[i]) {
+					for (unsigned int fj : Cell1DsFlag[j]) {
+						if (fi == fj) {
+							commonFlag = true;
+							break;
+						}
+					}
+					if (commonFlag) break;
+				}
+	
+				if (commonFlag){
+					int i0 = Cell1DsExtrema(i, 0);
+					int i1 = Cell1DsExtrema(i, 1);
+					int j0 = Cell1DsExtrema(j, 0);
+					int j1 = Cell1DsExtrema(j, 1);
+		
+					if ((i0 == j0 && i1 == j1) || (i0 == j1 && i1 == j0)){
+						Cell1DsFlag[j] = {maxFlag};
+					}
+			}
+		}
+	}
+}
 }
