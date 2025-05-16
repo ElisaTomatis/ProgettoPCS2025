@@ -39,23 +39,29 @@ namespace PolyhedralLibrary
 		return result;  // Restituisce il vettore con i valori di V, E, F
 	}
 	
-	vector<int> CalculateDuplicated(int q, int b, int c, vector<int>& dimension)
+	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension)
 	{
-		vector<int> result(3, -1);
+		vector<int> result(3, 1);
 		int subdivisionLevel = b + c;
+		int V = dimension[0];
+		int E = dimension[1];
+		int F = dimension[2];
 		
 		if (q == 3) {
-			dimension[0] += 2*dimension[0] + dimension[1] *(subdivisionLevel - 1);
-			dimension[1] += dimension[1]*subdivisionLevel;
+			V += 2*V + E *(subdivisionLevel - 1);
+			E += E*subdivisionLevel;
 		}
 		else if (q == 4) {
-			dimension[0]+= 2*dimension[0] + dimension[1] *(subdivisionLevel - 1);
-			dimension[1] += dimension[1]*subdivisionLevel;
+			V += 2*V + E *(subdivisionLevel - 1);
+			E += E*subdivisionLevel;
 		}
 		else {
-			dimension[0]+= 2*dimension[0] + dimension[1] *(subdivisionLevel - 1);
-			dimension[1] += dimension[1]*subdivisionLevel;
+			V += 2*V + E *(subdivisionLevel - 1);
+			V += V * subdivisionLevel;
 		}
+		result[0] = V;  
+		result[1] = E;  
+		result[2] = F;
 		
 		return result;
 	}

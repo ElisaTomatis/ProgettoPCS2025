@@ -6,7 +6,7 @@
 namespace PolyhedralLibrary
 {
 	vector<int> ComputePolyhedronVEF(int q, int b, int c);
-	vector<int> CalculateDuplicated(int q, int b, int c, vector<int>& dimension);
+	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension);
 	
 	void generateTetrahedron(PolyhedralLibrary::PolyhedralMesh& mesh);
 	
