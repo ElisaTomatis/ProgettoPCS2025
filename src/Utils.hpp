@@ -6,7 +6,12 @@
 namespace PolyhedralLibrary
 {
 	vector<int> ComputePolyhedronVEF(int q, int b, int c);
+	
 	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension);
+	
+	void RemoveDuplicatedVertices(Eigen::MatrixXd& Cell0DsCoordinates, vector<vector<unsigned int>>& Cell0DsFlag);
+	
+	void RemoveDuplicatedEdges(Eigen::MatrixXi& Cell1DsExtrema, vector<vector<unsigned int>>& Cell1DsFlag);
 	
 	void generateTetrahedron(PolyhedralLibrary::PolyhedralMesh& mesh);
 	
