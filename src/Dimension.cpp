@@ -11,10 +11,13 @@ namespace PolyhedralLibrary
 {
 	vector<int> ComputePolyhedronVEF(int q, int b, int c)
 	{
-		vector<int> result(3, -1); // inizializza un vettore con 3 valori, tutti -1 
+		vector<int> result(3); // inizializza un vettore con 3 valori, tutti -1 
 	
-		int T = b * b + b * c + c * c;
-		int V, E, F;
+		int T = 0;
+		T = b * b + b * c + c * c;
+		int V = 0;
+		int E = 0;
+		int F = 0;
 	
 		if (q == 3) {
 			V = 2 * T + 2;
@@ -41,8 +44,9 @@ namespace PolyhedralLibrary
 	
 	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension)
 	{
-		vector<int> result(3, 1);
-		int subdivisionLevel = b + c;
+		vector<int> result(3);
+		int subdivisionLevel = 0;
+		subdivisionLevel = b + c;
 		int V = dimension[0];
 		int E = dimension[1];
 		int F = dimension[2];

@@ -13,7 +13,7 @@ namespace PolyhedralLibrary
 	void FindAddEdge(
 		int a, int b,
 		PolyhedralMesh& meshTriangulated,
-		unsigned int k2,
+		unsigned int& k2,
 		unsigned int k3)
 	{
 		bool found = false;
