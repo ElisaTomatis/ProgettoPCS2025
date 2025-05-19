@@ -51,10 +51,11 @@ namespace PolyhedralLibrary
 	* Esporta la mesh triangolata a paraview.
 	*/
 	void ExportParaview(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
+	void printMeshTriangulated(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
 	
-	void WriteCell0DCSV(const PolyhedralMesh& mesh, const string& filename = "Cell0D.csv");
-    void WriteCell1DCSV(const PolyhedralMesh& mesh, const string& filename = "Cell1D.csv");
-    void WriteCell2DCSV(const PolyhedralMesh& mesh, const string& filename = "Cell2D.csv");
-    void WriteCell3DCSV(const PolyhedralMesh& mesh, const string& filename = "Cell3D.csv");
+	void WriteCell0DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
+    void WriteCell1DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
+    void WriteCell2DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
+    void WriteCell3DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
 	
 }

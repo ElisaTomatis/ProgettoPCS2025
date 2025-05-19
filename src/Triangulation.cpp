@@ -18,7 +18,7 @@ namespace PolyhedralLibrary
 	{
 		bool found = false;
 	
-		for (unsigned int i = 0; i < k2; ++i) {  // Scorri solo fino all'ultimo edge inserito
+		for (unsigned int i = 0; i <= k2; ++i) {  // Scorri solo fino all'ultimo edge inserito
 			if ((meshTriangulated.Cell1DsExtrema(i, 0) == a && meshTriangulated.Cell1DsExtrema(i, 1) == b) ||
 				(meshTriangulated.Cell1DsExtrema(i, 0) == b && meshTriangulated.Cell1DsExtrema(i, 1) == a)) {
 				
@@ -48,7 +48,7 @@ namespace PolyhedralLibrary
 				}
 				if (common) break;
 			}
-		
+			
 			if (!common) {
 				meshTriangulated.Cell1DsFlag[k2] = {numeric_limits<unsigned int>::max()};
 			}
@@ -63,27 +63,18 @@ namespace PolyhedralLibrary
 		
 		unsigned int subdivisionLevel = b + c;
 		
-		meshTriangulated.Cell0DsId.reserve(dimensionDuplicated[0]);
+		meshTriangulated.Cell0DsId.resize(dimensionDuplicated[0]);
 		meshTriangulated.Cell0DsCoordinates = MatrixXd::Zero(3, dimensionDuplicated[0]);
+		meshTriangulated.Cell0DsFlag.resize(dimensionDuplicated[0]);
 		
-		// meshTriangulated.Cell0DsFlag.resize(dimensionDuplicated[0]);
-		meshTriangulated.Cell0DsFlag.reserve(dimensionDuplicated[0]);
-		
-		meshTriangulated.Cell1DsId.reserve(dimensionDuplicated[1]);
+		meshTriangulated.Cell1DsId.resize(dimensionDuplicated[1]);
 		meshTriangulated.Cell1DsExtrema = MatrixXi::Zero(dimensionDuplicated[1], 2);
+		meshTriangulated.Cell1DsFlag.resize(dimensionDuplicated[1]);
 		
-		// meshTriangulated.Cell1DsFlag.resize(dimensionDuplicated[1]);
-		meshTriangulated.Cell1DsFlag.reserve(dimensionDuplicated[1]);
-		
-		meshTriangulated.Cell2DsId.reserve(dimensionDuplicated[2]);
-		
+		meshTriangulated.Cell2DsId.resize(dimensionDuplicated[2]);
 		meshTriangulated.Cell2DsVertices.resize(dimensionDuplicated[2]);
-			for (auto& v : meshTriangulated.Cell2DsVertices)
-				v.reserve(3);
-	
 		meshTriangulated.Cell2DsEdges.resize(dimensionDuplicated[2]);
-		for (auto& e : meshTriangulated.Cell2DsEdges)
-			e.reserve(3);
+
 		
 		/*
 		meshTriangulated.Cell2DsVertices.reserve(dimensionDuplicated[2]);
@@ -94,7 +85,7 @@ namespace PolyhedralLibrary
 		unsigned int k2=0;
 		unsigned int k3=0;
 		
-		for (unsigned int faceId = 0; faceId < mesh.Cell2DsId.size() ; ++faceId) {
+		for (unsigned int faceId = 0; faceId < mesh.Cell2DsId.size() ; ++faceId){
 			const auto& face = mesh.Cell2DsVertices[faceId];
 			Vector3d V0 = mesh.Cell0DsCoordinates.col(face[0]);
 			Vector3d V1 = mesh.Cell0DsCoordinates.col(face[1]);
@@ -116,9 +107,8 @@ namespace PolyhedralLibrary
 					}
 					
 					meshTriangulated.Cell0DsCoordinates.col(k1) = point;
-					
 					meshTriangulated.Cell0DsId[k1]=k1;
-					
+
 					if (i == 0) {
 					meshTriangulated.Cell0DsFlag[k1] = {mesh.Cell2DsEdges[faceId][0], mesh.Cell2DsEdges[faceId][2]};
 					}
@@ -138,44 +128,43 @@ namespace PolyhedralLibrary
 					}
 					else {
 						meshTriangulated.Cell0DsFlag[k1] = {numeric_limits<unsigned int>::max()};
-					}
+					}		
 	
 					row.push_back(k1);
 					k1++;
 				}
 				vertexGrid.push_back(row);
 			}
-	
 			for (unsigned int i = 0; i < subdivisionLevel; ++i) {
 				for (unsigned int j = 0; j < i; ++j) {
 					unsigned int v1 = vertexGrid[i][j];
 					unsigned int v2 = vertexGrid[i + 1][j];
 					unsigned int v3 = vertexGrid[i + 1][j + 1];
-	
+		
 					vector<unsigned int> verts1 = {v1, v2, v3};
-					
+						
 					// meshTriangulated.Cell2DsVertices.push_back(verts1);
 					meshTriangulated.Cell2DsVertices[k3]=verts1;
-					
+						
 					meshTriangulated.Cell2DsId[k3]=k3;
-					
+						
 					for (unsigned int e = 0; e < 3; ++e) {
 						int a = verts1[e];
 						int b = verts1[(e + 1) % 3];
 						FindAddEdge(a, b, meshTriangulated, k2, k3);
 					}
-					
+	
 					k3++;
-						
+							
 					unsigned int v4 = vertexGrid[i][j];
 					unsigned int v5 = vertexGrid[i + 1][j + 1];
 					unsigned int v6 = vertexGrid[i][j + 1];
-	
+		
 					vector<unsigned int> verts2 = {v4, v5, v6};
 					//meshTriangulated.Cell2DsVertices.push_back(verts2);
 					meshTriangulated.Cell2DsVertices[k3]=verts2;
 					meshTriangulated.Cell2DsId[k3]=k3;
-					
+						
 					for (unsigned int e = 0; e < 3; ++e) {
 						int a = verts2[e];
 						int b = verts2[(e + 1) % 3];
@@ -183,25 +172,27 @@ namespace PolyhedralLibrary
 					}
 					k3++;
 				}
-	
+		
 				// Triangolo finale in basso a sinistra
 				unsigned int v1 = vertexGrid[i][i];
 				unsigned int v2 = vertexGrid[i + 1][i];
 				unsigned int v3 = vertexGrid[i + 1][i + 1];
-
+	
 				vector<unsigned int> verts = {v1, v2, v3};
 				meshTriangulated.Cell2DsVertices[k3]=verts;
 				// meshTriangulated.Cell2DsVertices.push_back(verts);
 				meshTriangulated.Cell2DsId[k3]=k3;
-				
+					
 				for (unsigned int e = 0; e < 3; ++e) {
 					int a = verts[e];
 					int b = verts[(e + 1) % 3];
 					FindAddEdge(a, b, meshTriangulated, k2, k3);
 				}
 				k3++;
-			}
 		}
+			
+		}
+
 	}
 
 }

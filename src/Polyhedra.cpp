@@ -22,6 +22,14 @@ namespace PolyhedralLibrary
 		mesh.Cell0DsCoordinates(0, 2) = -r;  mesh.Cell0DsCoordinates(1, 2) = r;   mesh.Cell0DsCoordinates(2, 2) = -r;
 		mesh.Cell0DsCoordinates(0, 3) = r;   mesh.Cell0DsCoordinates(1, 3) = -r;  mesh.Cell0DsCoordinates(2, 3) = -r;
 		
+		for (int i = 0; i < 3; ++i) { // righe: x, y, z
+			std::cout << "Riga " << i << ": ";
+			for (int j = 0; j < 4; ++j) { // colonne (punti)
+				std::cout << mesh.Cell0DsCoordinates(i, j) << " ";
+			}
+			std::cout << std::endl;
+		}
+		
 		mesh.Cell0DsId = {0,1,2,3};
 		
 		// LATI
@@ -36,7 +44,15 @@ namespace PolyhedralLibrary
 			0, 3,
 			3, 1,
 			2, 3;
-	
+			
+		for (int i = 0; i < mesh.Cell1DsExtrema.rows(); ++i) {
+			std::cout << "Riga " << i << ": ";
+			for (int j = 0; j < mesh.Cell1DsExtrema.cols(); ++j) {
+				std::cout << mesh.Cell1DsExtrema(i, j) << " ";
+			}
+			std::cout << std::endl;
+		}
+
 		// FACCE
 		mesh.Cell2DsId.reserve(4);
 		mesh.Cell2DsId = {0, 1, 2, 3};

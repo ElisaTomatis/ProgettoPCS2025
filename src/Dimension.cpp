@@ -49,30 +49,27 @@ namespace PolyhedralLibrary
 		subdivisionLevel = b + c;
 		int V = dimension[0];
 		int E = dimension[1];
-		int F = dimension[2];
 		
 		if (q == 3) {
-			V += 2*V + E *(subdivisionLevel - 1);
-			E += E*subdivisionLevel;
+			V += 2*4 + 6*(subdivisionLevel - 1);
+			E += 6*subdivisionLevel;
 		}
 		else if (q == 4) {
-			V += 2*V + E *(subdivisionLevel - 1);
-			E += E*subdivisionLevel;
+			V += 3*6 + 12*(subdivisionLevel - 1);
+			E += 12*subdivisionLevel;
 		}
 		else {
-			V += 2*V + E *(subdivisionLevel - 1);
-			V += V * subdivisionLevel;
+			V += 4*12 + 30*(subdivisionLevel - 1);
+			E += 30* subdivisionLevel;
 		}
 		result[0] = V;  
 		result[1] = E;  
-		result[2] = F;
+		result[2] = dimension[2]; //il numero delle facce non cambia
 		
 		return result;
 	}
 	
-	void RemoveDuplicatedVertices(
-    Eigen::MatrixXd& Cell0DsCoordinates,
-    vector<vector<unsigned int>>& Cell0DsFlag)
+	void RemoveDuplicatedVertices(Eigen::MatrixXd& Cell0DsCoordinates, vector<vector<unsigned int>>& Cell0DsFlag)
 	{
 		double tol = 1e-12;
 		unsigned int maxFlag = numeric_limits<unsigned int>::max();
@@ -107,9 +104,7 @@ namespace PolyhedralLibrary
 		}
 	}
 	
-	void RemoveDuplicatedEdges(
-    Eigen::MatrixXi& Cell1DsExtrema,
-    vector<vector<unsigned int>>& Cell1DsFlag)
+	void RemoveDuplicatedEdges(Eigen::MatrixXi& Cell1DsExtrema, vector<vector<unsigned int>>& Cell1DsFlag)
 	{
 		unsigned int maxFlag = std::numeric_limits<unsigned int>::max();
 		size_t n = Cell1DsExtrema.rows(); // Numero di lati
@@ -145,5 +140,5 @@ namespace PolyhedralLibrary
 			}
 		}
 	}
-}
+	}
 }
