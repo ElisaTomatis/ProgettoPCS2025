@@ -43,6 +43,12 @@ int main(int argc, char *argv[]) {
     vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
     PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
     PolyhedralLibrary::ExportParaview(meshTriangulated);
+    
+    // Scrittura su CSV
+	PolyhedralLibrary::WriteCell0DCSV(meshTriangulated, "Cell0D.csv");
+	PolyhedralLibrary::WriteCell1DCSV(meshTriangulated, "Cell1D.csv");
+	PolyhedralLibrary::WriteCell2DCSV(meshTriangulated, "Cell2D.csv");
+	PolyhedralLibrary::WriteCell3DCSV(meshTriangulated, "Cell3D.csv");
 
     return 0;
 }
