@@ -9,23 +9,23 @@
 
 namespace PolyhedralLibrary
 {
-	void ExportParaview(const PolyhedralMesh& meshTriangulated){
+	void ExportParaview(const PolyhedralMesh& meshFinal){
 		
 		Gedim::UCDUtilities utilities;
 		{
 			utilities.ExportPoints("./Cell0Ds.inp",
-									 meshTriangulated.Cell0DsCoordinates,
+									 meshFinal.Cell0DsCoordinates,
 									 {});
 	
 			utilities.ExportSegments("./Cell1Ds.inp",
-									 meshTriangulated.Cell0DsCoordinates,
-									 meshTriangulated.Cell1DsExtrema,
+									 meshFinal.Cell0DsCoordinates,
+									 meshFinal.Cell1DsExtrema,
 									 {},
 									 {});
 	
 			utilities.ExportPolygons("./Cell2Ds.inp",
-									 meshTriangulated.Cell0DsCoordinates,
-									 meshTriangulated.Cell2DsVertices,
+									 meshFinal.Cell0DsCoordinates,
+									 meshFinal.Cell2DsVertices,
 									 {},
 									 {});
 									 
@@ -61,7 +61,7 @@ namespace PolyhedralLibrary
 		}
 		cout << "Cell1DsFlag:" << endl;
 		for (const auto& row : mesh.Cell1DsFlag) {
-			for (auto v : row) cout << v << " ";
+			cout << row << " ";
 			cout << endl;
 		}
 		

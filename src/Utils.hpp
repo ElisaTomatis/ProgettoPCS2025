@@ -9,9 +9,9 @@ namespace PolyhedralLibrary
 	
 	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension);
 	
-	void RemoveDuplicatedVertices(Eigen::MatrixXd& Cell0DsCoordinates, vector<vector<unsigned int>>& Cell0DsFlag);
+	void RemoveDuplicatedVertices(PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
 	
-	void RemoveDuplicatedEdges(Eigen::MatrixXi& Cell1DsExtrema, vector<vector<unsigned int>>& Cell1DsFlag);
+	void RemoveDuplicatedEdges(PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
 	
 	void generateTetrahedron(PolyhedralLibrary::PolyhedralMesh& mesh);
 	
@@ -34,7 +34,8 @@ namespace PolyhedralLibrary
 	 */
 	void triangulateAndStore(PolyhedralLibrary::PolyhedralMesh& mesh, PolyhedralLibrary::PolyhedralMesh& meshTriangulated,
 							  unsigned int b, unsigned int c, const vector<int>& dimension);
-							  
+	
+	void NewMesh(PolyhedralLibrary::PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension);
 	/**
 	 * Aggiunge un lato alla mesh triangolata se non già presente.
 	 * 
@@ -50,7 +51,7 @@ namespace PolyhedralLibrary
 	/**
 	* Esporta la mesh triangolata a paraview.
 	*/
-	void ExportParaview(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
+	void ExportParaview(const PolyhedralLibrary::PolyhedralMesh& meshFinal);
 	void printMeshTriangulated(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
 	
 	void WriteCell0DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);

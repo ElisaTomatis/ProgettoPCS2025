@@ -41,7 +41,7 @@ namespace PolyhedralLibrary
 			for (size_t s = 0; s < c.size(); ++s) {
 				for (size_t t = 0; t < d.size(); ++t) {
 					if (c[s] == d[t]) {
-						meshTriangulated.Cell1DsFlag[k2] = {c[s]};
+						meshTriangulated.Cell1DsFlag[k2] = c[s];
 						common = true;
 						break;
 					}
@@ -50,7 +50,7 @@ namespace PolyhedralLibrary
 			}
 			
 			if (!common) {
-				meshTriangulated.Cell1DsFlag[k2] = {numeric_limits<unsigned int>::max()};
+				meshTriangulated.Cell1DsFlag[k2] = numeric_limits<unsigned int>::max();
 			}
 		
 			meshTriangulated.Cell2DsEdges[k3].push_back(k2);

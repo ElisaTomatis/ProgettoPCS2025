@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     //}
 
     int p = 3; //atoi(argv[1]);
-    int q = 3; //atoi(argv[2]);
+    int q = 4; //atoi(argv[2]);
     int b = 2; //atoi(argv[3]);
     int c = 0; //atoi(argv[4]);
 
@@ -27,6 +27,7 @@ int main(int argc, char *argv[]) {
 
     PolyhedralLibrary::PolyhedralMesh mesh;
     PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+    PolyhedralLibrary::PolyhedralMesh meshFinal;
 
     if (p == 3 && q == 3) {
         PolyhedralLibrary::generateTetrahedron(mesh);
@@ -44,11 +45,14 @@ int main(int argc, char *argv[]) {
     PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
     PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
-    PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated.Cell0DsCoordinates, meshTriangulated.Cell0DsFlag);
-    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated.Cell1DsExtrema, meshTriangulated.Cell1DsFlag);
+    PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
     PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
-    PolyhedralLibrary::ExportParaview(meshTriangulated);
+    PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
+    PolyhedralLibrary::printMeshTriangulated(meshFinal);
+    
+    PolyhedralLibrary::ExportParaview(meshFinal);
     
     // Scrittura su CSV
 	//PolyhedralLibrary::WriteCell0DCSV(meshTriangulated, "Cell0D.csv");

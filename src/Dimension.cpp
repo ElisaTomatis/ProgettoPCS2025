@@ -69,24 +69,24 @@ namespace PolyhedralLibrary
 		return result;
 	}
 	
-	void RemoveDuplicatedVertices(Eigen::MatrixXd& Cell0DsCoordinates, vector<vector<unsigned int>>& Cell0DsFlag)
+	void RemoveDuplicatedVertices(PolyhedralMesh& meshTriangulated)
 	{
 		double tol = 1e-12;
 		unsigned int maxFlag = numeric_limits<unsigned int>::max();
-		size_t n = Cell0DsCoordinates.cols(); // Numero di vertici
-	
+		size_t n = meshTriangulated.Cell0DsCoordinates.cols();
+		vector<bool> reached(n, false);
+
 		for (size_t i = 0; i < n; ++i) {
-			if (Cell0DsFlag[i][0] == maxFlag)
+			if (meshTriangulated.Cell0DsFlag[i][0] == maxFlag || reached[i])
 				continue;
-	
-			for (size_t j = i + 1; j < n; ++j) {
-				if (Cell0DsFlag[j][0] == maxFlag)
+
+			for (size_t j = i+1; j < n; ++j) {
+				if (meshTriangulated.Cell0DsFlag[j][0] == maxFlag || reached[j])
 					continue;
 	
-				// Verifica se condividono almeno un lato
 				bool commonSide = false;
-				for (unsigned int fi : Cell0DsFlag[i]) {
-					for (unsigned int fj : Cell0DsFlag[j]) {
+				for (unsigned int fi : meshTriangulated.Cell0DsFlag[i]) {
+					for (unsigned int fj : meshTriangulated.Cell0DsFlag[j]) {
 						if (fi == fj) {
 							commonSide = true;
 							break;
@@ -96,49 +96,101 @@ namespace PolyhedralLibrary
 				}
 	
 				if (commonSide) {
-					if ((Cell0DsCoordinates.col(i) - Cell0DsCoordinates.col(j)).norm() < tol) {
-						Cell0DsFlag[j] = {maxFlag};
+					if ((meshTriangulated.Cell0DsCoordinates.col(i) - meshTriangulated.Cell0DsCoordinates.col(j)).norm() < tol) {
+						reached[j]=true;
 					}
 				}
 			}
 		}
+		for (size_t i = 0; i < n; ++i) {
+			if (!reached[i]) {
+				meshTriangulated.Cell0DsFlag[i] = {maxFlag};
+			}
+		}
 	}
 	
-	void RemoveDuplicatedEdges(Eigen::MatrixXi& Cell1DsExtrema, vector<vector<unsigned int>>& Cell1DsFlag)
+	void RemoveDuplicatedEdges(PolyhedralMesh& meshTriangulated)
+	{
+		double tol = 1e-12;
+		unsigned int maxFlag = numeric_limits<unsigned int>::max();
+		size_t n = meshTriangulated.Cell1DsExtrema.rows();
+		vector<bool> reached(n, false);
+			
+		for (size_t i = 0; i < n; ++i) {
+			if (meshTriangulated.Cell1DsFlag[i] == maxFlag || reached[i]){
+				continue; 
+			}
+			
+			for (size_t j = i + 1; j < n; ++j) {
+				if (meshTriangulated.Cell1DsFlag[j] == maxFlag || reached[j]){
+					continue;
+				}
+	
+				if (meshTriangulated.Cell1DsFlag[i] == meshTriangulated.Cell1DsFlag[j]) {
+					int i0 = meshTriangulated.Cell1DsExtrema(i, 0);
+					int i1 = meshTriangulated.Cell1DsExtrema(i, 1);
+					int j0 = meshTriangulated.Cell1DsExtrema(j, 0);
+					int j1 = meshTriangulated.Cell1DsExtrema(j, 1);
+					
+					if (((meshTriangulated.Cell0DsCoordinates.col(i0) - meshTriangulated.Cell0DsCoordinates.col(j0)).norm() < tol && (meshTriangulated.Cell0DsCoordinates.col(i1) - meshTriangulated.Cell0DsCoordinates.col(j1)).norm() < tol) || ((meshTriangulated.Cell0DsCoordinates.col(i0) - meshTriangulated.Cell0DsCoordinates.col(j1)).norm() < tol && (meshTriangulated.Cell0DsCoordinates.col(i1) - meshTriangulated.Cell0DsCoordinates.col(j0)).norm() < tol)) {
+						meshTriangulated.Cell1DsFlag[i] = maxFlag;
+						reached[j]=true;
+						break;
+					}
+				}
+			}
+		}	
+	}
+	
+	void NewMesh(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension)
 	{
 		unsigned int maxFlag = std::numeric_limits<unsigned int>::max();
-		size_t n = Cell1DsExtrema.rows(); // Numero di lati
-	
-		for (size_t i = 0; i < n; ++i) {
-			if (Cell1DsFlag[i][0] == maxFlag)
-				continue;
-	
-			for (size_t j = i + 1; j < n; ++j) {
-				if (Cell1DsFlag[j][0] == maxFlag)
-					continue;
-	
-				bool commonFlag = false;
-				for (unsigned int fi : Cell1DsFlag[i]) {
-					for (unsigned int fj : Cell1DsFlag[j]) {
-						if (fi == fj) {
-							commonFlag = true;
-							break;
-						}
-					}
-					if (commonFlag) break;
-				}
-	
-				if (commonFlag){
-					int i0 = Cell1DsExtrema(i, 0);
-					int i1 = Cell1DsExtrema(i, 1);
-					int j0 = Cell1DsExtrema(j, 0);
-					int j1 = Cell1DsExtrema(j, 1);
 		
-					if ((i0 == j0 && i1 == j1) || (i0 == j1 && i1 == j0)){
-						Cell1DsFlag[j] = {maxFlag};
-					}
+		meshFinal.Cell0DsId.resize(dimension[0]);
+		meshFinal.Cell0DsCoordinates = MatrixXd::Zero(3, dimension[0]);
+		
+		meshFinal.Cell1DsId.resize(dimension[1]);
+		meshFinal.Cell1DsExtrema = MatrixXi::Zero(dimension[1], 2);
+		
+		meshFinal.Cell2DsId.resize(dimension[2]);
+		meshFinal.Cell2DsVertices.resize(dimension[2]);
+		meshFinal.Cell2DsEdges.resize(dimension[2]);
+		
+		unsigned int k1=0;
+		unsigned int k2=0;
+		
+		// VERTICI
+		for (size_t i = 0; i < meshTriangulated.Cell0DsFlag.size(); ++i) {
+			for (size_t j = 0; j < meshTriangulated.Cell0DsFlag[i].size(); ++j) {
+				if (meshTriangulated.Cell0DsFlag[i][j] == maxFlag){
+					meshFinal.Cell0DsCoordinates.col(k1)= meshTriangulated.Cell0DsCoordinates.col(i);
+					k1 ++;
+				}
 			}
 		}
-	}
+		
+		for (int i=0; i<dimension[0]; ++i){
+			meshFinal.Cell0DsId[i]=i;
+		}
+		
+		// LATI
+		for (size_t i = 0; i < meshTriangulated.Cell1DsFlag.size(); ++i) {
+			if (meshTriangulated.Cell1DsFlag[i] == maxFlag){
+				meshFinal.Cell1DsExtrema.row(k2)= meshTriangulated.Cell1DsExtrema.row(i);
+				k2++;
+			}	
+		}
+		
+		for (int i=0; i<dimension[1]; ++i){
+			meshFinal.Cell1DsId[i]=i;
+		}
+		
+		// FACCE
+		for (int i=0; i<dimension[2]; ++i){
+			meshFinal.Cell2DsId[i]=i;
+		}
+		
+		meshFinal.Cell2DsVertices = meshTriangulated.Cell2DsVertices;
+		meshFinal.Cell2DsEdges = meshTriangulated.Cell2DsEdges;	
 	}
 }
