@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
     int p = 3; //atoi(argv[1]);
     int q = 3; //atoi(argv[2]);
-    int b = 3; //atoi(argv[3]);
+    int b = 2; //atoi(argv[3]);
     int c = 0; //atoi(argv[4]);
 
     cout << "Hai inserito: " << p << " " << q << " " << b << " " << c << "\n";
@@ -40,19 +40,21 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-    vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-    PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    //vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+    //vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+    //PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
-    PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    //PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    //PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
-    PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
-    PolyhedralLibrary::printMeshTriangulated(meshFinal);
+    //PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
+    //PolyhedralLibrary::printMeshTriangulated(meshFinal);
     
-    PolyhedralLibrary::ExportParaview(meshFinal);
+    //PolyhedralLibrary::ExportParaview(meshFinal);
+    PolyhedralLibrary::printMeshTriangulated(mesh);
+    PolyhedralLibrary::ExportParaview(mesh);
     
     // Scrittura su CSV
 	//PolyhedralLibrary::WriteCell0DCSV(meshTriangulated, "Cell0D.csv");
