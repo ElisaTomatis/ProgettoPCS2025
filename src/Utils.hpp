@@ -32,10 +32,15 @@ namespace PolyhedralLibrary
 	 * cellID ID della cella a cui appartiene la faccia.
 	 * dimension Informazioni di dimensione, tipicamente [numVertices, numEdges, numFaces].
 	 */
+	 
+	 
 	void triangulateAndStore(PolyhedralLibrary::PolyhedralMesh& mesh, PolyhedralLibrary::PolyhedralMesh& meshTriangulated,
 							  unsigned int b, unsigned int c, const vector<int>& dimension);
 	
+	
 	void NewMesh(PolyhedralLibrary::PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension);
+	
+	
 	/**
 	 * Aggiunge un lato alla mesh triangolata se non già presente.
 	 * 
@@ -48,10 +53,12 @@ namespace PolyhedralLibrary
 	void FindAddEdge(unsigned int a, unsigned int b, PolyhedralLibrary::PolyhedralMesh& meshTriangulated,
 					 unsigned int& edgeID, unsigned int triangleID);
 					 
+	
 	/**
 	* Esporta la mesh triangolata a paraview.
 	*/
 	void ExportParaview(const PolyhedralLibrary::PolyhedralMesh& meshFinal);
+	
 	void printMeshTriangulated(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
 	
 	void WriteCell0DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);

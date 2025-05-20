@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
     } else if (p == 3 && q == 5) {
         PolyhedralLibrary::generateIcosahedron(mesh);
     } else {
-        cerr << "Errore: combinazione p=" << p << " e q=" << q << " non supportata.\n";
+        cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";
         return 1;
     }
 

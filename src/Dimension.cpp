@@ -160,6 +160,8 @@ namespace PolyhedralLibrary
 		unsigned int k2=0;
 		
 		// VERTICI
+		
+		/*
 		for (size_t i = 0; i < meshTriangulated.Cell0DsFlag.size(); ++i) {
 			for (size_t j = 0; j < meshTriangulated.Cell0DsFlag[i].size(); ++j) {
 				if (meshTriangulated.Cell0DsFlag[i][j] == maxFlag){
@@ -167,7 +169,22 @@ namespace PolyhedralLibrary
 					k1 ++;
 				}
 			}
+		}*/
+		
+		for (size_t i = 0; i < meshTriangulated.Cell0DsFlag.size(); ++i) {
+			bool hasMaxFlag = false;
+			for (size_t j = 0; j < meshTriangulated.Cell0DsFlag[i].size(); ++j) {
+				if (meshTriangulated.Cell0DsFlag[i][j] == maxFlag) {
+					hasMaxFlag = true;
+					break; // appena trovato, esci
+				}
+			}
+			if (hasMaxFlag) {
+				meshFinal.Cell0DsCoordinates.col(k1) = meshTriangulated.Cell0DsCoordinates.col(i);
+				++k1;
+			}
 		}
+
 		
 		for (int i=0; i<dimension[0]; ++i){
 			meshFinal.Cell0DsId[i]=i;
