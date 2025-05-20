@@ -74,14 +74,14 @@ namespace PolyhedralLibrary
 		double tol = 1e-12;
 		unsigned int maxFlag = numeric_limits<unsigned int>::max();
 		size_t n = meshTriangulated.Cell0DsCoordinates.cols();
-		vector<bool> reached(n, false);
+		vector<bool> reached(n, true);
 
 		for (size_t i = 0; i < n; ++i) {
-			if (meshTriangulated.Cell0DsFlag[i][0] == maxFlag || reached[i])
+			if (meshTriangulated.Cell0DsFlag[i][0] == maxFlag || !reached[i])
 				continue;
 
 			for (size_t j = i+1; j < n; ++j) {
-				if (meshTriangulated.Cell0DsFlag[j][0] == maxFlag || reached[j])
+				if (meshTriangulated.Cell0DsFlag[j][0] == maxFlag || !reached[j])
 					continue;
 	
 				bool commonSide = false;
@@ -97,13 +97,13 @@ namespace PolyhedralLibrary
 	
 				if (commonSide) {
 					if ((meshTriangulated.Cell0DsCoordinates.col(i) - meshTriangulated.Cell0DsCoordinates.col(j)).norm() < tol) {
-						reached[j]=true;
+						reached[j]=false;
 					}
 				}
 			}
 		}
 		for (size_t i = 0; i < n; ++i) {
-			if (!reached[i]) {
+			if (reached[i]) {
 				meshTriangulated.Cell0DsFlag[i] = {maxFlag};
 			}
 		}
