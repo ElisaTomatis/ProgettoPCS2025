@@ -74,6 +74,7 @@ namespace PolyhedralLibrary
 		double tol = 1e-12;
 		unsigned int maxFlag = numeric_limits<unsigned int>::max();
 		size_t n = meshTriangulated.Cell0DsCoordinates.cols();
+		cout << n << endl;
 		vector<bool> reached(n, true);
 
 		for (size_t i = 0; i < n; ++i) {
