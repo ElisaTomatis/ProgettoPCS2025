@@ -5,7 +5,7 @@
 
 using namespace std;
 namespace PolyhedralLibrary {
-
+/*
 void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
 {
 	meshDual.Cell0DsId.resize(meshTriangulated.Cell2DsId.size());
@@ -84,7 +84,7 @@ map <pair<unsigned int, unsigned int>, vector<unsigned int>> buildEdgeToFacesMap
         }
     }
     return edgeToFaces;
-}
+}*/
 }
 
 
