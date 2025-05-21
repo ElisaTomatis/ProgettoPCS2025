@@ -40,21 +40,20 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    //vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-    //vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-    //PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+    vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+    PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
-    //PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-    //PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    //PolyhedralLibrary::ExportParaview(meshTriangulated);
     
-    //PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
-    //PolyhedralLibrary::printMeshTriangulated(meshFinal);
+    PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
+    PolyhedralLibrary::printMeshTriangulated(meshFinal);
     
-    //PolyhedralLibrary::ExportParaview(meshFinal);
-    PolyhedralLibrary::printMeshTriangulated(mesh);
-    PolyhedralLibrary::ExportParaview(mesh);
+    PolyhedralLibrary::ExportParaview(meshFinal);
     
     // Scrittura su CSV
 	//PolyhedralLibrary::WriteCell0DCSV(meshTriangulated, "Cell0D.csv");
