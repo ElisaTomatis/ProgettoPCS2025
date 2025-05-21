@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     //}
 
     int p = 3; //atoi(argv[1]);
-    int q = 4; //atoi(argv[2]);
+    int q = 5; //atoi(argv[2]);
     int b = 2; //atoi(argv[3]);
     int c = 0; //atoi(argv[4]);
 
@@ -27,38 +27,56 @@ int main(int argc, char *argv[]) {
 
     PolyhedralLibrary::PolyhedralMesh mesh;
     PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-
+    
     if (p == 3 && q == 3) {
         PolyhedralLibrary::generateTetrahedron(mesh);
-    } else if (p == 3 && q == 4) {
-        PolyhedralLibrary::generateOctahedron(mesh);
-    } else if (p == 3 && q == 5) {
-        PolyhedralLibrary::generateIcosahedron(mesh);
-    } else {
-        cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";
+        vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+		vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+		
+    } else if (p == 3 && q != 3){
+	    if (q == 4){
+		    PolyhedralLibrary::generateOctahedron(mesh);
+		} else {
+			PolyhedralLibrary::generateIcosahedron(mesh);
+		}
+		vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+		vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+
+	} else if (q == 3 && p!= 3) {
+		if (p == 4){
+			PolyhedralLibrary::generateOctahedron(mesh);
+		} else {
+			PolyhedralLibrary::generateIcosahedron(mesh);
+		}
+		vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+		vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+		
+	} else {
+		cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";
         return 1;
     }
-
-    vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-    vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-    PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
-    
-    PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
-    //PolyhedralLibrary::ExportParaview(meshTriangulated);
-    
-    //PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
-    //PolyhedralLibrary::printMeshTriangulated(meshFinal);
     
     PolyhedralLibrary::ExportParaview(meshTriangulated);
+
+    //PolyhedralLibrary::ExportParaview(mesh);
+    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
-    // Scrittura su CSV
-	PolyhedralLibrary::WriteCell0Ds(meshTriangulated);
-	PolyhedralLibrary::WriteCell1Ds(meshTriangulated);
-	PolyhedralLibrary::WriteCell2Ds(meshTriangulated);
-	PolyhedralLibrary::WriteCell3Ds(meshTriangulated);
+    //PolyhedralLibrary::ExportParaview(meshTriangulated);
+    
+    // Scrittura su TXT
+	//PolyhedralLibrary::WriteCell0Ds(meshTriangulated);
+	//PolyhedralLibrary::WriteCell1Ds(meshTriangulated);
+	//PolyhedralLibrary::WriteCell2Ds(meshTriangulated);
+	//PolyhedralLibrary::WriteCell3Ds(meshTriangulated);
 
     return 0;
 }

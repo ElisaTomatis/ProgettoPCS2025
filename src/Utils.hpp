@@ -38,9 +38,6 @@ namespace PolyhedralLibrary
 							  unsigned int b, unsigned int c, const vector<int>& dimension);
 	
 	
-	void NewMesh(PolyhedralLibrary::PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension);
-	
-	
 	/**
 	 * Aggiunge un lato alla mesh triangolata se non già presente.
 	 * 
