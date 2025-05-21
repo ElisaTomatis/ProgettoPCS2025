@@ -61,9 +61,9 @@ namespace PolyhedralLibrary
 	
 	void printMeshTriangulated(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
 	
-	void WriteCell0DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
-    void WriteCell1DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
-    void WriteCell2DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
-    void WriteCell3DCSV(const PolyhedralLibrary::PolyhedralMesh& mesh, const string& filename);
+	void WriteCell0Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
+    void WriteCell1Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
+    void WriteCell2Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
+    void WriteCell3Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
 	
 }
