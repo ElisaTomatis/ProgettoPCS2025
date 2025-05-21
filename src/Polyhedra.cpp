@@ -180,18 +180,18 @@ namespace PolyhedralLibrary
 	
 		mesh.Cell1DsExtrema = MatrixXi::Zero(12, 2);
 		mesh.Cell1DsExtrema <<
-			0, 1,  // Lato 0
-			0, 3,  // Lato 1
-			0, 2,  // Lato 2
-			0, 4,  // Lato 3
-			5, 4,  // Lato 4
-			2, 5,  // Lato 5
-			3, 5,  // Lato 6
-			1, 5,  // Lato 7
-			1, 3,  // Lato 8
-			1, 2,  // Lato 9
-			4, 2,  // Lato 10
-			4, 3;  // Lato 11
+			0, 2,  // Lato 0
+			2, 1,  // Lato 1
+			1, 3,  // Lato 2
+			3, 0,  // Lato 3
+			0, 4,  // Lato 4
+			2, 4,  // Lato 5
+			4, 1,  // Lato 6
+			4, 3,  // Lato 7
+			1, 5,  // Lato 8
+			3, 5,  // Lato 9
+			0, 5,  // Lato 10
+			2, 5;  // Lato 11
 	
 		// FACCE
 		mesh.Cell2DsId.reserve(8);
@@ -206,25 +206,25 @@ namespace PolyhedralLibrary
 			e.reserve(3);
 	
 		mesh.Cell2DsVertices = {
-			{0, 1, 3},  // Faccia 0
-			{0, 1, 2},  // Faccia 1
-			{0, 2, 4},  // Faccia 2
-			{0, 3, 4},  // Faccia 3
-			{2, 5, 4},  // Faccia 4
-			{2, 5, 1},  // Faccia 5
-			{1, 3, 5},  // Faccia 6
-			{3, 5, 4}   // Faccia 7
+			{0, 2, 4},  // Faccia 0
+			{0, 4, 3},  // Faccia 1
+			{3, 4, 1},  // Faccia 2
+			{1, 2, 4},  // Faccia 3
+			{2, 5, 0},  // Faccia 4
+			{2, 1, 5},  // Faccia 5
+			{1, 5, 3},  // Faccia 6
+			{0, 3, 5}   // Faccia 7
 		};
 	
 		mesh.Cell2DsEdges = {
-			{0, 8, 1},  // Faccia 0
-			{0, 9, 2},  // Faccia 1
-			{2, 10, 3}, // Faccia 2
-			{1, 11, 3},  // Faccia 3
-			{5, 4, 10}, // Faccia 4
-			{5, 7, 9}, // Faccia 5
-			{8, 6, 7},  // Faccia 6
-			{6, 4, 11}  // Faccia 7
+			{0, 5, 4},  // Faccia 0
+			{4, 7, 3},  // Faccia 1
+			{7, 6, 2}, // Faccia 2
+			{1, 5, 6},  // Faccia 3
+			{11, 10, 0}, // Faccia 4
+			{1, 8 , 11}, // Faccia 5
+			{8, 9, 2},  // Faccia 6
+			{3, 9, 10}  // Faccia 7
 		};
 	
 		// POLIEDRO

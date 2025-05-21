@@ -20,7 +20,7 @@ namespace PolyhedralLibrary
 	
 			utilities.ExportSegments("./Cell1Ds.inp",
 									 meshFinal.Cell0DsCoordinates,
-									 meshFinal.Cell1DsExtrema,
+									 meshFinal.Cell1DsExtrema.transpose(),
 									 {},
 									 {});
 	

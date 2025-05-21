@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     //}
 
     int p = 3; //atoi(argv[1]);
-    int q = 3; //atoi(argv[2]);
+    int q = 4; //atoi(argv[2]);
     int b = 2; //atoi(argv[3]);
     int c = 0; //atoi(argv[4]);
 
