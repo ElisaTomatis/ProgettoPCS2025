@@ -80,11 +80,11 @@ namespace PolyhedralLibrary
 			if (meshTriangulated.Cell0DsFlag[i][0] == maxFlag)
 				continue;
 			
-			bool commonSide = false;
 			for (size_t j = i+1; j < n; ++j) {
 				if (meshTriangulated.Cell0DsFlag[j][0] == maxFlag)
 					continue;
-	
+				
+				bool commonSide = false;
 				for (unsigned int fi : meshTriangulated.Cell0DsFlag[i]) {
 					for (unsigned int fj : meshTriangulated.Cell0DsFlag[j]) {
 						if (fi == fj) {
@@ -98,11 +98,11 @@ namespace PolyhedralLibrary
 				if (commonSide) {
 					if ((meshTriangulated.Cell0DsCoordinates.col(i) - meshTriangulated.Cell0DsCoordinates.col(j)).norm() < tol) {
 						reached[i]=false;
+						break;
 					}
 				}
-				break;
 			}
-			if (!commonSide) {
+			if (reached[i]) {
 				meshTriangulated.Cell0DsFlag[i] = {maxFlag};
 			}
 		}

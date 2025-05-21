@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     
     PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     //PolyhedralLibrary::ExportParaview(meshTriangulated);
     
     PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
