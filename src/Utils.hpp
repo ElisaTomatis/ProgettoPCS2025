@@ -62,5 +62,8 @@ namespace PolyhedralLibrary
     void WriteCell1Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
     void WriteCell2Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
     void WriteCell3Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
+    
+    void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual);
+    map <pair<unsigned int, unsigned int>, vector<unsigned int>> buildEdgeToFacesMap(const PolyhedralMesh& meshTrinagulated);
 	
 }
