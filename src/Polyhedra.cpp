@@ -28,28 +28,28 @@ namespace PolyhedralLibrary
 	
 		mesh.Cell1DsExtrema = MatrixXi::Zero(6, 2);
 		mesh.Cell1DsExtrema <<
-			0, 1,
-			1, 2,
-			2, 0,
-			0, 3,
-			3, 1,
-			2, 3;
+			0, 1, // lato 0
+			1, 2, // lato 1
+			2, 0, // lato 2
+			0, 3, // lato 3 
+			3, 1, // lato 4
+			2, 3; // lato 5
 
 		// FACCE
 		mesh.Cell2DsId = {0, 1, 2, 3};
 	
 		mesh.Cell2DsVertices = {
-			{0, 1, 2}, 
-			{0, 3, 1}, 
-			{1, 3, 2},
-			{2, 3, 0} 
+			{0, 1, 2}, // faccia 0
+			{0, 3, 1}, // faccia 1
+			{1, 3, 2}, // faccia 2
+			{2, 3, 0}  // faccia 3
 		};
 	
 		mesh.Cell2DsEdges = {
-			{0, 1, 2}, 
-			{3, 4, 0},
-			{4, 5, 1},
-			{5, 3, 2} 
+			{0, 1, 2}, // faccia 0 
+			{3, 4, 0}, // faccia 1
+			{4, 5, 1}, // faccia 2
+			{5, 3, 2}  // faccia 3
 		};
 	
 		// POLIEDRO

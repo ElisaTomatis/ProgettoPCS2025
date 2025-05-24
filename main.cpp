@@ -14,8 +14,8 @@ int main(int argc, char *argv[]) {
     //}
 
     int p = 3; //atoi(argv[1]);
-    int q = 5; //atoi(argv[2]);
-    int b = 3; //atoi(argv[3]);
+    int q = 3; //atoi(argv[2]);
+    int b = 2; //atoi(argv[3]);
     int c = 0; //atoi(argv[4]);
 
     cout << "Hai inserito: " << p << " " << q << " " << b << " " << c << "\n";
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     PolyhedralLibrary::ExportParaview(meshTriangulated);
 
     //PolyhedralLibrary::ExportParaview(mesh);
-    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
     //PolyhedralLibrary::ExportParaview(meshTriangulated);
     
