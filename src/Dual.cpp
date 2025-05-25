@@ -8,12 +8,12 @@ namespace PolyhedralLibrary {
 
 void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
 {
+	// VERTICI
 	// i vertici del duale sono i baricentri delle facce originali
 	meshDual.Cell0DsId.resize(meshTriangulated.Cell2DsId.size());
 	meshDual.Cell0DsCoordinates = MatrixXd::Zero(3, meshTriangulated.Cell2DsId.size());
 	
 	for (unsigned int faceId = 0; faceId < meshTriangulated.Cell2DsId.size() ; ++faceId){
-		cout << meshTriangulated.Cell2DsId.size() << endl;
 		const auto& face = meshTriangulated.Cell2DsVertices[faceId]; // id dei vertici faccia originale
 		Vector3d barycenter = Vector3d::Zero();
 		for (unsigned int vertexId : face) {
@@ -23,13 +23,15 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
         meshDual.Cell0DsCoordinates.col(faceId) = barycenter;
         meshDual.Cell0DsId[faceId]=faceId; // l'id del vertice duale è l'id della faccia orginale
     }
-        
+    
+    // SPIGOLI
     map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
     // mappa che associ ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
     
+    unsigned int k=0;
     for (const auto& [edge_key, faces_vec] : edgeToFacesMap) {
         // Print the key (the edge)
-        std::cout << "Spigolo (" << edge_key.first << ", " << edge_key.second << ") -> Facce: [";
+        std::cout << "Spigolo " << k << " (" << edge_key.first << ", " << edge_key.second << ") -> Facce: [";
         
         // Print the value (the vector of faces)
         for (size_t i = 0; i < faces_vec.size(); ++i) {
@@ -39,6 +41,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
             }
         }
         std::cout << "]" << std::endl;
+        k++;
     }
     
     vector<pair<unsigned int, unsigned int>> dualEdgesExtremaVector;
@@ -79,7 +82,9 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
     // mappa che per ogni vertice originale elenca le facce che lo contengono
     for (unsigned int faceId = 0; faceId < meshTriangulated.Cell2DsId.size(); ++faceId) {
         for (unsigned int vertexOriginalId : meshTriangulated.Cell2DsVertices[faceId]) {
-            vertexToFacesMap[vertexOriginalId].push_back(faceId);
+	        if (meshTriangulated.Cell0DsFlag[vertexOriginalId][0] == numeric_limits<unsigned int>::max()) {
+            	vertexToFacesMap[vertexOriginalId].push_back(faceId);
+            }
         }
     }
     
@@ -218,17 +223,19 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
 
 map <pair<unsigned int, unsigned int>, vector<unsigned int>> buildEdgeToFacesMap(const PolyhedralMesh& meshTriangulated) {
     map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFaces;
+    unsigned int maxFlag = std::numeric_limits<unsigned int>::max();
 
     for (unsigned int faceId = 0; faceId < meshTriangulated.Cell2DsId.size(); ++faceId) {
         const vector<unsigned int>& faceEdges = meshTriangulated.Cell2DsEdges[faceId]; // spigoli della faccia corrente
         
         for (unsigned int edgeOriginalId : faceEdges) {
-            unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 0);
-            unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 1);
-            
-            pair<unsigned int, unsigned int> sortedEdgeVertices = {min(v1_id, v2_id), max(v1_id, v2_id)};
-            // Ordiniamo i vertici dello spigolo per avere una chiave univoca nella mappa
-            edgeToFaces[sortedEdgeVertices].push_back(faceId);
+	        if (meshTriangulated.Cell1DsFlag[edgeOriginalId] == maxFlag) {
+				unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 0);
+				unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 1);
+				pair<unsigned int, unsigned int> sortedEdgeVertices = {min(v1_id, v2_id), max(v1_id, v2_id)};
+				// Ordiniamo i vertici dello spigolo per avere una chiave univoca nella mappa
+				edgeToFaces[sortedEdgeVertices].push_back(faceId);
+			}
         }
     }
     return edgeToFaces;
