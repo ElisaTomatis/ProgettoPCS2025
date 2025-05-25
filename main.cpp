@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     //}
 
     int p = 3; //atoi(argv[1]);
-    int q = 3; //atoi(argv[2]);
+    int q = 4; //atoi(argv[2]);
     int b = 2; //atoi(argv[3]);
     int c = 0; //atoi(argv[4]);
 
@@ -27,6 +27,10 @@ int main(int argc, char *argv[]) {
 
     PolyhedralLibrary::PolyhedralMesh mesh;
     PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+    PolyhedralLibrary::PolyhedralMesh meshFinal;
+    PolyhedralLibrary::PolyhedralMesh meshDual;
+    
+    /*
     
     if (p == 3 && q == 3) {
         PolyhedralLibrary::generateTetrahedron(mesh);
@@ -64,11 +68,26 @@ int main(int argc, char *argv[]) {
 		cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";
         return 1;
     }
+    */
     
-    PolyhedralLibrary::ExportParaview(meshTriangulated);
+    PolyhedralLibrary::generateOctahedron(mesh);
+    vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+
+    //PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
+    //PolyhedralLibrary::printMeshTriangulated(meshDual);
+    
+    PolyhedralLibrary::CalculateDual(meshTriangulated, meshDual);
+    PolyhedralLibrary::printMeshTriangulated(meshDual);
+
+    
+    //PolyhedralLibrary::ExportParaview(meshTriangulated);
 
     //PolyhedralLibrary::ExportParaview(mesh);
-    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
     
     //PolyhedralLibrary::ExportParaview(meshTriangulated);
     
@@ -77,6 +96,7 @@ int main(int argc, char *argv[]) {
 	//PolyhedralLibrary::WriteCell1Ds(meshTriangulated);
 	//PolyhedralLibrary::WriteCell2Ds(meshTriangulated);
 	//PolyhedralLibrary::WriteCell3Ds(meshTriangulated);
+	
 
     return 0;
 }

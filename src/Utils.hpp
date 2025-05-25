@@ -57,6 +57,7 @@ namespace PolyhedralLibrary
 	void ExportParaview(const PolyhedralLibrary::PolyhedralMesh& meshFinal);
 	
 	void printMeshTriangulated(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
+	void NewMesh(PolyhedralLibrary::PolyhedralMesh& meshTriangulated, PolyhedralLibrary::PolyhedralMesh& meshFinal, const vector<int>& dimension);
 	
 	void WriteCell0Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
     void WriteCell1Ds(PolyhedralLibrary::PolyhedralMesh& mesh);

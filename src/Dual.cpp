@@ -13,6 +13,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
 	meshDual.Cell0DsCoordinates = MatrixXd::Zero(3, meshTriangulated.Cell2DsId.size());
 	
 	for (unsigned int faceId = 0; faceId < meshTriangulated.Cell2DsId.size() ; ++faceId){
+		cout << meshTriangulated.Cell2DsId.size() << endl;
 		const auto& face = meshTriangulated.Cell2DsVertices[faceId]; // id dei vertici faccia originale
 		Vector3d barycenter = Vector3d::Zero();
 		for (unsigned int vertexId : face) {
@@ -96,7 +97,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
         std::cout << "]" << std::endl;
     }
     
-    meshDual.Cell2DsVertices.reserve(vertexToFacesMap.size());
+    meshDual.Cell2DsVertices.resize(vertexToFacesMap.size());
     meshDual.Cell2DsId.resize(vertexToFacesMap.size());
     meshDual.Cell2DsEdges.resize(vertexToFacesMap.size());
     // ho tante facce duali quanti sono i vertici originali
@@ -208,8 +209,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
         
         // Aggiungi la faccia duale costruita
         meshDual.Cell2DsId[dualFaceIdCounter] = dualFaceIdCounter;
-        meshDual.Cell2DsVertices.push_back(orderedDualFaceVertices);
-
+        meshDual.Cell2DsVertices[dualFaceIdCounter] =(orderedDualFaceVertices);
         meshDual.Cell2DsEdges[dualFaceIdCounter] = dualFaceEdges;
         dualFaceIdCounter++;
     }	
