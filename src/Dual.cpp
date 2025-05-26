@@ -2,18 +2,20 @@
 #include "PolyhedralMesh.hpp"
 #include <fstream>
 #include <sstream>
+#include <Eigen/Dense> // Assicurati di includere la libreria Eigen
+#include <cmath>       // Per std::sqrt
 
 using namespace std;
 namespace PolyhedralLibrary {
 
 void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
 {
+	// VERTICI
 	// i vertici del duale sono i baricentri delle facce originali
 	meshDual.Cell0DsId.resize(meshTriangulated.Cell2DsId.size());
 	meshDual.Cell0DsCoordinates = MatrixXd::Zero(3, meshTriangulated.Cell2DsId.size());
 	
 	for (unsigned int faceId = 0; faceId < meshTriangulated.Cell2DsId.size() ; ++faceId){
-		cout << meshTriangulated.Cell2DsId.size() << endl;
 		const auto& face = meshTriangulated.Cell2DsVertices[faceId]; // id dei vertici faccia originale
 		Vector3d barycenter = Vector3d::Zero();
 		for (unsigned int vertexId : face) {
@@ -23,13 +25,15 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
         meshDual.Cell0DsCoordinates.col(faceId) = barycenter;
         meshDual.Cell0DsId[faceId]=faceId; // l'id del vertice duale è l'id della faccia orginale
     }
-        
+    
+    // SPIGOLI
     map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
     // mappa che associ ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
     
+    unsigned int k=0;
     for (const auto& [edge_key, faces_vec] : edgeToFacesMap) {
         // Print the key (the edge)
-        std::cout << "Spigolo (" << edge_key.first << ", " << edge_key.second << ") -> Facce: [";
+        std::cout << "Spigolo " << k << " (" << edge_key.first << ", " << edge_key.second << ") -> Facce: [";
         
         // Print the value (the vector of faces)
         for (size_t i = 0; i < faces_vec.size(); ++i) {
@@ -39,6 +43,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
             }
         }
         std::cout << "]" << std::endl;
+        k++;
     }
     
     vector<pair<unsigned int, unsigned int>> dualEdgesExtremaVector;
@@ -66,6 +71,8 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
 		meshDual.Cell1DsExtrema(i, 0) = dualEdgesExtremaVector[i].first;
 		meshDual.Cell1DsExtrema(i, 1) = dualEdgesExtremaVector[i].second;
     }
+    
+    // FACCE
     
     map<pair<unsigned int, unsigned int>, unsigned int> dualEdgeToIdMap;
     // mappa che per ogni coppia di id di facce originali mi associa l'id dello spigolo duale
@@ -103,116 +110,120 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
     // ho tante facce duali quanti sono i vertici originali
     
     unsigned int dualFaceIdCounter = 0;
-    for (const auto& entry : vertexToFacesMap) {
-        unsigned int vertexOriginalId = entry.first; // Il vertice originale che è il centro della faccia duale
-        vector<unsigned int> incidentFaces = entry.second; // Le facce originali incidenti a questo vertice
-                                                         // (questi saranno i vertici della faccia duale, non ordinati)
-
-        vector<unsigned int> orderedDualFaceVertices; // Qui memorizzeremo i vertici ordinati
-        vector<unsigned int> dualFaceEdges;  // Qui memorizzeremo gli spigoli della faccia duale
-        vector<bool> visitedFaces(meshTriangulated.Cell2DsId.size(), false); // Per tenere traccia delle facce già visitate nel giro
-        
-
-        // Trova uno spigolo di partenza per avviare il giro
-        unsigned int currentFaceId = incidentFaces[0]; // Inizia con la prima faccia incidente
-        unsigned int currentEdgeIdOriginal = -1;       // ID dello spigolo originale (che ha vertexOriginalId come estremo)
-
-        // Trova uno spigolo della currentFaceId che ha vertexOriginalId come estremo
-        for (unsigned int edgeOriginalId : meshTriangulated.Cell2DsEdges[currentFaceId]) {
-            unsigned int v1 = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 0);
-            unsigned int v2 = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 1);
-            if (v1 == vertexOriginalId || v2 == vertexOriginalId) {
-                currentEdgeIdOriginal = edgeOriginalId;
-                break;
-            }
-        }
-
-        unsigned int startFaceId = currentFaceId;
-        unsigned int facesVisitedCount = 0; // Contatore per il numero di facce visitate
-
-        // Il ciclo continua finché non visitiamo tutte le facce incidenti E torniamo alla faccia iniziale
-        // o finché non incontriamo una condizione di interruzione
-        while (true) {
-            if (visitedFaces[currentFaceId]) {
-                // Abbiamo già visitato questa faccia in questo giro.
-                // Se è la faccia di partenza e abbiamo visitato il numero corretto di facce, abbiamo chiuso il ciclo.
-                if (currentFaceId == startFaceId && facesVisitedCount == incidentFaces.size()) {
-                    break; // Ciclo chiuso correttamente
-                } else {
-                    // Stiamo ri-visitando una faccia ma non abbiamo chiuso il ciclo o non abbiamo visitato tutte le facce.
-                    cerr << "Warning: Rilevata riconnessione inaspettata per vertice " << vertexOriginalId << endl;
-                    break;
-                }
-            }
-            visitedFaces[currentFaceId] = true;
-            facesVisitedCount++;
-
-            orderedDualFaceVertices.push_back(currentFaceId);
-
-            const auto& facesSharingCurrentEdge = edgeToFacesMap[{min(meshTriangulated.Cell1DsExtrema(currentEdgeIdOriginal, 0), meshTriangulated.Cell1DsExtrema(currentEdgeIdOriginal, 1)), max(meshTriangulated.Cell1DsExtrema(currentEdgeIdOriginal, 0), meshTriangulated.Cell1DsExtrema(currentEdgeIdOriginal, 1))}];
-            // id delle facce originali adiacenti allo spigolo currentEdgeIdOriginal
-            // facesSharingCurrentEdge conterrà due ID di facce: di questi ID sarà la currentFaceId (la faccia da cui siamo "venuti"), 
-            // e l'altro sarà la nextFaceId (la faccia su cui dobbiamo "andare" per continuare il giro attorno al vertexOriginalId)
-            
-            unsigned int nextFaceId = (unsigned int)-1;
-            if (facesSharingCurrentEdge.size() == 2) {
-                if (facesSharingCurrentEdge[0] == currentFaceId) {
-                    nextFaceId = facesSharingCurrentEdge[1];
-                } else {
-                    nextFaceId = facesSharingCurrentEdge[0];
-                }
-            } else {
-                 break; // Interrompi il giro per questa faccia duale
-            }
-
-            pair<unsigned int, unsigned int> dualEdgeKey = {min(currentFaceId, nextFaceId), max(currentFaceId, nextFaceId)};
-            // chiave che identifica lo spigolo duale, lo cerchiamo nella mappa
-            auto it_dual_edge = dualEdgeToIdMap.find(dualEdgeKey);
-            if (it_dual_edge != dualEdgeToIdMap.end()) {
-                dualFaceEdges.push_back(it_dual_edge->second); // aggiungiamo lo spigolo duale alla faccia duale
-            } else {
-                cerr << "Errore: Spigolo duale non trovato per facce " << currentFaceId << " e " << nextFaceId << endl;
-                break;
-            }
-
-            unsigned int nextEdgeIdOriginal = (unsigned int)-1;
-            // troviamo il prossimo spigolo
-            for (unsigned int edgeOrigIdOnNextFace : meshTriangulated.Cell2DsEdges[nextFaceId]) {
-                if (edgeOrigIdOnNextFace == currentEdgeIdOriginal) continue;
-                unsigned int v1_e = meshTriangulated.Cell1DsExtrema(edgeOrigIdOnNextFace, 0);
-                unsigned int v2_e = meshTriangulated.Cell1DsExtrema(edgeOrigIdOnNextFace, 1);
-                if (v1_e == vertexOriginalId || v2_e == vertexOriginalId) {
-	                // controlliamo se uno dei due vertici estremi dello spigolo corrente è il nostro vertexOriginalId centrale
-                    nextEdgeIdOriginal = edgeOrigIdOnNextFace;
-                    break;
-                }
-            }
-
-            if (nextEdgeIdOriginal == (unsigned int)-1) {
-                 // Questo potrebbe indicare la fine del giro se nextFaceId non ha altri spigoli
-                 // incidenti a vertexOriginalId oltre a currentEdgeIdOriginal (solo per facce degeneri).
-                 // In un poliedro ben formato, ci dovrebbe essere sempre un "prossimo" spigolo per continuare il giro.
-                 // Se siamo arrivati qui, probabilmente il giro è completo ma non siamo tornati esattamente a startFaceId,
-                 // o c'è un problema di topologia.
-                 // Proviamo a fare un'ultima verifica.
-                 if (nextFaceId == startFaceId && facesVisitedCount == incidentFaces.size()) {
-                     // Abbiamo chiuso il ciclo correttamente con l'ultima faccia e spigolo.
-                     break; 
-                 }
-                 cerr << "Warning: Mancante spigolo successivo per continuare il giro per vertice " << vertexOriginalId << " su faccia " << nextFaceId << endl;
-                 break; 
-            }
-            
-            currentFaceId = nextFaceId;
-            currentEdgeIdOriginal = nextEdgeIdOriginal;
-        }
-        
-        // Aggiungi la faccia duale costruita
-        meshDual.Cell2DsId[dualFaceIdCounter] = dualFaceIdCounter;
-        meshDual.Cell2DsVertices[dualFaceIdCounter] =(orderedDualFaceVertices);
-        meshDual.Cell2DsEdges[dualFaceIdCounter] = dualFaceEdges;
-        dualFaceIdCounter++;
-    }	
+	for (const auto& entry : vertexToFacesMap) {
+		unsigned int vertexOriginalId = entry.first; // Il vertice originale che è il centro della faccia duale
+		std::vector<unsigned int> incidentFaces = entry.second; // Le facce originali incidenti a questo vertice
+	
+		// Se un vertice è incidenti a meno di 3 facce, non può formare una faccia duale valida.
+		// (o se è un vertice di bordo in una mesh aperta)
+		if (incidentFaces.size() < 3) {
+			// Puoi decidere come gestire questi casi. Per un ottaedro chiuso, questo non dovrebbe accadere.
+			// Se si tratta di una mesh aperta, questi vertici formano i bordi della faccia duale.
+			// Per ora, li saltiamo o gestiamo come errore se ci aspettiamo un poliedro chiuso.
+			std::cerr << "Warning: Vertice " << vertexOriginalId << " incidente a meno di 3 facce. Saltato o gestito come bordo." << std::endl;
+			continue; // Salta questo vertice se non forma una faccia duale chiusa
+		}
+	
+		// 1. Calcola il baricentro del vertice originale (per un potenziale "piano locale")
+		// O semplicemente usa le coordinate del vertice stesso come origine locale
+		Eigen::Vector3d vertexOriginalCoords = meshTriangulated.Cell0DsCoordinates.col(vertexOriginalId);
+	
+		// 2. Trova un vettore "normale" locale per il piano di proiezione (o semplicemente un vettore up arbitrario)
+		// Questo è un punto delicato. Una normale valida può essere la somma normalizzata delle normali delle facce incidenti,
+		// o il baricentro normalizzato dei baricentri delle facce incidenti rispetto al vertexOriginalId.
+		// Per semplicità, proviamo con una normale "media" delle facce incidenti.
+		Eigen::Vector3d averageNormal = Eigen::Vector3d::Zero();
+		for (unsigned int faceId : incidentFaces) {
+			// Per ottenere la normale della faccia, avresti bisogno di accedere ai vertici della faccia
+			// e calcolare il prodotto vettoriale di due spigoli.
+			// Assumiamo che tu abbia una funzione o modo per ottenere la normale di una faccia.
+			// Per ora, useremo una stima meno robusta: il vettore dal vertice originale al baricentro della faccia.
+			Eigen::Vector3d faceBarycenter = Eigen::Vector3d::Zero();
+			const auto& faceVertices = meshTriangulated.Cell2DsVertices[faceId];
+			for (unsigned int v_id : faceVertices) {
+				faceBarycenter += meshTriangulated.Cell0DsCoordinates.col(v_id);
+			}
+			faceBarycenter /= static_cast<double>(faceVertices.size());
+			averageNormal += (faceBarycenter - vertexOriginalCoords).normalized();
+		}
+		averageNormal.normalize(); // Normalizza la normale media
+	
+		// Scegli un vettore di riferimento per l'ordinamento angolare (es. un vettore arbitrario non parallelo alla normale)
+		Eigen::Vector3d referenceVector;
+		if (averageNormal.isApprox(Eigen::Vector3d::UnitZ())) { // Se la normale è Z, usa Y come riferimento
+			referenceVector = Eigen::Vector3d::UnitY();
+		} else { // Altrimenti, usa Z come riferimento (o X, non importa molto)
+			referenceVector = Eigen::Vector3d::UnitZ();
+		}
+		// Rendi il vettore di riferimento ortogonale alla normale
+		referenceVector = (referenceVector - referenceVector.dot(averageNormal) * averageNormal).normalized();
+	
+		// 3. Raccogli i vertici duali (baricentri delle facce originali) e i loro angoli
+		std::vector<std::pair<double, unsigned int>> anglesAndDualVertices; // {angle, dual_vertex_id (original_face_id)}
+	
+		for (unsigned int faceId : incidentFaces) {
+			// Calcola il baricentro della faccia (che è il vertice del duale)
+			Eigen::Vector3d faceBarycenter = Eigen::Vector3d::Zero();
+			const auto& faceVertices = meshTriangulated.Cell2DsVertices[faceId];
+			for (unsigned int v_id : faceVertices) {
+				faceBarycenter += meshTriangulated.Cell0DsCoordinates.col(v_id);
+			}
+			faceBarycenter /= static_cast<double>(faceVertices.size());
+	
+			// Vettore dal vertice originale al baricentro della faccia duale
+			Eigen::Vector3d vecToBarycenter = faceBarycenter - vertexOriginalCoords;
+	
+			// Proietta il vettore sul piano normale al verticeOriginalCoords con normale `averageNormal`
+			Eigen::Vector3d projectedVec = vecToBarycenter - vecToBarycenter.dot(averageNormal) * averageNormal;
+			
+			// Calcola l'angolo in 2D sul piano
+			// Questo è il punto più critico: gli angoli devono essere robusti
+			double angle = atan2(projectedVec.dot(averageNormal.cross(referenceVector)), projectedVec.dot(referenceVector));
+			anglesAndDualVertices.push_back({angle, faceId});
+		}
+	
+		// 4. Ordina i vertici duali (le facce originali) in base all'angolo
+		std::sort(anglesAndDualVertices.begin(), anglesAndDualVertices.end());
+	
+		// 5. Costruisci la faccia duale con i vertici ordinati
+		std::vector<unsigned int> orderedDualFaceVertices;
+		std::vector<unsigned int> dualFaceEdges;
+	
+		for (size_t i = 0; i < anglesAndDualVertices.size(); ++i) {
+			unsigned int currentDualVertexId = anglesAndDualVertices[i].second;
+			orderedDualFaceVertices.push_back(currentDualVertexId);
+	
+			unsigned int nextDualVertexId;
+			if (i == anglesAndDualVertices.size() - 1) {
+				nextDualVertexId = anglesAndDualVertices[0].second; // Torna al primo vertice per chiudere il poligono
+			} else {
+				nextDualVertexId = anglesAndDualVertices[i+1].second;
+			}
+	
+			// Trova l'ID dello spigolo duale tra currentDualVertexId e nextDualVertexId
+			// Ricorda che gli ID dei vertici duali sono gli ID delle facce originali
+			std::pair<unsigned int, unsigned int> dualEdgeKey = {std::min(currentDualVertexId, nextDualVertexId), std::max(currentDualVertexId, nextDualVertexId)};
+			auto it_dual_edge = dualEdgeToIdMap.find(dualEdgeKey);
+	
+			if (it_dual_edge != dualEdgeToIdMap.end()) {
+				dualFaceEdges.push_back(it_dual_edge->second);
+			} else {
+				std::cerr << "Errore: Spigolo duale non trovato per facce (vertici duali) "
+						  << currentDualVertexId << " e " << nextDualVertexId << " attorno al vertice originale "
+						  << vertexOriginalId << std::endl;
+				// Questo è un errore grave: significa che la topologia non è 2-manifold
+				// o che c'è un problema di precisione.
+				// Potresti dover gestire un fallback o uscire.
+			}
+		}
+		
+		// Assegna la faccia duale costruita
+		meshDual.Cell2DsId[dualFaceIdCounter] = dualFaceIdCounter;
+		meshDual.Cell2DsVertices[dualFaceIdCounter] = orderedDualFaceVertices;
+		meshDual.Cell2DsEdges[dualFaceIdCounter] = dualFaceEdges;
+		dualFaceIdCounter++;
+	}
+    
 }
 
 
@@ -223,16 +234,28 @@ map <pair<unsigned int, unsigned int>, vector<unsigned int>> buildEdgeToFacesMap
         const vector<unsigned int>& faceEdges = meshTriangulated.Cell2DsEdges[faceId]; // spigoli della faccia corrente
         
         for (unsigned int edgeOriginalId : faceEdges) {
-            unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 0);
-            unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 1);
-            
-            pair<unsigned int, unsigned int> sortedEdgeVertices = {min(v1_id, v2_id), max(v1_id, v2_id)};
-            // Ordiniamo i vertici dello spigolo per avere una chiave univoca nella mappa
-            edgeToFaces[sortedEdgeVertices].push_back(faceId);
+			unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 0);
+			unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeOriginalId, 1);
+			pair<unsigned int, unsigned int> sortedEdgeVertices = {min(v1_id, v2_id), max(v1_id, v2_id)};
+			// Ordiniamo i vertici dello spigolo per avere una chiave univoca nella mappa
+			edgeToFaces[sortedEdgeVertices].push_back(faceId);
         }
     }
     return edgeToFaces;
 }
+
+void ProjectMeshToUnitSphere(PolyhedralMesh& mesh) {
+    for (int i = 0; i < mesh.Cell0DsCoordinates.cols(); ++i) {
+        Eigen::Vector3d vertexCoords = mesh.Cell0DsCoordinates.col(i);
+        double norm = vertexCoords.norm(); // Equivalente a std::sqrt(vertexCoords.squaredNorm());
+        if (norm < 1e-12) { 
+            cerr << "Warning: Vertice " << i << " troppo vicino all'origine. Non proiettato." << endl;
+            continue; // Salta la proiezione per questo vertice
+        }
+        mesh.Cell0DsCoordinates.col(i) = vertexCoords / norm;
+    }
+}
+
 }
 
 

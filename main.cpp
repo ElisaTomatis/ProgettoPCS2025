@@ -74,23 +74,21 @@ int main(int argc, char *argv[]) {
     vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
 	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
 	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	
+	//PolyhedralLibrary::CompactPolyhedralMesh(meshTriangulated, meshFinal);
+	
 	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
 
     //PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
-    //PolyhedralLibrary::printMeshTriangulated(meshDual);
+    //PolyhedralLibrary::printMeshTriangulated(meshFinal);
     
     PolyhedralLibrary::CalculateDual(meshTriangulated, meshDual);
     PolyhedralLibrary::printMeshTriangulated(meshDual);
+	PolyhedralLibrary::ProjectMeshToUnitSphere(meshDual);
+    PolyhedralLibrary::ExportParaview(meshDual);
 
-    
-    //PolyhedralLibrary::ExportParaview(meshTriangulated);
-
-    //PolyhedralLibrary::ExportParaview(mesh);
-    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
-    
-    //PolyhedralLibrary::ExportParaview(meshTriangulated);
-    
     // Scrittura su TXT
 	//PolyhedralLibrary::WriteCell0Ds(meshTriangulated);
 	//PolyhedralLibrary::WriteCell1Ds(meshTriangulated);

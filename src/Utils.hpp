@@ -58,6 +58,8 @@ namespace PolyhedralLibrary
 	
 	void printMeshTriangulated(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
 	void NewMesh(PolyhedralLibrary::PolyhedralMesh& meshTriangulated, PolyhedralLibrary::PolyhedralMesh& meshFinal, const vector<int>& dimension);
+	void CompactPolyhedralMesh(const PolyhedralLibrary::PolyhedralMesh& originalMesh, PolyhedralLibrary::PolyhedralMesh& newMesh);
+	void ProjectMeshToUnitSphere(PolyhedralLibrary::PolyhedralMesh& mesh);
 	
 	void WriteCell0Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
     void WriteCell1Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
