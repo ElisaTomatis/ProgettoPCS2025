@@ -79,16 +79,15 @@ int main(int argc, char *argv[]) {
 	
 	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
+    //PolyhedralLibrary::printMeshTriangulated(meshTriangulated);
 
     //PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
     //PolyhedralLibrary::printMeshTriangulated(meshFinal);
     
-    //PolyhedralLibrary::CalculateDual(meshTriangulated, meshDual);
-    //PolyhedralLibrary::printMeshTriangulated(meshDual);
-
-    
-    //PolyhedralLibrary::ExportParaview(meshTriangulated);
+    PolyhedralLibrary::CalculateDual(meshTriangulated, meshDual);
+    PolyhedralLibrary::printMeshTriangulated(meshDual);
+	PolyhedralLibrary::ProjectMeshToUnitSphere(meshDual);
+    PolyhedralLibrary::ExportParaview(meshDual);
 
     // Scrittura su TXT
 	//PolyhedralLibrary::WriteCell0Ds(meshTriangulated);
