@@ -2,10 +2,13 @@
 
 #include <iostream>
 #include <vector>
+#include "Eigen/Eigen"
 
 #include <gtest/gtest.h>
 #include "PolyhedralMesh.hpp"
 #include "Utils.hpp"
+
+using namespace Eigen;
 
 namespace PolyhedraTest {
 	
@@ -286,22 +289,143 @@ TEST(TestPolyedra, TestTriangulationTetrahedron)
     EXPECT_EQ(meshExpected.Cell3DsFaces, meshTriangulated.Cell3DsFaces);
 }
 
-/*
+
 TEST(TestPolyedra, TestOrderedEdges)
-{
+{ 
+   // mesh ottenuta utilizzando la funzione di triangolazione
+	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+	PolyhedralLibrary::PolyhedralMesh mesh;
+	PolyhedralLibrary::generateTetrahedron(mesh);
+	
+	int q = 3;
+	int b = 2;
+	int c = 0;
+	
+	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	
+	
+	// per ogni faccia i lati sono ordinati in modo che la fine dell'arco e coincida con l'inizio dell'arco successivo (e+1)%E
+	// il vertice e della faccia deve corrispondere all'origine dell'arco e
+
+    // ciclo su tutte le facce della mesh triangolata 
+    for (size_t f = 0; f < meshTriangulated.Cell2DsId.size(); ++f) {
+		const auto& edges = meshTriangulated.Cell2DsEdges[f]; // lista dei lati di una faccia
+        const auto& vertices = meshTriangulated.Cell2DsVertices[f]; // lista dei vertici di una faccia 
+        size_t E = edges.size(); // numero di vertici dela faccia
+		
+		ASSERT_EQ(vertices.size(), E) << "Numero di vertici e di lati non corrispondono per faccia " << f;
+		
+		// itero su ogni lato e della faccia 
+		 for (size_t e = 0; e < E; ++e) {
+			int currentEdge = edges[e]; // vertice corrente
+            int nextEdge = edges[(e + 1) % E]; // vertice successivo 
+			int currentEdgeOrigin = meshTriangulated.Cell1DsExtrema(currentEdge, 0);
+            int currentEdgeEnd = meshTriangulated.Cell1DsExtrema(currentEdge, 1);
+
+            int nextEdgeOrigin = meshTriangulated.Cell1DsExtrema(nextEdge, 0);
+
+            int vertex = vertices[e];
+			
+			std::cout << "Face " << f << ", edge " << e << ": "
+              << "currentEdgeEnd=" << currentEdgeEnd << ", "
+              << "nextEdgeOrigin=" << nextEdgeOrigin << ", "
+              << "vertex=" << vertex << ", "
+              << "currentEdgeOrigin=" << currentEdgeOrigin << "\n";
+			
+			// Controllo chiusura del ciclo edge: end corrente == origin prossimo
+            EXPECT_EQ(currentEdgeEnd, nextEdgeOrigin) 
+                << "Edge " << currentEdge << " end non corrisponde a origin di edge " << nextEdge;
+			 
+            // controllo che il vertice e della faccia coincida con l'origine dell'edge corrente
+            	EXPECT_EQ(vertex, currentEdgeOrigin) 
+                << "Vertice " << vertex << " non coincide con origin di edge " << currentEdge;	
+
+		 }
+
+	}		
+	
 	
 }
 
 TEST(TestPolyedra, TestNotNullArea)
 {
+	double eps = numeric_limits<double>::epsilon();
+
+	// mesh ottenuta utilizzando la funzione di triangolazione
+	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+	PolyhedralLibrary::PolyhedralMesh mesh;
+	PolyhedralLibrary::generateTetrahedron(mesh);
+	
+	int q = 3;
+	int b = 2;
+	int c = 0;
+	
+	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	
+	// ciclo su tutti i triangoli
+	for (size_t i = 0; i < meshTriangulated.Cell2DsVertices.size(); ++i) {
+		const auto& tri = meshTriangulated.Cell2DsVertices[i];
+		ASSERT_EQ(tri.size(), 3); // controllo se il triangolo ha 3 vertici
+		
+		// accedo alle coordinate dei vertici
+		Vector3d A = meshTriangulated.Cell0DsCoordinates.col(tri[0]); // per ogni vertice prendo la colonna che contiene le coordinate
+        Vector3d B = meshTriangulated.Cell0DsCoordinates.col(tri[1]);
+        Vector3d C = meshTriangulated.Cell0DsCoordinates.col(tri[2]);
+		
+		// calcolo l'area del triangolo
+		double area = 0.5 * ((B - A).cross(C - A)).norm();
+		EXPECT_GT(area, eps) << "Triangolo con area nulla o quasi nulla al triangolo " << i;
+	}
+	
+	
 	
 }
 
-TEST(TestPolyedra, TestNotNullEdges)
-{
+TEST(TestPolyedra, TestNotNullEdges){
 	
+	double eps = numeric_limits<double>::epsilon();
+
+	// mesh ottenuta utilizzando la funzione di triangolazione
+	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+	PolyhedralLibrary::PolyhedralMesh mesh;
+	PolyhedralLibrary::generateTetrahedron(mesh);
+	
+	int q = 3;
+	int b = 2;
+	int c = 0;
+	
+	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	
+	// itero su ogni lato della mesh triangolata 
+	for (size_t i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
+		// prendo gli indici dei due vertici che definisco il lato i
+		int vStart = meshTriangulated.Cell1DsExtrema(i, 0); // indice del vertice di partenza 
+        int vEnd = meshTriangulated.Cell1DsExtrema(i, 1); // indice del vertice di arrivo
+		
+		// prendo le coordinate dei due vertici
+		Vector3d startPoint = meshTriangulated.Cell0DsCoordinates.col(vStart);
+        Vector3d endPoint = meshTriangulated.Cell0DsCoordinates.col(vEnd);
+		
+		// calcolo la norma della lunghezza del lato
+		double length = (endPoint - startPoint).norm();
+		
+		EXPECT_GT(length, eps) << "Lato con lunghezza nulla o quasi nulla all'edge " << i;
+		
+	}
 }
-*/
+
 
 
 }
