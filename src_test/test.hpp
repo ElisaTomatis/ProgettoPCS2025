@@ -13,27 +13,57 @@ using namespace Eigen;
 namespace PolyhedraTest {
 	
 // Dimension
-/*
 TEST(TestPolyedra, TestComputePolyhedronVEF)
 {
-   
+	int b = 2;
+	int c = 0;
+	
+	// caso 1: p=3, q=3
+	int q1 = 3;
+	vector<int> expected1 = {10, 24, 16};
+	vector<int> result1 = PolyhedralLibrary::ComputePolyhedronVEF(q1, b, c);
+	EXPECT_EQ(expected1, result1);
+	
+	// caso 2: p=3, q=4
+	int q2 = 4;
+	vector<int> expected2 = {18, 48, 32};
+	vector<int> result2 = PolyhedralLibrary::ComputePolyhedronVEF(q2, b, c);
+	EXPECT_EQ(expected2, result2);
+	
+    // caso 3: p=3, q=5
+	int q3 = 5;
+	vector<int> expected3 = {42, 120, 80};
+	vector<int> result3 = PolyhedralLibrary::ComputePolyhedronVEF(q3, b, c);
+	EXPECT_EQ(expected3, result3);
 }
 
 TEST(TestPolyedra, TestCalculateDuplicated)
 {
+	int b = 2;
+	int c = 0;
 	
+	// caso 1: p=3, q=3
+	int q1 = 3;
+	vector<int> dimension1 = {10, 24, 16};
+	vector<int> expected1 = {24, 36, 16};
+	vector<int> result1 = PolyhedralLibrary::CalculateDuplicated(q1, b, c, dimension1);
+	EXPECT_EQ(expected1, result1);
+	
+	// caso 2: p=3, q=4
+	int q2 = 4;
+	vector<int> dimension2 = {18, 48, 32};
+	vector<int> expected2 = {48, 72, 32};
+	vector<int> result2 = PolyhedralLibrary::CalculateDuplicated(q2, b, c, dimension2);
+	EXPECT_EQ(expected2, result2);
+	
+	// caso 3: p=3, q=5
+	int q3 = 5;
+	vector<int> dimension3 = {42, 120, 80};
+	vector<int> expected3 = {120, 180 , 80};
+	vector<int> result3 = PolyhedralLibrary::CalculateDuplicated(q3, b, c, dimension3);
+	EXPECT_EQ(expected3, result3);
 }
 
-TEST(TestPolyedra, TestRemoveDuplicatedVertices)
-{
-	
-}
-
-TEST(TestPolyedra, TestRemoveDuplicatedEdges)
-{
-	
-}
-*/
 
 // Triangulation
 TEST(TestPolyedra, TestTriangulationTetrahedron)
