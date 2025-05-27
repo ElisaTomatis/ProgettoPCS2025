@@ -15,6 +15,7 @@ list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/Polyhedra.cpp)
 list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/Dimension.cpp)
 list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/MeshExport.cpp)
 list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/Dual.cpp)
+list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/CamminoMinimo.cpp)
 
 list(APPEND src_includes ${CMAKE_CURRENT_SOURCE_DIR})
 

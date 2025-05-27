@@ -69,5 +69,9 @@ namespace PolyhedralLibrary
     
     void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual);
     map <pair<unsigned int, unsigned int>, vector<unsigned int>> buildEdgeToFacesMap(const PolyhedralMesh& meshTrinagulated);
+
+
+	double distance = calculateDistanceById(const PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
+	pair<unsigned int, double> path = findShortestPathBFS(const PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
 	
 }
