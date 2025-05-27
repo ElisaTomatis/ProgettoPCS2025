@@ -91,7 +91,7 @@ pair<unsigned int, double> findShortestPathBFS(
         double length = calculateDistanceById(mesh, vertexIdToIndexMap, v1_real, v2_real);
 
         // Memorizziamo l'informazione usando gli INDICI dei vertici
-        edgeInfoMap{min(v1_idx, v2_idx), max(v1_idx, v2_idx)}] = {edgeId, length};
+        edgeInfoMap[{min(v1_idx, v2_idx), max(v1_idx, v2_idx)}] = {edgeId, length};
     }
 
     // Inizializzazione per BFS
@@ -135,8 +135,11 @@ pair<unsigned int, double> findShortestPathBFS(
     }
 
     // Ricostruzione del cammino e calcolo delle statistiche
-    vector<bool> isVertexInShortestPath(numVertices, false); // Vettore indicizzato per INDICE di colonna
-    vector<bool> isEdgeInShortestPath(numEdgesInMesh, false); // Vettore indicizzato per INDICE in Cell1DsId
+	isVertexInShortestPath.assign(numVertices, false);
+	isEdgeInShortestPath.assign(numEdgesInMesh, false);
+	// se non uso assign mi dà errore
+    //vector<bool> isVertexInShortestPath(numVertices, false); // Vettore indicizzato per INDICE di colonna
+    //vector<bool> isEdgeInShortestPath(numEdgesInMesh, false); // Vettore indicizzato per INDICE in Cell1DsId
 
     unsigned int numEdgesInPath = 0;
     double totalPathLength = 0.0;
@@ -182,3 +185,4 @@ pair<unsigned int, double> findShortestPathBFS(
     return {numEdgesInPath, totalPathLength};
 }
 
+}
