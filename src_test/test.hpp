@@ -457,11 +457,9 @@ TEST(TestPolyedra, TestNotNullArea)
         Vector3d C = meshTriangulated.Cell0DsCoordinates.col(tri[2]);
 		
 		// calcolo l'area del triangolo
-		double area = 0.5 * ((B - A).cross(C - A)).norm();
+		double area = 0.5 * ((B - A).cross(C - A)).norm(); // prodotto vettoriale
 		EXPECT_GT(area, eps) << "Triangolo con area nulla o quasi nulla al triangolo " << i;
-	}
-	
-	
+	}	
 	
 }
 
