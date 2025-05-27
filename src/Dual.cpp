@@ -30,22 +30,6 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
     map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
     // mappa che associ ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
     
-    unsigned int k=0;
-    for (const auto& [edge_key, faces_vec] : edgeToFacesMap) {
-        // Print the key (the edge)
-        std::cout << "Spigolo " << k << " (" << edge_key.first << ", " << edge_key.second << ") -> Facce: [";
-        
-        // Print the value (the vector of faces)
-        for (size_t i = 0; i < faces_vec.size(); ++i) {
-            std::cout << faces_vec[i];
-            if (i < faces_vec.size() - 1) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << "]" << std::endl;
-        k++;
-    }
-    
     vector<pair<unsigned int, unsigned int>> dualEdgesExtremaVector;
     // Ogni spigolo interno del poliedro originale (condiviso da due facce) genera uno spigolo nel poliedro duale che connette i baricentri di quelle due facce.
     // Useremo un vettore temporaneo e poi lo convertiremo in Eigen::MatrixXi.
@@ -88,20 +72,6 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
         for (unsigned int vertexOriginalId : meshTriangulated.Cell2DsVertices[faceId]) {
             vertexToFacesMap[vertexOriginalId].push_back(faceId);
         }
-    }
-    
-    for (const auto& [vertex_id, faces_vec] : vertexToFacesMap) {
-        // Stampa la chiave (l'ID del vertice originale)
-        std::cout << "Vertice " << vertex_id << " -> Facce: [";
-        
-        // Stampa il valore (il vettore di facce incidenti)
-        for (size_t i = 0; i < faces_vec.size(); ++i) {
-            std::cout << faces_vec[i];
-            if (i < faces_vec.size() - 1) {
-                std::cout << ", ";
-            }
-        }
-        std::cout << "]" << std::endl;
     }
     
     meshDual.Cell2DsVertices.resize(vertexToFacesMap.size());

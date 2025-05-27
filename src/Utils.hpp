@@ -5,6 +5,8 @@
 
 namespace PolyhedralLibrary
 {
+	void invertiValori(int& a, int& b);
+	
 	vector<int> ComputePolyhedronVEF(int q, int b, int c);
 	
 	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension);
@@ -57,8 +59,7 @@ namespace PolyhedralLibrary
 	void ExportParaview(const PolyhedralLibrary::PolyhedralMesh& meshFinal);
 	
 	void printMeshTriangulated(const PolyhedralLibrary::PolyhedralMesh& meshTriangulated);
-	void NewMesh(PolyhedralLibrary::PolyhedralMesh& meshTriangulated, PolyhedralLibrary::PolyhedralMesh& meshFinal, const vector<int>& dimension);
-	void CompactPolyhedralMesh(const PolyhedralLibrary::PolyhedralMesh& originalMesh, PolyhedralLibrary::PolyhedralMesh& newMesh);
+
 	void ProjectMeshToUnitSphere(PolyhedralLibrary::PolyhedralMesh& mesh);
 	
 	void WriteCell0Ds(PolyhedralLibrary::PolyhedralMesh& mesh);
