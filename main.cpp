@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+    	printMeshTriangulated(meshTriangulated);
     	PolyhedralLibrary::ExportParaview(meshTriangulated);
 		
     } else if (p == 3 && q != 3){
@@ -72,7 +73,6 @@ int main(int argc, char *argv[]) {
 		cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";
         return 1;
     }
-    printMeshTriangulated(meshTriangulated);
 
     // Scrittura su TXT
 	PolyhedralLibrary::WriteCell0Ds(meshTriangulated);

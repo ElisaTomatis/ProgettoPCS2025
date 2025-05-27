@@ -176,10 +176,10 @@ namespace PolyhedralLibrary
     }
 
     // Fase 3: Aggiornare le strutture della mesh in base al remapping finale
-    for (int edgeId = 0; edgeId < meshTriangulated.Cell1DsExtrema.cols(); ++edgeId) {
-        meshTriangulated.Cell1DsExtrema(0, edgeId) = id_remap[meshTriangulated.Cell1DsExtrema(0, edgeId)];
-        meshTriangulated.Cell1DsExtrema(1, edgeId) = id_remap[meshTriangulated.Cell1DsExtrema(1, edgeId)];
-    }
+    for (int edgeId = 0; edgeId < meshTriangulated.Cell1DsExtrema.rows(); ++edgeId) {
+		meshTriangulated.Cell1DsExtrema(edgeId, 0) = id_remap[meshTriangulated.Cell1DsExtrema(edgeId, 0)];
+		meshTriangulated.Cell1DsExtrema(edgeId, 1) = id_remap[meshTriangulated.Cell1DsExtrema(edgeId, 1)];
+	}
     
     for (unsigned int faceId = 0; faceId < meshTriangulated.Cell2DsId.size(); ++faceId) {
         for (unsigned int& vertexOriginalId : meshTriangulated.Cell2DsVertices[faceId]) {
@@ -272,7 +272,7 @@ namespace PolyhedralLibrary
                     // puntino a 'j' o al suo master.
                     id_remap[i] = root_j; // Imposta il reindirizzamento diretto per 'i'
 
-                    meshTriangulated.Cell1DsExtrema.row(i) = meshTriangulated.Cell1DsExtrema.row(j);
+                    //meshTriangulated.Cell1DsExtrema.row(i) = meshTriangulated.Cell1DsExtrema.row(j);
                 }
             }
         }
@@ -285,7 +285,7 @@ namespace PolyhedralLibrary
         while (id_remap[current_id] != current_id) {
             current_id = id_remap[current_id];
             // Optional: Path compression during traversal for future faster lookups
-            // id_remap[k] = current_id; // This line (if uncommented) would implement path compression during the first traversal
+            id_remap[k] = current_id; // This line (if uncommented) would implement path compression during the first traversal
         }
         id_remap[k] = current_id; // Imposta il reindirizzamento finale per k
     }

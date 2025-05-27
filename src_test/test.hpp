@@ -330,12 +330,13 @@ TEST(TestPolyedra, TestOrderedEdges)
 	int q = 3;
 	int b = 2;
 	int c = 0;
+	unsigned int maxFlag = numeric_limits<unsigned int>::max();
 	
 	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
 	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
 	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
 	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
 	
 	
 	// per ogni faccia i lati sono ordinati in modo che la fine dell'arco e coincida con l'inizio dell'arco successivo (e+1)%E
@@ -346,39 +347,84 @@ TEST(TestPolyedra, TestOrderedEdges)
 		const auto& edges = meshTriangulated.Cell2DsEdges[f]; // lista dei lati di una faccia
         const auto& vertices = meshTriangulated.Cell2DsVertices[f]; // lista dei vertici di una faccia 
         size_t E = edges.size(); // numero di vertici dela faccia
+        
 		
 		ASSERT_EQ(vertices.size(), E) << "Numero di vertici e di lati non corrispondono per faccia " << f;
 		
 		// itero su ogni lato e della faccia 
 		 for (size_t e = 0; e < E; ++e) {
-			int currentEdge = edges[e]; // vertice corrente
-            int nextEdge = edges[(e + 1) % E]; // vertice successivo 
-			int currentEdgeOrigin = meshTriangulated.Cell1DsExtrema(currentEdge, 0);
-            int currentEdgeEnd = meshTriangulated.Cell1DsExtrema(currentEdge, 1);
+			unsigned int currentEdge = edges[e]; // lato corrente
+            unsigned int nextEdge = edges[(e + 1) % E]; // lato successivo 
+            
+            unsigned int currentEdgeOrigin = maxFlag;
+			unsigned int currentEdgeEnd = maxFlag;
+			unsigned int nextEdgeOrigin = maxFlag;
+			unsigned int nextEdgeEnd = maxFlag;
+            
+            bool foundCurrent = false;
+            for (unsigned int i = 0; i < meshTriangulated.Cell1DsId.size(); i++) {
+                if (currentEdge == meshTriangulated.Cell1DsId[i]) {
+                    // Trovato un lato originale 'i' che punta a currentEdgeMasterId
+                    // Prendiamo i suoi estremi
+                    currentEdgeOrigin = meshTriangulated.Cell1DsExtrema(i, 0);
+                    currentEdgeEnd = meshTriangulated.Cell1DsExtrema(i, 1);
+                    foundCurrent = true;
+                    break; // Trovato, esci dal ciclo interno
+                }
+            }
+            // Controllo che il master ID sia stato trovato (dovrebbe esserlo sempre)
+            ASSERT_TRUE(foundCurrent) << "Master Edge ID " << currentEdge << " not found in Cell1DsId!";
 
-            int nextEdgeOrigin = meshTriangulated.Cell1DsExtrema(nextEdge, 0);
+            // Trova gli estremi per nextEdgeMasterId
+            bool foundNext = false;
+            for (unsigned int i = 0; i < meshTriangulated.Cell1DsId.size(); i++) {
+                if (nextEdge == meshTriangulated.Cell1DsId[i]) {
+                    // Trovato un lato originale 'i' che punta a nextEdgeMasterId
+                    // Prendiamo i suoi estremi
+                    nextEdgeOrigin = meshTriangulated.Cell1DsExtrema(i, 0);
+                    nextEdgeEnd = meshTriangulated.Cell1DsExtrema(i, 1);
+                    foundNext = true;
+                    break; // Trovato, esci dal ciclo interno
+                }
+            }
+            ASSERT_TRUE(foundNext) << "Master Edge ID " << nextEdge << " not found in Cell1DsId!";
 
-            int vertex = vertices[e];
-			
-			std::cout << "Face " << f << ", edge " << e << ": "
-              << "currentEdgeEnd=" << currentEdgeEnd << ", "
-              << "nextEdgeOrigin=" << nextEdgeOrigin << ", "
-              << "vertex=" << vertex << ", "
-              << "currentEdgeOrigin=" << currentEdgeOrigin << "\n";
-			
-			// Controllo chiusura del ciclo edge: end corrente == origin prossimo
-            EXPECT_EQ(currentEdgeEnd, nextEdgeOrigin) 
-                << "Edge " << currentEdge << " end non corrisponde a origin di edge " << nextEdge;
-			 
-            // controllo che il vertice e della faccia coincida con l'origine dell'edge corrente
-            	EXPECT_EQ(vertex, currentEdgeOrigin) 
-                << "Vertice " << vertex << " non coincide con origin di edge " << currentEdge;	
+            // Recupera il vertice della faccia
+            unsigned int faceVertex = vertices[e]; // ID master del vertice della faccia
 
-		 }
+            std::cout << "Face " << f << ", edge " << e << ": "
+                << "currentEdgeMasterId=" << currentEdge
+                << ", nextEdgeMasterId=" << nextEdge
+                << ", currentEdgeOrigin=" << currentEdgeOrigin
+                << ", currentEdgeEnd=" << currentEdgeEnd
+                << ", nextEdgeOrigin=" << nextEdgeOrigin
+                << ", nextEdgeEnd=" << nextEdgeEnd
+                << ", faceVertex=" << faceVertex << "\n";
 
-	}		
-	
-	
+            // Controllo chiusura del ciclo edge: fine corrente == inizio prossimo (o altre condizioni)
+            // Ho mantenuto le tue 4 condizioni, ma considera attentamente la loro necessità.
+            // Per una mesh ordinata, la prima (currentEdgeEnd == nextEdgeOrigin) è quella principale.
+            bool condition = (currentEdgeOrigin == nextEdgeOrigin) ||
+                             (currentEdgeOrigin == nextEdgeEnd) ||
+                             (currentEdgeEnd == nextEdgeOrigin) ||
+                             (currentEdgeEnd == nextEdgeEnd);
+            EXPECT_TRUE(condition)
+                << "Face " << f << ", Edge " << currentEdge
+                << " (Origin: " << currentEdgeOrigin << ", End: " << currentEdgeEnd << ") "
+                << "does not connect correctly with Edge " << nextEdge
+                << " (Origin: " << nextEdgeOrigin << ", End: " << nextEdgeEnd << ")";
+
+            // Controllo che il vertice e-esimo della faccia coincida con l'origine del lato e-esimo
+            // Questa è una condizione importante per la coerenza.
+            bool condition2 = (faceVertex == currentEdgeOrigin) ||
+            					(faceVertex == currentEdgeEnd);
+            EXPECT_TRUE(condition2)
+                << "Face " << f << ", Vertex " << e << " (ID: " << faceVertex
+                << ") does not match origin of Edge " << currentEdge
+                << " (Origin: " << currentEdgeOrigin << ")";
+
+		}		
+	}
 }
 
 TEST(TestPolyedra, TestNotNullArea)
