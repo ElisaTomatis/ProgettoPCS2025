@@ -2,8 +2,8 @@
 #include "PolyhedralMesh.hpp"
 #include <fstream>
 #include <sstream>
-#include <Eigen/Dense> // Assicurati di includere la libreria Eigen
-#include <cmath>       // Per std::sqrt
+#include <Eigen/Dense> 
+#include <cmath>
 
 using namespace std;
 namespace PolyhedralLibrary {

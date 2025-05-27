@@ -11,7 +11,10 @@
 
 using namespace std;
 using namespace Eigen;
+/*
 namespace PolyhedralLibrary {
+	
+
 
 // Funzione helper per calcolare la distanza euclidea tra due punti.
 // Prende la mesh, e gli ID REALI dei vertici. Usa la mappa per convertirli.
@@ -181,4 +184,6 @@ pair<unsigned int, double> findShortestPathBFS(
 
     return {numEdgesInPath, totalPathLength};
 }
+}
 
+*/

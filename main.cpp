@@ -38,7 +38,8 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    	printMeshTriangulated(meshTriangulated);
+    	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
+    	//printMeshTriangulated(meshTriangulated);
     	PolyhedralLibrary::ExportParaview(meshTriangulated);
 		
     } else if (p == 3 && q != 3){
@@ -52,6 +53,8 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+    	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
+    	//printMeshTriangulated(meshTriangulated);
     	PolyhedralLibrary::ExportParaview(meshTriangulated);
 
 	} else if (q == 3 && p!= 3) {
@@ -67,6 +70,8 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
     	PolyhedralLibrary::CalculateDual(meshTriangulated, meshDual);
+    	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
+    	//printMeshTriangulated(meshTriangulated);
     	PolyhedralLibrary::ExportParaview(meshDual);
 		
 	} else {

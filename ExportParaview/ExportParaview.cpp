@@ -1,12 +1,13 @@
+#include "UCDUtilities.hpp"
+#include "Utils.hpp"
+#include "PolyhedralMesh.hpp"
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include <array>
 #include <Eigen/Dense>
-#include "UCDUtilities.hpp"
-#include "Utils.hpp"
-#include "PolyhedralMesh.hpp"
 
+using namespace std;
 namespace PolyhedralLibrary
 {
 	void ExportParaview(const PolyhedralMesh& meshFinal){
@@ -27,6 +28,8 @@ namespace PolyhedralLibrary
 	}
 	
 	void printMeshTriangulated(const PolyhedralMesh& mesh) {
+		
+		// VERTICI
 		cout << "Cell0DsId: "; 
 		for (auto id : mesh.Cell0DsId) cout << id << " ";
 		cout << "\nCell0DsCoordinates (per colonne):" << endl;
@@ -42,7 +45,8 @@ namespace PolyhedralLibrary
 			for (auto v : row) cout << v << " ";
 			cout << endl;
 		}
-
+		
+		// LATI
 		cout << "Cell1DsId: "; 
 		for (auto id : mesh.Cell1DsId) cout << id << " ";
 		cout << "\nCell1DsExtrema (per righe):" << endl;
@@ -58,8 +62,10 @@ namespace PolyhedralLibrary
 			cout << endl;
 		}
 		
+		// FACCE
 		cout << "Cell2DsId: "; 
 		for (auto id : mesh.Cell2DsId) cout << id << " ";
+		
 		cout << "\nCell2DsVertices:" << endl;
 		for (const auto& row : mesh.Cell2DsVertices) {
 			for (auto v : row) cout << v << " ";
@@ -70,6 +76,19 @@ namespace PolyhedralLibrary
 			for (auto v : row) cout << v << " ";
 			cout << endl;
 		}
+		
+		// POLIEDRO
+		cout << "Cell3DsId: " << mesh.Cell3DsId << endl; 
+		cout << "\nNumero di vertici: " << mesh.NumCells0Ds << endl;
+		cout << "Numero di lati: " << mesh.NumCells1Ds << endl;
+		cout << "Numero di facce: " << mesh.NumCells2Ds << endl;
+		
+		cout << "Cell3DsVertices: "; 
+		for (auto id : mesh.Cell3DsVertices) cout << id << " ";
+		cout << "Cell3DsEdges: "; 
+		for (auto id : mesh.Cell3DsEdges) cout << id << " ";
+		cout << "Cell3DsFaces: "; 
+		for (auto id : mesh.Cell3DsFaces) cout << id << " ";
 	
 		cout << "\n--- Fine struttura ---" << endl;
 	}

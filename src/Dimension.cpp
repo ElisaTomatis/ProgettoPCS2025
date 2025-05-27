@@ -1,14 +1,14 @@
+#include "Utils.hpp"
+#include "PolyhedralMesh.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "Utils.hpp"
-#include "PolyhedralMesh.hpp"
 #include <vector>
 #include <map>
-#include <algorithm> // Per std::min e std::max
-#include <limits>    // Per std::numeric_limits
+#include <algorithm>
+#include <limits> 
 #include <Eigen/Dense>
-#include <set>       // Per std::set per controlli efficienti di appartenenza
+#include <set> 
 
 using namespace std;
 using namespace Eigen;

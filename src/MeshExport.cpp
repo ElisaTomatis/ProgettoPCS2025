@@ -77,14 +77,23 @@ namespace PolyhedralLibrary {
 		if (!file.is_open()) {
         cerr << "Errore: impossibile aprire il file Cell3Ds.txt per la scrittura." << endl;
         return;
-    }
-        file << "Id;Vertices;Edges;Faces\n";
-        for (size_t i = 0; i < mesh.Cell3DsId.size(); ++i) {
-            file << mesh.Cell3DsId[i] << ";";
+    	}
+        file << "Id;NumVertices;Vertices;NumEdges;Edges;NumFaces;Faces\n";
+        file << mesh.Cell3DsId << ";";
+        
+        file << mesh.NumCells0Ds << ";";
+        for (size_t i = 0; i < mesh.Cell3DsVertices.size(); ++i) {
             file << mesh.Cell3DsVertices[i] << ";";
-            file << mesh.Cell3DsEdges[i] << ";";
-            file << mesh.Cell3DsFaces[i] << "\n";
         }
+        file << mesh.NumCells1Ds << ";";
+        for (size_t i = 0; i < mesh.Cell3DsEdges.size(); ++i) {
+            file << mesh.Cell3DsEdges[i] << ";";
+        }
+        file << mesh.NumCells2Ds << ";";
+        for (size_t i = 0; i < mesh.Cell3DsFaces.size(); ++i) {
+            file << mesh.Cell3DsFaces[i] << ";";
+        }
+
         file.close();
     }
 
