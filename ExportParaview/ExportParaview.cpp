@@ -23,15 +23,6 @@ namespace PolyhedralLibrary
 									 meshFinal.Cell1DsExtrema.transpose(),
 									 {},
 									 {});
-	
-			utilities.ExportPolygons("./Cell2Ds.inp",
-									 meshFinal.Cell0DsCoordinates,
-									 meshFinal.Cell2DsVertices,
-									 {},
-									 {},
-									 {});
-									 
-									 //UCDUtilities::ExportPolyhedra
 		 }
 	}
 	
