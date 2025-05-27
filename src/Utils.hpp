@@ -3,6 +3,9 @@
 #include "PolyhedralMesh.hpp"
 #include <Eigen/Dense>
 
+using namespace std;
+using namespace Eigen;
+
 namespace PolyhedralLibrary
 {
 	void invertiValori(int& a, int& b);
@@ -72,6 +75,7 @@ namespace PolyhedralLibrary
 
 
 	double calculateDistanceById(const PolyhedralLibrary::PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
-	pair<unsigned int, double> findShortestPathBFS(const PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
+	pair<unsigned int, double> findShortestPathBFS(PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
+	MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh);
 	
 }
