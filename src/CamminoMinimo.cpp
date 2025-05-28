@@ -13,7 +13,6 @@
 
 using namespace std;
 using namespace Eigen;
-/*
 namespace PolyhedralLibrary {
 	
 
@@ -195,9 +194,7 @@ pair<unsigned int, double> findShortestPathBFS(
 }
 }
 
-<<<<<<< HEAD
-*/
-=======
+
 
 // Funzione per calcolare la matrice di adiacenza
 MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
@@ -241,4 +238,4 @@ MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
 
 
 }
->>>>>>> e2fc71dbddbc1a7b6f067b7570c36fed60b61481
+
