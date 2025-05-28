@@ -94,7 +94,6 @@ int main(int argc, char *argv[]) {
     	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
     	//printMeshTriangulated(meshTriangulated);
     	// PolyhedralLibrary::ExportParaview(meshDual);
-
 		
 	} else {
 		cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";
@@ -166,12 +165,13 @@ int main(int argc, char *argv[]) {
         cout << "\nCammino minimo non richiesto (solo 5 argomenti forniti).\n";
 		PolyhedralLibrary::ExportParaview(*targetMeshPtr);
     }
+	
 
     // Scrittura su TXT
-	PolyhedralLibrary::WriteCell0Ds(meshTriangulated);
-	PolyhedralLibrary::WriteCell1Ds(meshTriangulated);
-	PolyhedralLibrary::WriteCell2Ds(meshTriangulated);
-	PolyhedralLibrary::WriteCell3Ds(meshTriangulated);
+	PolyhedralLibrary::WriteCell0Ds(*targetMeshPtr);
+	PolyhedralLibrary::WriteCell1Ds(*targetMeshPtr);
+	PolyhedralLibrary::WriteCell2Ds(*targetMeshPtr);
+	PolyhedralLibrary::WriteCell3Ds(*targetMeshPtr);
 
     return 0;
 }

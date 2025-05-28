@@ -13,7 +13,6 @@
 
 using namespace std;
 using namespace Eigen;
-
 namespace PolyhedralLibrary {
 	
 
@@ -96,7 +95,7 @@ pair<unsigned int, double> findShortestPathBFS(
         double length = calculateDistanceById(mesh, vertexIdToIndexMap, v1_real, v2_real);
 
         // Memorizziamo l'informazione usando gli INDICI dei vertici
-        edgeInfoMap{min(v1_idx, v2_idx), max(v1_idx, v2_idx)}] = {edgeId, length};
+        edgeInfoMap[{min(v1_idx, v2_idx), max(v1_idx, v2_idx)}] = {edgeId, length};
     }
 
     // Inizializzazione per BFS
@@ -140,8 +139,12 @@ pair<unsigned int, double> findShortestPathBFS(
     }
 
     // Ricostruzione del cammino e calcolo delle statistiche
-    vector<bool> isVertexInShortestPath(numVertices, false); // Vettore indicizzato per INDICE di colonna
-    vector<bool> isEdgeInShortestPath(numEdgesInMesh, false); // Vettore indicizzato per INDICE in Cell1DsId
+	
+	isVertexInShortestPath.assign(numVertices, false);
+	isEdgeInShortestPath.assign(numEdgesInMesh, false);
+    
+	//vector<bool> isVertexInShortestPath(numVertices, false); // Vettore indicizzato per INDICE di colonna
+    //vector<bool> isEdgeInShortestPath(numEdgesInMesh, false); // Vettore indicizzato per INDICE in Cell1DsId
 
 	mesh.Cell0DsMarker.resize(numVertices, 0); // Inizializza i marker a 0
     mesh.Cell1DsMarker.resize(numEdgesInMesh, 0);
@@ -193,7 +196,6 @@ pair<unsigned int, double> findShortestPathBFS(
 
     return {numEdgesInPath, totalPathLength};
 }
-}
 
 
 // Funzione per calcolare la matrice di adiacenza
@@ -238,4 +240,3 @@ MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
 
 
 }
-

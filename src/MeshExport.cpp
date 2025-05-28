@@ -6,7 +6,7 @@
 using namespace std;
 namespace PolyhedralLibrary {
 
-    void WriteCell0Ds(PolyhedralMesh& mesh) {
+    void WriteCell0Ds(const PolyhedralMesh& mesh) {
         ofstream file("Cell0Ds.txt");
 		if (!file.is_open()) {
         cerr << "Errore: impossibile aprire il file Cell0Ds.txt per la scrittura." << endl;
@@ -29,7 +29,7 @@ namespace PolyhedralLibrary {
     file.close();
     }
 
-    void WriteCell1Ds(PolyhedralMesh& mesh) {
+    void WriteCell1Ds(const PolyhedralMesh& mesh) {
         ofstream file("Cell1Ds.txt");
 		if (!file.is_open()) {
         cerr << "Errore: impossibile aprire il file Cell1Ds.txt per la scrittura." << endl;
@@ -51,7 +51,7 @@ namespace PolyhedralLibrary {
         file.close();
     }
 
-    void WriteCell2Ds(PolyhedralMesh& mesh){
+    void WriteCell2Ds(const PolyhedralMesh& mesh){
         std::ofstream file("Cell2Ds.txt");
 		if (!file.is_open()) {
         cerr << "Errore: impossibile aprire il file Cell2Ds.txt per la scrittura." << endl;
@@ -72,7 +72,7 @@ namespace PolyhedralLibrary {
         file.close();
     }
 
-    void WriteCell3Ds(PolyhedralMesh& mesh) {
+    void WriteCell3Ds(const PolyhedralMesh& mesh) {
         ofstream file("Cell3Ds.txt");
 		if (!file.is_open()) {
         cerr << "Errore: impossibile aprire il file Cell3Ds.txt per la scrittura." << endl;
