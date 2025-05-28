@@ -8,6 +8,8 @@
 #include <limits>       // Per std::numeric_limits (per infinity, anche se non usato direttamente in BFS)
 #include <cstdlib>      // Per EXIT_FAILURE
 #include <Eigen/Dense>  // Per Eigen::MatrixXd, Eigen::VectorXd
+# include <map>
+
 
 using namespace std;
 using namespace Eigen;
@@ -44,7 +46,7 @@ double calculateDistanceById(
 // --- Funzione per calcolare il cammino minimo usando BFS ---
 // Ora startVertexId e endVertexId sono gli ID REALI dei vertici.
 pair<unsigned int, double> findShortestPathBFS(
-    const PolyhedralMesh& mesh, // Passiamo la mesh per accedere ai dati originali
+    PolyhedralMesh& mesh, // Passiamo la mesh per accedere ai dati originali
     const MatrixXi& adjMatrix, // La matrice di adiacenza come parametro
     unsigned int startVertexId_real,  // ID REALE del vertice di partenza
     unsigned int endVertexId_real,    // ID REALE del vertice di arrivo
@@ -75,7 +77,7 @@ pair<unsigned int, double> findShortestPathBFS(
     unsigned int endVertexIdx = it_end->second;     // Indice di colonna del vertice di arrivo
 
     if (startVertexIdx == endVertexIdx) {
-        std::cout << "Il vertice di partenza e quello di arrivo sono gli stessi. Cammino minimo è 0 lati, lunghezza 0." << std::endl;
+        cout << "Il vertice di partenza e quello di arrivo sono gli stessi. Cammino minimo è 0 lati, lunghezza 0." << endl;
         return {0, 0.0};
     }
 
@@ -141,6 +143,9 @@ pair<unsigned int, double> findShortestPathBFS(
     vector<bool> isVertexInShortestPath(numVertices, false); // Vettore indicizzato per INDICE di colonna
     vector<bool> isEdgeInShortestPath(numEdgesInMesh, false); // Vettore indicizzato per INDICE in Cell1DsId
 
+	mesh.Cell0DsMarker.resize(numVertices, 0); // Inizializza i marker a 0
+    mesh.Cell1DsMarker.resize(numEdgesInMesh, 0);
+	
     unsigned int numEdgesInPath = 0;
     double totalPathLength = 0.0;
 
@@ -153,6 +158,8 @@ pair<unsigned int, double> findShortestPathBFS(
     unsigned int current_idx = endVertexIdx; // current_idx è un INDICE di colonna
     while (current_idx != startVertexIdx) {
         isVertexInShortestPath[current_idx] = true;
+		mesh.Cell0DsMarker[current_idx] = 1;
+		
         unsigned int prev_vertex_idx = predecessorVertex[current_idx]; // Indice di colonna del predecessore
         unsigned int edge_used_id = predecessorEdge[current_idx];     // ID REALE del Cell1D
 
@@ -161,7 +168,8 @@ pair<unsigned int, double> findShortestPathBFS(
         for (unsigned int i = 0; i < numEdgesInMesh; ++i) {
             if (mesh.Cell1DsId[i] == edge_used_id) {
                 isEdgeInShortestPath[i] = true; // Marca l'elemento all'indice 'i'
-                
+                mesh.Cell1DsMarker[i] = 1;
+				
                 // Converti gli indici di colonna in ID reali per calculateDistanceById
                 unsigned int prev_vertex_real = mesh.Cell0DsId[prev_vertex_idx];
                 unsigned int current_vertex_real = mesh.Cell0DsId[current_idx];
@@ -181,9 +189,56 @@ pair<unsigned int, double> findShortestPathBFS(
         current_idx = prev_vertex_idx;
     }
     isVertexInShortestPath[startVertexIdx] = true; // Aggiungi il vertice di partenza
+	mesh.Cell0DsMarker[startVertexIdx] = 1;
 
     return {numEdgesInPath, totalPathLength};
 }
 }
 
+<<<<<<< HEAD
 */
+=======
+
+// Funzione per calcolare la matrice di adiacenza
+MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
+    const unsigned int numVertices = mesh.Cell0DsCoordinates.cols();
+    
+    // Inizializza la matrice di adiacenza con zeri
+    // MatrixXi è una matrice di interi di Eigen
+    MatrixXi adjMatrix = MatrixXi::Zero(numVertices, numVertices);
+
+    // Mappa per convertire gli ID reali dei vertici in indici di colonna
+    map<unsigned int, unsigned int> vertexIdToIndexMap;
+    for (unsigned int i = 0; i < numVertices; ++i) {
+        vertexIdToIndexMap[mesh.Cell0DsId[i]] = i;
+    }
+
+    // Itera su tutti i lati (Cell1Ds) della mesh
+    for (unsigned int i = 0; i < mesh.Cell1DsId.size(); ++i) {
+        // Recupera gli ID reali dei due vertici che compongono il lato
+        unsigned int v1_real = mesh.Cell1DsExtrema(i, 0);
+        unsigned int v2_real = mesh.Cell1DsExtrema(i, 1);
+
+        // Converti gli ID reali in indici di colonna
+        auto it1 = vertexIdToIndexMap.find(v1_real);
+        auto it2 = vertexIdToIndexMap.find(v2_real);
+
+        if (it1 == vertexIdToIndexMap.end() || it2 == vertexIdToIndexMap.end()) {
+            cerr << "Errore: ID vertice non trovato nella mappa durante la costruzione della matrice di adiacenza.\n";
+            continue; // Salta questo lato e continua
+        }
+
+        unsigned int idx1 = it1->second;
+        unsigned int idx2 = it2->second;
+
+        // Imposta a 1 le celle corrispondenti nella matrice di adiacenza (il grafo non è diretto)
+        adjMatrix(idx1, idx2) = 1;
+        adjMatrix(idx2, idx1) = 1;
+    }
+
+    return adjMatrix;
+}
+
+
+}
+>>>>>>> e2fc71dbddbc1a7b6f067b7570c36fed60b61481

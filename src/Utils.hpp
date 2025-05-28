@@ -3,7 +3,11 @@
 #include "PolyhedralMesh.hpp"
 #include <Eigen/Dense>
 
+
 using namespace PolyhedralLibrary;
+using namespace std;
+using namespace Eigen;
+
 namespace PolyhedralLibrary
 {
 	// Inverte i valori di p e q
@@ -84,7 +88,12 @@ namespace PolyhedralLibrary
     void WriteCell2Ds(const PolyhedralMesh& mesh);
     void WriteCell3Ds(const PolyhedralMesh& mesh);
 
+
 	//double distance = calculateDistanceById(const PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
 	//pair<unsigned int, double> path = findShortestPathBFS(const PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
+
+	double calculateDistanceById(const PolyhedralLibrary::PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
+	pair<unsigned int, double> findShortestPathBFS(PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
+	MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh);
 	
 }
