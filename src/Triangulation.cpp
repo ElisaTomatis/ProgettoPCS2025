@@ -75,12 +75,6 @@ namespace PolyhedralLibrary
 		meshTriangulated.Cell2DsVertices.resize(dimensionDuplicated[2]);
 		meshTriangulated.Cell2DsEdges.resize(dimensionDuplicated[2]);
 
-		
-		/*
-		meshTriangulated.Cell2DsVertices.reserve(dimensionDuplicated[2]);
-		meshTriangulated.Cell2DsEdges.reserve(dimensionDuplicated[2]);*/
-		
-		
 		unsigned int k1=0;
 		unsigned int k2=0;
 		unsigned int k3=0;

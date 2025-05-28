@@ -38,12 +38,20 @@ namespace PolyhedralLibrary
 	void generateDodecahedron(PolyhedralMesh& mesh);
 	void generateIcosahedron(PolyhedralMesh& mesh);
 	
-	 // Triangola il poliedro
+	 // Triangola il poliedro di classe I
 	 // mesh : una struct PolyhedralMesh, quella di partenza non triangolata
 	 // meshTriangulated : una struct PolyhedralMesh, quella triangolata
 	 // b,c : parametri passati dall'utente che identificano il poliedro
 	 // dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato
 	void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated,
+							  unsigned int b, unsigned int c, const vector<int>& dimension);
+							  
+	 // Triangola il poliedro di classe II
+	 // mesh : una struct PolyhedralMesh, quella di partenza non triangolata
+	 // meshTriangulated : una struct PolyhedralMesh, quella triangolata
+	 // b,c : parametri passati dall'utente che identificano il poliedro
+	 // dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato
+	void triangulateAndStore2(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated,
 							  unsigned int b, unsigned int c, const vector<int>& dimension);
 	
 	 // Aggiunge un lato alla mesh triangolata se non è già presente
@@ -87,6 +95,7 @@ namespace PolyhedralLibrary
     void WriteCell1Ds(const PolyhedralMesh& mesh);
     void WriteCell2Ds(const PolyhedralMesh& mesh);
     void WriteCell3Ds(const PolyhedralMesh& mesh);
+
 
 	double calculateDistanceById(const PolyhedralLibrary::PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
 	pair<unsigned int, double> findShortestPathBFS(PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
