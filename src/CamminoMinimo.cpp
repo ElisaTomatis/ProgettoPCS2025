@@ -171,7 +171,7 @@ pair<unsigned int, double> findShortestPathBFS(
         for (unsigned int i = 0; i < numEdgesInMesh; ++i) {
             if (mesh.Cell1DsId[i] == edge_used_id) {
                 isEdgeInShortestPath[i] = true; // Marca l'elemento all'indice 'i'
-                mesh.Cell1DsMarker[i] = 1;
+                mesh.Cell1DsMarker[edge_used_id] = 1;
 				
                 // Converti gli indici di colonna in ID reali per calculateDistanceById
                 unsigned int prev_vertex_real = mesh.Cell0DsId[prev_vertex_idx];
@@ -182,12 +182,12 @@ pair<unsigned int, double> findShortestPathBFS(
                 foundEdgeIdx = true;
                 break;
             }
-        }
+		}
         if (!foundEdgeIdx) {
             cerr << "Errore critico durante la ricostruzione: L'ID del lato (" << edge_used_id
                       << ") per il segmento (indici " << prev_vertex_idx << "->" << current_idx << ") non è stato trovato in Cell1DsId.\n";
             return {0, 0.0};
-        }
+		}
 
         current_idx = prev_vertex_idx;
     }

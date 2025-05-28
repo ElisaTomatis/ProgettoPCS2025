@@ -14,6 +14,14 @@ namespace PolyhedralLibrary
 
     Gedim::UCDUtilities utilities;
 	
+	Eigen::VectorXi vertexIds(meshFinal.Cell0DsId.size());
+	for (size_t i = 0; i < meshFinal.Cell0DsId.size(); ++i)
+		vertexIds[i] = static_cast<int>(meshFinal.Cell0DsId[i]);
+
+	Eigen::VectorXi edgeIds(meshFinal.Cell1DsId.size());
+	for (size_t i = 0; i < meshFinal.Cell1DsId.size(); ++i)
+		edgeIds[i] = static_cast<int>(meshFinal.Cell1DsId[i]);
+	
 	bool hasValidVertexMarkers = !meshFinal.Cell0DsMarker.empty();
 
     bool hasValidEdgeMarkers = !meshFinal.Cell1DsMarker.empty();
@@ -44,18 +52,23 @@ namespace PolyhedralLibrary
         edgeProperty.NumComponents = 1;
         edgeProperty.Data = edgeData.data();
         edgeProperty.Size = edgeData.size();
+		
+		/*utilities.ExportPoints("./Cell0Ds.inp",
+                              meshFinal.Cell0DsCoordinates,
+                              { vertexProperty },
+                              Eigen::VectorXi());*/
 
         utilities.ExportPoints("./Cell0Ds.inp",
                               meshFinal.Cell0DsCoordinates,
                               { vertexProperty },
-                              Eigen::VectorXi());
+                              vertexIds);
 
         utilities.ExportSegments("./Cell1Ds.inp",
                                 meshFinal.Cell0DsCoordinates,
                                 meshFinal.Cell1DsExtrema.transpose(),
                                 { vertexProperty },
                                 { edgeProperty },
-                                Eigen::VectorXi());
+                                edgeIds);
 
     } else {
         // Export senza proprietà scalari
