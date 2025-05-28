@@ -1,0 +1,90 @@
+'lightgray
+'material-outline
+'plain
+'vibrant
+
+@startuml
+!theme materia-outline
+
+title Polyhedral Structure and Geodesic/Goldberg Polyhedra
+
+package PolyhedronLibrary <<Folder>> {
+
+    class PolyhedralMesh {
+        ' Celle 0D (Vertici)
+        + Cell0DsId : std::vector<unsigned int>
+        + Cell0DsCoordinates : Eigen::MatrixXd
+        + Cell0DsFlag : std::vector<std::vector<unsigned int>>
+        + Cell0DsMarker : std::vector<unsigned int>
+
+        ' Celle 1D (Lati)
+        + Cell1DsId : std::vector<unsigned int>
+        + Cell1DsExtrema : Eigen::MatrixXi
+        + Cell1DsFlag : std::vector<unsigned int>
+        + Cell1DsMarker : std::vector<unsigned int>
+
+        ' Celle 2D (Facce)
+        + Cell2DsId : std::vector<unsigned int>
+        + Cell2DsVertices : std::vector<std::vector<unsigned int>>
+        + Cell2DsEdges : std::vector<std::vector<unsigned int>>
+
+        ' Cella 3D (Poliedro)
+        + Cell3DsId : unsigned int
+        + NumCells0Ds : unsigned int
+        + NumCells1Ds : unsigned int
+        + NumCells2Ds : unsigned int
+        + Cell3DsVertices : std::vector<unsigned int>
+        + Cell3DsEdges : std::vector<unsigned int>
+        + Cell3DsFaces : std::vector<unsigned int>
+    }
+
+class Utils {
+  + void invertiValori(int& p, int& q)
+  + vector<int> ComputePolyhedronVEF(int q, int b, int c)
+  + vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension)
+  + void RemoveDuplicatedVertices(PolyhedralMesh& meshTriangulated)
+  + void RemoveDuplicatedEdges(PolyhedralMesh& meshTriangulated)
+  + void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, unsigned int b, unsigned int c, const vector<int>& dimension)
+  + void FindAddEdge(unsigned int a, unsigned int b, PolyhedralMesh& meshTriangulated, unsigned int& edgeID, unsigned int triangleID)
+  + void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
+  + map<pair<unsigned int, unsigned int>, vector<unsigned int>> buildEdgeToFacesMap(const PolyhedralMesh& meshTriangulated)
+  + void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension)
+  + void ProjectMeshToUnitSphere(PolyhedralMesh& mesh)
+  + void WriteCell0Ds(const PolyhedralMesh& mesh)
+  + void WriteCell1Ds(const PolyhedralMesh& mesh)
+  + void WriteCell2Ds(const PolyhedralMesh& mesh)
+  + void WriteCell3Ds(const PolyhedralMesh& mesh)
+  + double calculateDistanceById(const PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2)
+  + pair<unsigned int, double> findShortestPathBFS(PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath)
+  + MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh)
+
+ .. TESTUTILS ..
+        TestComputePolyhedronVEF
+        TestCalculateDuplicated
+        TestTriangulationTetrahedron
+        TestOrderedEdges
+        TestNotNullArea
+        TestNotNullEdges
+        DualTest
+
+}
+
+ ' Relazione di uso
+    PolyhedralMesh "1" o-left- "uses" Utils : contains output of
+
+class ExportParaview{
+  + void ExportParaview(const PolyhedralMesh& meshTriangulated)
+  + void printMeshTriangulated(const PolyhedralMesh& meshTriangulated)
+}
+
+}
+
+
+
+package Gedim <<Frame>>
+{
+
+}
+
+ExportParaview ..> Gedim  : uses
+@enduml
