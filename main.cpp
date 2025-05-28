@@ -59,14 +59,9 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-<<<<<<< HEAD
     	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
-    	//printMeshTriangulated(meshTriangulated);
-    	PolyhedralLibrary::ExportParaview(meshTriangulated);
-=======
     	// printMeshTriangulated(meshTriangulated);
     	// PolyhedralLibrary::ExportParaview(meshTriangulated);
->>>>>>> e2fc71dbddbc1a7b6f067b7570c36fed60b61481
 		
     } else if (p == 3 && q != 3){
 	    if (q == 4){
@@ -79,14 +74,9 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-<<<<<<< HEAD
     	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
     	//printMeshTriangulated(meshTriangulated);
-    	PolyhedralLibrary::ExportParaview(meshTriangulated);
-=======
-		printMeshTriangulated(meshTriangulated);
     	// PolyhedralLibrary::ExportParaview(meshTriangulated);
->>>>>>> e2fc71dbddbc1a7b6f067b7570c36fed60b61481
 
 	} else if (q == 3 && p!= 3) {
 		if (p == 4){
@@ -101,13 +91,10 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
     	PolyhedralLibrary::CalculateDual(meshTriangulated, meshDual);
-<<<<<<< HEAD
     	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
     	//printMeshTriangulated(meshTriangulated);
-    	PolyhedralLibrary::ExportParaview(meshDual);
-=======
     	// PolyhedralLibrary::ExportParaview(meshDual);
->>>>>>> e2fc71dbddbc1a7b6f067b7570c36fed60b61481
+
 		
 	} else {
 		cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";

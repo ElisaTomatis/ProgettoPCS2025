@@ -13,12 +13,6 @@ namespace PolyhedralLibrary
 	void ExportParaview(const PolyhedralMesh& meshFinal){
 
     Gedim::UCDUtilities utilities;
-
-/*    bool hasValidVertexMarkers = !meshFinal.Cell0DsMarker.empty() &&
-                                 (meshFinal.Cell0DsMarker.size() == meshFinal.Cell0DsCoordinates.rows());
-
-    bool hasValidEdgeMarkers = !meshFinal.Cell1DsMarker.empty() &&
-                              (meshFinal.Cell1DsMarker.size() == meshFinal.Cell1DsExtrema.rows()); */
 	
 	bool hasValidVertexMarkers = !meshFinal.Cell0DsMarker.empty();
 
