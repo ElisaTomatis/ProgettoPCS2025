@@ -11,6 +11,7 @@ list(APPEND src_headers ${CMAKE_CURRENT_SOURCE_DIR}/PolyhedralMesh.hpp)
 list(APPEND src_headers ${CMAKE_CURRENT_SOURCE_DIR}/Utils.hpp)
 
 list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/Triangulation.cpp)
+list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/Triangulation2.cpp)
 list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/Polyhedra.cpp)
 list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/Dimension.cpp)
 list(APPEND src_sources ${CMAKE_CURRENT_SOURCE_DIR}/MeshExport.cpp)
