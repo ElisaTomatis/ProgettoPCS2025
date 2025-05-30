@@ -54,6 +54,19 @@ namespace PolyhedralLibrary
 		return result;  // Restituisce il vettore con i valori di V, E, F
 	}
 	
+	vector<int> CalculateDimension2(int b, const vector<int>& dimension)
+	{
+		vector<int> result(3);
+		int V = dimension[0] + dimension[1]*(2*b-1) + dimension[2]*((3*b*b)/2 - (3*b)/2 +1);
+		int E = dimension[1]*2*b + dimension[2]*((3*b*b)/2 + (3*b)/2);
+		int F = dimension[2]*(3*b*b + 3*b);
+		result[0] = V;  
+		result[1] = E;  
+		result[2] = F;
+		
+		return result;
+	}
+
 	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension)
 	{
 		vector<int> result(3);
