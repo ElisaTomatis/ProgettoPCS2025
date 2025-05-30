@@ -238,11 +238,12 @@ namespace PolyhedralLibrary
 					meshTriangulated.Cell2DsId[k3]=k3;
 					k3++;
 					*/
-					
-					
-
 				
-			} 
+			} else {
+				
+				// TRIANGOLO CENTRALE, DUE BARICENTRI E VERTICE
+			
+			}				
 			
 	
         
