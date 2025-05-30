@@ -90,9 +90,16 @@ namespace PolyhedralLibrary
 				vertexGrid.push_back(row);
             }
             }
-
+            for (unsigned int i = 0; i < vertexGrid.size(); ++i) {
+				cout << "Riga " << i << ": ";
+				for (unsigned int j = 0; j < vertexGrid[i].size(); ++j) {
+					cout << vertexGrid[i][j] << " ";
+				}
+				cout << endl;
+			}
+			
             for (unsigned int i = 0; i < subdivisionLevel; ++i) {
-                for (unsigned int j = 0; j < =i; ++j) {
+                for (unsigned int j = 0; j <=i; ++j) {
 	                
 	                if (i%2 == 0){
 						unsigned int v1 = vertexGrid[i][j];
@@ -106,6 +113,7 @@ namespace PolyhedralLibrary
 						meshTriangulated.Cell0DsId[k1] = k1;
 						meshTriangulated.Cell0DsFlag[k1] = {maxFlag}; // il baricentro è sicuramente interno
 						
+						// aggiungo i lati con congiungo i baricentri con i vertici originali
 						vector<unsigned int> verts1 = {v1, v2, v3};
 						for (unsigned int e = 0; e < 3; ++e) {
 							int a = verts1[e];
@@ -138,6 +146,8 @@ namespace PolyhedralLibrary
 
                 }
             }
+            
+            // Creo una mappa che ad ogni lato orginale	 mi associ gli id dei vertici ai lati
         }
     }
 }
