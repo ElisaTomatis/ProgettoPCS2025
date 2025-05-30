@@ -9,7 +9,6 @@ using namespace PolyhedralLibrary;
 
 int main(int argc, char *argv[]) {
 	
-	/*
     // Definizione delle variabili per il cammino minimo, inizializzate a valori non validi
     unsigned int startVertexId = 0;
     unsigned int endVertexId = 0;
@@ -174,7 +173,8 @@ int main(int argc, char *argv[]) {
 	PolyhedralLibrary::WriteCell1Ds(*targetMeshPtr);
 	PolyhedralLibrary::WriteCell2Ds(*targetMeshPtr);
 	PolyhedralLibrary::WriteCell3Ds(*targetMeshPtr);
-	*/
+	
+	/*
 	int p = 3;
 	int q = 3;
 	int b = 2;
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
 	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
 	PolyhedralLibrary::triangulateAndStore2(mesh, meshTriangulated, b, c, dimensionDuplicated);
 	printMeshTriangulated(meshTriangulated);
-	
+	*/
 
     return 0;
 }
