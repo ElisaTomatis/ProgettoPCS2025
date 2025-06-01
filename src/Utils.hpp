@@ -30,6 +30,12 @@ namespace PolyhedralLibrary
 	// meshTriangulated : una struct PolyhedralMesh
 	void RemoveDuplicatedEdges(PolyhedralMesh& meshTriangulated);
 	
+	// Crea una nuova mesh senza duplicati
+	// meshTriangulated : una struct PolyhedralMesh (duplicati)
+	// meshFinal : una struct PolyhedralMesh (non duplicati)
+	// dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato
+	void NewMesh(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension);
+	
 	// Riempiono la struct PolyhedralMesh con i dati dei poliedri non traingolati
 	// mesh: una struct PolyhedralMesh
 	void generateTetrahedron(PolyhedralMesh& mesh);

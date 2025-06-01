@@ -188,6 +188,7 @@ int main(int argc, char *argv[]) {
 	PolyhedralLibrary::triangulateAndStore2(mesh, meshTriangulated, b, c, dimensionDuplicated);
 	printMeshTriangulated(meshTriangulated);
 	*/
+	
 
     return 0;
 }

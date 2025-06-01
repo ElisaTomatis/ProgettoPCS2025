@@ -323,5 +323,138 @@ namespace PolyhedralLibrary
             // Potresti voler assegnare un flag specifico per i lati duplicati qui se necessario.
         }
     }
-}
+	}
+	
+	void NewMesh(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension)
+	{
+		unsigned int maxFlag = std::numeric_limits<unsigned int>::max();
+		meshFinal.Cell0DsId.resize(dimension[0]);
+		meshFinal.Cell0DsCoordinates = MatrixXd::Zero(3, dimension[0]);
+		
+		meshFinal.Cell1DsId.resize(dimension[1]);
+		meshFinal.Cell1DsExtrema = MatrixXi::Zero(dimension[1], 2);
+		
+		meshFinal.Cell2DsId.resize(dimension[2]);
+		meshFinal.Cell2DsVertices.resize(dimension[2]);
+		meshFinal.Cell2DsEdges.resize(dimension[2]);
+		
+		unsigned int k1=0;
+		unsigned int k2=0;
+		
+		// VERICI
+    	map<unsigned int, unsigned int> oldToNewVertexIdMap; // Mappa per tradurre vecchi ID vertice -> nuovi ID vertice
+    	vector<unsigned int> uniqueOldVertexIdsInOrder; // Per mantenere l'ordine dei vertici unici
+    	
+    	unsigned int currentNewVertexId = 0; // Contatore per i nuovi ID dei vertici
+    	for (unsigned int i = 0; i < meshTriangulated.Cell0DsCoordinates.cols(); ++i) {
+			if (meshTriangulated.Cell0DsFlag[i][0] == maxFlag) { 
+				oldToNewVertexIdMap[i] = currentNewVertexId; // Mappa il vecchio ID unico al nuovo
+				uniqueOldVertexIdsInOrder.push_back(i);     // Salva il vecchio ID per recuperare le coordinate dopo
+				currentNewVertexId++; // Incrementa il contatore del nuovo ID
+			}
+		}
+		
+		// Poi, aggiungi alla mappa i vertici duplicati, reindirizzandoli ai loro vertici unici
+		for (unsigned int i = 0; i < meshTriangulated.Cell0DsCoordinates.cols(); ++i) {
+			// Se il vertice 'i' NON è marcato come unico (maxFlag), allora è un duplicato
+			if (meshTriangulated.Cell0DsFlag[i][0] != maxFlag) {
+				unsigned int uniqueVertexOldIdDuplicate = meshTriangulated.Cell0DsFlag[i][0]; 
+				
+				// Reindirizza il vecchio ID duplicato al nuovo ID del suo vertice unico
+				// La .at() è sicura perché unique_vertex_old_id_for_duplicate DEVE essere un ID unico già mappato
+				oldToNewVertexIdMap[i] = oldToNewVertexIdMap.at(uniqueVertexOldIdDuplicate);
+			}
+		}		
+		
+		// Ora popola le strutture finali per i vertici
+		for (unsigned int i = 0; i < currentNewVertexId; ++i) {
+			meshFinal.Cell0DsId[i] = i; // Nuovi ID consecutivi
+			meshFinal.Cell0DsCoordinates.col(i) = meshTriangulated.Cell0DsCoordinates.col(uniqueOldVertexIdsInOrder[i]);
+			meshFinal.Cell0DsFlag[i] = meshTriangulated.Cell0DsFlag[uniqueOldVertexIdsInOrder[i]];
+		}
+		// SPIGOLI
+		map<unsigned int, unsigned int> oldToNewEdgeIdMap; // Mappa per tradurre vecchi ID spigolo -> nuovi ID spigolo
+		vector<pair<unsigned int, unsigned int>> temp_edge_extrema; // Vettore temporaneo per gli estremi degli spigoli (con i nuovi ID vertici)
+		vector<unsigned int> temp_edge_flags; // Vettore temporaneo per i flag degli spigoli
+	
+		unsigned int currentNewEdgeId = 0; // Contatore per i nuovi ID degli spigoli
+		for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
+			if (meshTriangulated.Cell1DsFlag[i] == maxFlag) {
+				unsigned int old_v1_id = meshTriangulated.Cell1DsExtrema(i, 0);
+				unsigned int old_v2_id = meshTriangulated.Cell1DsExtrema(i, 1);
+	
+				// Ottieni i nuovi ID dei vertici.
+				// Se uno dei vertici originali non è stato mantenuto, lo spigolo non è valido.
+				// oldToNewVertexIdMap.count() restituisce 1 se la chiave esiste, 0 altrimenti.
+				if (oldToNewVertexIdMap.count(old_v1_id) > 0 && oldToNewVertexIdMap.count(old_v2_id) > 0) {
+					unsigned int new_v1_id = oldToNewVertexIdMap[old_v1_id];
+					unsigned int new_v2_id = oldToNewVertexIdMap[old_v2_id];
+	
+					// Ordina per consistenza (min, max) per la chiave se usata in future mappe
+					temp_edge_extrema.push_back({min(new_v1_id, new_v2_id), max(new_v1_id, new_v2_id)});
+					temp_edge_flags.push_back(meshTriangulated.Cell1DsFlag[i]); // Copia il flag
+					oldToNewEdgeIdMap[i] = currentNewEdgeId; // Mappa il vecchio ID spigolo al nuovo
+					currentNewEdgeId++;
+				} else {
+					// Warning se uno spigolo "valido" punta a un vertice rimosso
+					cerr << "Warning: Skipping Cell1D " << i << " as one or both of its vertices were removed." << endl;
+				}
+			}
+		}
+		// Popola le strutture finali per gli spigoli
+
+		for (unsigned int i = 0; i < currentNewEdgeId; ++i) {
+			meshFinal.Cell1DsId[i] = i; // Nuovi ID consecutivi
+			meshFinal.Cell1DsExtrema(i, 0) = temp_edge_extrema[i].first;
+			meshFinal.Cell1DsExtrema(i, 1) = temp_edge_extrema[i].second;
+			meshFinal.Cell1DsFlag[i] = temp_edge_flags[i];
+		}
+		
+		vector<vector<unsigned int>> temp_face_vertices; // Vettore temporaneo per i vertici delle facce (con i nuovi ID vertici)Add commentMore actions
+		vector<vector<unsigned int>> temp_face_edges; // Vettore temporaneo per gli spigoli delle facce (con i nuovi ID spigoli)
+		
+		unsigned int currentNewFaceId = 0; // Contatore per i nuovi ID delle facce
+		for (unsigned int i = 0; i < meshTriangulated.Cell2DsId.size(); ++i) { // Copia e aggiorna i vertici della faccia
+			vector<unsigned int> current_face_new_vertices;
+			bool face_valid_vertices = true;
+			for (unsigned int old_vertex_id : meshTriangulated.Cell2DsVertices[i]) {
+				if (oldToNewVertexIdMap.count(old_vertex_id) > 0) { // Se il vertice è stato mantenuto
+					current_face_new_vertices.push_back(oldToNewVertexIdMap[old_vertex_id]);
+				} else {
+					face_valid_vertices = false; // Vertice non valido, la faccia è invalida
+					break;
+				}
+			}
+	
+			// Copia e aggiorna gli spigoli della faccia (necessita di oldToNewEdgeIdMap)
+			vector<unsigned int> current_face_new_edges;
+			bool face_valid_edges = true;
+			for (unsigned int old_edge_id : meshTriangulated.Cell2DsEdges[i]) {
+				if (oldToNewEdgeIdMap.count(old_edge_id) > 0) { // Se lo spigolo è stato mantenuto
+					current_face_new_edges.push_back(oldToNewEdgeIdMap[old_edge_id]);
+				} else {
+					face_valid_edges = false; // Spigolo non valido, la faccia è invalida
+					break;
+				}
+			}
+			
+			// Se la faccia è valida (tutti i suoi vertici e spigoli sono stati mantenuti e riassegnati)
+			if (face_valid_vertices && face_valid_edges) {
+				temp_face_vertices.push_back(current_face_new_vertices);
+				temp_face_edges.push_back(current_face_new_edges);
+				currentNewFaceId++;
+			} else {
+				cerr << "Warning: Skipping Cell2D " << i << " due to invalid vertices or edges." << endl;
+			}
+		}
+	
+		// Popola le strutture finali per le facce
+		for (unsigned int i = 0; i < currentNewFaceId; ++i) {
+			meshFinal.Cell2DsId[i] = i; // Nuovi ID consecutivi
+			meshFinal.Cell2DsVertices[i] = temp_face_vertices[i];
+			meshFinal.Cell2DsEdges[i] = temp_face_edges[i];
+		}
+		
+		
+	}
 }
