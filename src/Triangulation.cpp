@@ -191,21 +191,17 @@ namespace PolyhedralLibrary
 	
 	void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension){
 		
-		unsigned int maxFlag = numeric_limits<unsigned int>::max();
 		meshTriangulated.Cell3DsId = {0};
 		meshTriangulated.NumCells0Ds = dimension[0];
 		meshTriangulated.NumCells1Ds = dimension[1];
 		meshTriangulated.NumCells2Ds = dimension[2];
 
 		for (unsigned int i = 0; i < meshTriangulated.Cell0DsId.size(); i++){
-			if (meshTriangulated.Cell0DsFlag[i][0] == maxFlag){
-				meshTriangulated.Cell3DsVertices.push_back(meshTriangulated.Cell0DsId[i]);
-			}
+			meshTriangulated.Cell3DsVertices.push_back(meshTriangulated.Cell0DsId[i]);
 		}
 		for (unsigned int i = 0; i < meshTriangulated.Cell1DsId.size(); i++){
-			if (meshTriangulated.Cell1DsFlag[i] == maxFlag){
-				meshTriangulated.Cell3DsEdges.push_back(meshTriangulated.Cell1DsId[i]);
-			}
+			meshTriangulated.Cell3DsEdges.push_back(meshTriangulated.Cell1DsId[i]);
+
 		}
 		for (unsigned int i = 0; i < meshTriangulated.Cell2DsId.size(); i++){
 			meshTriangulated.Cell3DsFaces.push_back(i);

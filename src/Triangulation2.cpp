@@ -7,9 +7,10 @@
 
 using namespace std;
 using namespace Eigen;
-
+/*
 namespace PolyhedralLibrary
 { 
+	
 	
 	unsigned int FindAddVertice(const Vector3d& coord, PolyhedralMesh& meshTriangulated, unsigned int& k1)
 	{
@@ -176,4 +177,4 @@ namespace PolyhedralLibrary
         
 	}
 }
-
+*/

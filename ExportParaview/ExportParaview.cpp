@@ -139,7 +139,7 @@ namespace PolyhedralLibrary
 		
 		// POLIEDRO
 		cout << "Cell3DsId: " << mesh.Cell3DsId << endl; 
-		cout << "\nNumero di vertici: " << mesh.NumCells0Ds << endl;
+		cout << "Numero di vertici: " << mesh.NumCells0Ds << endl;
 		cout << "Numero di lati: " << mesh.NumCells1Ds << endl;
 		cout << "Numero di facce: " << mesh.NumCells2Ds << endl;
 		

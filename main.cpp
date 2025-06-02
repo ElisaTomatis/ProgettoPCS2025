@@ -8,6 +8,7 @@ using namespace Eigen;
 using namespace PolyhedralLibrary;
 
 int main(int argc, char *argv[]) {
+	/*
 	
     // Definizione delle variabili per il cammino minimo, inizializzate a valori non validi
     unsigned int startVertexId = 0;
@@ -61,7 +62,7 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
     	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
-    	// printMeshTriangulated(meshTriangulated);
+    	//printMeshTriangulated(meshTriangulated);
     	// PolyhedralLibrary::ExportParaview(meshTriangulated);
 		
     } else if (p == 3 && q != 3){
@@ -174,21 +175,30 @@ int main(int argc, char *argv[]) {
 	PolyhedralLibrary::WriteCell2Ds(*targetMeshPtr);
 	PolyhedralLibrary::WriteCell3Ds(*targetMeshPtr);
 	
-	/*
+	*/
+	
 	int p = 3;
-	int q = 3;
-	int b = 2;
-	int c = 2;
+	int q = 4;
+	int b = 1;
+	int c = 0;
 	
 	PolyhedralLibrary::PolyhedralMesh mesh;
     PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+    PolyhedralLibrary::PolyhedralMesh meshFinal;
+    PolyhedralLibrary::PolyhedralMesh meshDual;
+    
+	PolyhedralLibrary::generateOctahedron(mesh);
     vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
 	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	PolyhedralLibrary::triangulateAndStore2(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	printMeshTriangulated(meshTriangulated);
-	*/
-	
+	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+	PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
+	PolyhedralLibrary::PopulateCell3D(meshFinal, dimension);
+	printMeshTriangulated(meshFinal);
+	PolyhedralLibrary::CalculateDual(meshFinal, meshDual);
+	PolyhedralLibrary::ProjectMeshToUnitSphere(meshDual);
+	PolyhedralLibrary::ExportParaview(meshDual);
 
     return 0;
 }
