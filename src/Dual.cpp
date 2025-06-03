@@ -9,12 +9,12 @@ using namespace std;
 using namespace Eigen;
 namespace PolyhedralLibrary {
 	
-// Funzione helper per ottenere il baricentro di una faccia
-Vector3d getFaceBarycenter(const PolyhedralMesh& mesh, unsigned int faceId) {
+// Funzione per ottenere il baricentro di una faccia
+Vector3d getFaceBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int faceId) {
     Vector3d barycenter = Vector3d::Zero();
-    const auto& faceVertices = mesh.Cell2DsVertices[faceId];
+    const auto& faceVertices = meshTriangulated.Cell2DsVertices[faceId];
     for (unsigned int v_id : faceVertices) {
-        barycenter += mesh.Cell0DsCoordinates.col(v_id);
+        barycenter += meshTriangulated.Cell0DsCoordinates.col(v_id);
     }
     return barycenter /= (3.0);
 }
@@ -253,15 +253,15 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
 	}
 }
 
-void ProjectMeshToUnitSphere(PolyhedralMesh& mesh) {
-    for (int i = 0; i < mesh.Cell0DsCoordinates.cols(); ++i) {
-        Eigen::Vector3d vertexCoords = mesh.Cell0DsCoordinates.col(i);
+void ProjectMeshToUnitSphere(PolyhedralMesh& meshTriangulated) {
+    for (int i = 0; i < meshTriangulated.Cell0DsCoordinates.cols(); ++i) {
+        Vector3d vertexCoords = meshTriangulated.Cell0DsCoordinates.col(i);
         double norm = vertexCoords.norm(); // Equivalente a std::sqrt(vertexCoords.squaredNorm());
         if (norm < 1e-12) { 
             cerr << "Warning: Vertice " << i << " troppo vicino all'origine. Non proiettato." << endl;
             continue; // Salta la proiezione per questo vertice
         }
-        mesh.Cell0DsCoordinates.col(i) = vertexCoords / norm;
+        meshTriangulated.Cell0DsCoordinates.col(i) = vertexCoords / norm;
     }
 }
 

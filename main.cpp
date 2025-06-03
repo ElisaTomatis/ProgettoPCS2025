@@ -8,7 +8,6 @@ using namespace Eigen;
 using namespace PolyhedralLibrary;
 
 int main(int argc, char *argv[]) {
-	/*
 	
     // Definizione delle variabili per il cammino minimo, inizializzate a valori non validi
     unsigned int startVertexId = 0;
@@ -27,9 +26,9 @@ int main(int argc, char *argv[]) {
         calculatePath = true;
 
     } else { // Errore: numero di argomenti non valido
-        std::cerr << "Uso:\n";
-        std::cerr << "  " << argv[0] << " p q b c\n";
-        std::cerr << "  " << argv[0] << " p q b c startVertexId endVertexId\n";
+        cerr << "Uso:\n";
+        cerr << "  " << argv[0] << " p q b c\n";
+        cerr << "  " << argv[0] << " p q b c startVertexId endVertexId\n";
         return 1;
     }
     
@@ -48,60 +47,56 @@ int main(int argc, char *argv[]) {
         cerr << "Errore: p e q devono essere 3, 4 o 5.\n";
         return 1;
     }
-
-    PolyhedralLibrary::PolyhedralMesh mesh;
-    PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-    PolyhedralLibrary::PolyhedralMesh meshFinal;
-    PolyhedralLibrary::PolyhedralMesh meshDual;
     
-    if (p == 3 && q == 3) {
-        PolyhedralLibrary::generateTetrahedron(mesh);
-        vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-		vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-    	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
-    	//printMeshTriangulated(meshTriangulated);
-    	// PolyhedralLibrary::ExportParaview(meshTriangulated);
-		
-    } else if (p == 3 && q != 3){
-	    if (q == 4){
-		    PolyhedralLibrary::generateOctahedron(mesh);
-		} else {
-			PolyhedralLibrary::generateIcosahedron(mesh);
-		}
-		vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-		vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-    	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
-    	//printMeshTriangulated(meshTriangulated);
-    	// PolyhedralLibrary::ExportParaview(meshTriangulated);
-
-	} else if (q == 3 && p!= 3) {
-		if (p == 4){
-			PolyhedralLibrary::generateOctahedron(mesh);
-		} else {
-			PolyhedralLibrary::generateIcosahedron(mesh);
-		}
-		PolyhedralLibrary::invertiValori(p, q);
-		vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-		vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-		PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-		PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-    	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-    	PolyhedralLibrary::CalculateDual(meshTriangulated, meshDual);
-    	PolyhedralLibrary::PopulateCell3D(meshTriangulated, dimension);
-    	//printMeshTriangulated(meshTriangulated);
-    	// PolyhedralLibrary::ExportParaview(meshDual);
-		
-	} else {
-		cerr << "Errore: combinazione p =" << p << " e q =" << q << " non supportata.\n";
-        return 1;
-    }
+    PolyhedralMesh mesh;
+    
+    if (b != c){
+	    
+		if (p == 3 && q == 3) {
+			generateTetrahedron(mesh);
+			Triangulation(q, b, c, mesh);
+			
+		} else if (p == 3 && q != 3){
+			if (q == 4){
+				generateOctahedron(mesh);
+			} else {
+				generateIcosahedron(mesh);
+			}
+			Triangulation(q, b, c, mesh);
 	
+		} else if (q == 3 && p!= 3) {
+			if (p == 4){
+				generateOctahedron(mesh);
+			} else {
+				generateIcosahedron(mesh);
+			}
+			invertiValori(p, q);
+			TriangulationDual(q, b, c, mesh);
+		}
+	} else {
+		if (p == 3 && q == 3) {
+			generateTetrahedron(mesh);
+			Triangulation2(q, b, c, mesh);
+			
+		} else if (p == 3 && q != 3){
+			if (q == 4){
+				generateOctahedron(mesh);
+			} else {
+				generateIcosahedron(mesh);
+			}
+			Triangulation2(q, b, c, mesh);
+	
+		} else if (q == 3 && p!= 3) {
+			if (p == 4){
+				generateOctahedron(mesh);
+			} else {
+				generateIcosahedron(mesh);
+			}
+			invertiValori(p, q);
+			Triangulation2Dual(q, b, c, mesh);
+		}
+	}
+
 	// --- Selettore della mesh target per l'esportazione e il cammino minimo ---
     PolyhedralMesh* targetMeshPtr = nullptr;
     if (q == 3 && p != 3) {
@@ -168,45 +163,12 @@ int main(int argc, char *argv[]) {
 		PolyhedralLibrary::ExportParaview(*targetMeshPtr);
     }
 	
-
     // Scrittura su TXT
 	PolyhedralLibrary::WriteCell0Ds(*targetMeshPtr);
 	PolyhedralLibrary::WriteCell1Ds(*targetMeshPtr);
 	PolyhedralLibrary::WriteCell2Ds(*targetMeshPtr);
 	PolyhedralLibrary::WriteCell3Ds(*targetMeshPtr);
-	
-	*/
-	
-	int p = 3;
-	int q = 3;
-	int b = 2;
-	int c = 0;
-	
-	PolyhedralLibrary::PolyhedralMesh mesh;
-    PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-    PolyhedralLibrary::PolyhedralMesh meshTriangulated2;
-    PolyhedralLibrary::PolyhedralMesh meshFinal;
-    PolyhedralLibrary::PolyhedralMesh meshDual;
-    
-	PolyhedralLibrary::generateTetrahedron(mesh);
-    vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	vector<int> dimension2 = PolyhedralLibrary::CalculateDimension2(b, q);
-	
-	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	
-	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-    PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-	PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
-	printMeshTriangulated(meshFinal);
-	
-	PolyhedralLibrary::triangulateAndStore2(meshFinal, meshTriangulated2, dimension2);
-	PolyhedralLibrary::PopulateCell3D(meshTriangulated2, dimension);
-	
-	printMeshTriangulated(meshTriangulated2);
-	//PolyhedralLibrary::CalculateDual(meshFinal, meshDual);
-	//PolyhedralLibrary::ProjectMeshToUnitSphere(meshDual);
-	PolyhedralLibrary::ExportParaview(meshTriangulated2);
+
 
     return 0;
 }

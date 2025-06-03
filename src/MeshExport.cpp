@@ -12,19 +12,12 @@ namespace PolyhedralLibrary {
         cerr << "Errore: impossibile aprire il file Cell0Ds.txt per la scrittura." << endl;
         return;
     	}
-    	unsigned int maxFlag = numeric_limits<unsigned int>::max();
-        file << "Id;x;y;z;duplicated\n";
+        file << "Id;x;y;z\n";
         for (size_t i = 0; i < mesh.Cell0DsId.size(); ++i) {
             file << mesh.Cell0DsId[i] << ";"
                  << mesh.Cell0DsCoordinates(0, i) << ";"
                  << mesh.Cell0DsCoordinates(1, i) << ";"
                  << mesh.Cell0DsCoordinates(2, i) << ";";
-            if ( mesh.Cell0DsFlag[i][0] == maxFlag) {
-	            file << "false \n";
-	        }
-	        else {
-		        file << "true \n";
-        	}
     	}
     file.close();
     }
@@ -35,18 +28,11 @@ namespace PolyhedralLibrary {
         cerr << "Errore: impossibile aprire il file Cell1Ds.txt per la scrittura." << endl;
         return;
     	}
-    	unsigned int maxFlag = numeric_limits<unsigned int>::max();
-        file << "Id;Start;End;duplicated\n";
+        file << "Id;Start;End";
         for (size_t i = 0; i < mesh.Cell1DsId.size(); ++i) {
             file << mesh.Cell1DsId[i] << ";"
                  << mesh.Cell1DsExtrema(i, 0) << ";"
                  << mesh.Cell1DsExtrema(i, 1) << ";";
-            if (mesh.Cell1DsFlag[i] == maxFlag){
-	            file << "false \n";
-	        }
-	        else {
-		        file << "true \n";
-		    }
         }
         file.close();
     }

@@ -24,7 +24,7 @@ namespace PolyhedralLibrary
 		return temp_edges;
 	}
 
-	vector<unsigned int> NormalizeFaceEdges(const std::vector<unsigned int>& face_edges) {
+	vector<unsigned int> NormalizeFaceEdges(const vector<unsigned int>& face_edges) {
 		if (face_edges.empty() || face_edges.size() == 1) {
 			return face_edges; // Non c'è nulla da normalizzare per 0 o 1 elemento
 		}
@@ -121,14 +121,14 @@ namespace PolyhedralLibrary
 	
 	
 	// trova la faccia adiacente a face tramite edge, e poi restituire il baricentro di questa faccia adiacente
-	Vector3d FindNearBarycenter(const PolyhedralMesh& mesh, unsigned int edgeId, unsigned int currentFaceId) {
+	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId) {
 
     // Per questo esempio, la ricostruiamo qui, ma è meglio farlo una volta sola. MODIFICA
-    map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(mesh);
+    map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
 
     // Ottieni i vertici che compongono l'edge per creare la chiave.
-    unsigned int v1_id = mesh.Cell1DsExtrema(edgeId, 0);
-    unsigned int v2_id = mesh.Cell1DsExtrema(edgeId, 1);
+    unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeId, 0);
+    unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeId, 1);
     pair<unsigned int, unsigned int> edgeKey = {min(v1_id, v2_id), max(v1_id, v2_id)};
 
     // 2. Trova le facce associate a questo edge.
@@ -157,7 +157,7 @@ namespace PolyhedralLibrary
         }
 
         // 4. Calcola e restituisci il baricentro della faccia adiacente.
-        return getFaceBarycenter(mesh, targetFaceId);
+        return getFaceBarycenter(meshTriangulated, targetFaceId);
 
     } else if (facesSharingEdge.size() == 1) {
         cerr << "Warning: Edge " << edgeId << " è un bordo della mesh. Nessuna faccia adiacente trovata." << endl;
