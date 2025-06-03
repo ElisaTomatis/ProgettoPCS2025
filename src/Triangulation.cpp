@@ -50,9 +50,9 @@ namespace PolyhedralLibrary
 		PolyhedralMesh meshTriangulated2;
 		PolyhedralMesh meshFinal;
 		
-		vector<int> dimension = ComputePolyhedronVEF(q, b, c);
-		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
-		triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+		vector<int> dimension = ComputePolyhedronVEF(q, b, 0);
+		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, 0, dimension);
+		triangulateAndStore(mesh, meshTriangulated, b, 0,  dimensionDuplicated);
 		RemoveDuplicatedVertices(meshTriangulated);
     	RemoveDuplicatedEdges(meshTriangulated);
     	NewMesh(meshTriangulated, meshFinal, dimension);
@@ -60,7 +60,7 @@ namespace PolyhedralLibrary
     	vector<int> dimension2 = CalculateDimension2(b, q);
 		triangulateAndStore2(meshFinal, meshTriangulated2, dimension2);
 		PopulateCell3D(meshTriangulated2, dimension);
-		ProjectMeshToUnitSphere(meshTriangulated2);
+		//ProjectMeshToUnitSphere(meshTriangulated2);
 		ExportParaview(meshTriangulated2);
     }
     
@@ -71,9 +71,9 @@ namespace PolyhedralLibrary
 		PolyhedralMesh meshFinal;
 		PolyhedralMesh meshDual;
     
-		vector<int> dimension = ComputePolyhedronVEF(q, b, c);
-		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
-		triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+		vector<int> dimension = ComputePolyhedronVEF(q, b, 0);
+		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, 0, dimension);
+		triangulateAndStore(mesh, meshTriangulated, b, 0, dimensionDuplicated);
 		RemoveDuplicatedVertices(meshTriangulated);
     	RemoveDuplicatedEdges(meshTriangulated);
     	NewMesh(meshTriangulated, meshFinal, dimension);

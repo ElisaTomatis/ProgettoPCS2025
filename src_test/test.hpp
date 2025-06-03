@@ -11,7 +11,7 @@
 using namespace Eigen;
 
 namespace PolyhedraTest {
-	
+
 // Dimension
 TEST(TestPolyedra, TestComputePolyhedronVEF)
 {

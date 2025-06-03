@@ -9,6 +9,7 @@ using namespace PolyhedralLibrary;
 
 int main(int argc, char *argv[]) {
 	
+	/*
     // Definizione delle variabili per il cammino minimo, inizializzate a valori non validi
     unsigned int startVertexId = 0;
     unsigned int endVertexId = 0;
@@ -47,8 +48,13 @@ int main(int argc, char *argv[]) {
         cerr << "Errore: p e q devono essere 3, 4 o 5.\n";
         return 1;
     }
+    */
     
     PolyhedralMesh mesh;
+    int p = 3;
+    int q = 3;
+    int b = 2;
+    int c = 2;
     
     if (b != c){
 	    
@@ -96,6 +102,8 @@ int main(int argc, char *argv[]) {
 			Triangulation2Dual(q, b, c, mesh);
 		}
 	}
+	
+	/*
 
 	// --- Selettore della mesh target per l'esportazione e il cammino minimo ---
     PolyhedralMesh* targetMeshPtr = nullptr;
@@ -169,7 +177,7 @@ int main(int argc, char *argv[]) {
 	PolyhedralLibrary::WriteCell2Ds(*targetMeshPtr);
 	PolyhedralLibrary::WriteCell3Ds(*targetMeshPtr);
 
-
+*/
     return 0;
 }
 

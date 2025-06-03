@@ -90,7 +90,7 @@ namespace PolyhedralLibrary
 	// Triangola il poliedro di classe I
 	// mesh : una struct PolyhedralMesh, quella di partenza non triangolata
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
-	// b , c : parametri passati dall'utente che identificano il poliedro
+	// b,c  : parametri passati dall'utente che identificano il poliedro
 	// dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato
 	void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated,
 							  unsigned int b, unsigned int c, const vector<int>& dimension);
