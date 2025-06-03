@@ -9,6 +9,7 @@
 #include <limits> 
 #include <Eigen/Dense>
 #include <set> 
+#include <cmath>
 
 using namespace std;
 using namespace Eigen;
@@ -54,12 +55,29 @@ namespace PolyhedralLibrary
 		return result;  // Restituisce il vettore con i valori di V, E, F
 	}
 	
-	vector<int> CalculateDimension2(int b, const vector<int>& dimension)
+	vector<int> CalculateDimension2(int b, int q)
 	{
 		vector<int> result(3);
-		int V = dimension[0] + dimension[1]*(2*b-1) + dimension[2]*((3*b*b)/2 - (3*b)/2 +1);
-		int E = dimension[1]*2*b + dimension[2]*((3*b*b)/2 + (3*b)/2);
-		int F = dimension[2]*(3*b*b + 3*b);
+		int V = 0;
+		int E = 0;
+		int F = 0;
+		
+		if (q == 3) {
+			V = 4 + 6 * (2 * b - 1) + static_cast<int>(round(4 * ((3.0 * b * b) / 2.0 - (3.0 * b) / 2.0 + 1)));
+			E = 6 * 2 * b + static_cast<int>(round(4 * ((9.0 * b * b) / 2.0 + (3.0 * b) / 2.0)));
+			F = 4 * (3 * b * b + 3 * b);
+		}
+		else if (q == 4) {
+			V = 6 + 12 * (2 * b - 1) + static_cast<int>(round(8 * ((3.0 * b * b) / 2.0 - (3.0 * b) / 2.0 + 1)));
+			E = 12 * 2 * b + static_cast<int>(round(8 * ((3.0 * b * b) / 2.0 + (3.0 * b) / 2.0)));
+			F = 8 * (3 * b * b + 3 * b);
+		}
+		else {
+			V = 12 + 30 * (2 * b - 1) + static_cast<int>(round(20 * ((3.0 * b * b) / 2.0 - (3.0 * b) / 2.0 + 1)));
+			E = 30 * 2 * b + static_cast<int>(round(20 * ((3.0 * b * b) / 2.0 + (3.0 * b) / 2.0)));
+			F = 20 * (3 * b * b + 3 * b);
+		}
+
 		result[0] = V;  
 		result[1] = E;  
 		result[2] = F;
@@ -217,6 +235,16 @@ namespace PolyhedralLibrary
     double tol = 1e-12;
     unsigned int maxFlag = numeric_limits<unsigned int>::max();
     size_t n = meshTriangulated.Cell1DsExtrema.rows(); // Numero di lati
+    
+    if (meshTriangulated.Cell1DsOriginalFlag.empty() || meshTriangulated.Cell1DsOriginalFlag.size() != n) {
+        meshTriangulated.Cell1DsOriginalFlag.resize(n);
+    }
+    for (size_t k = 0; k < n; ++k) {
+        meshTriangulated.Cell1DsOriginalFlag[k] = (meshTriangulated.Cell1DsFlag[k] == maxFlag);
+    }
+    // Ogni elemento in Cell1DsOriginalMaxFlag sarà true se il lato corrispondente aveva 
+    // Cell1DsFlag[k] == maxFlag all'inizio della funzione, e false altrimenti.
+    // true: lato in centro, false: lato di bordo
 
     // FASE 1: Inizializzazione delle strutture di reindirizzamento
     // Inizializza una mappa (vettore) per tenere traccia del reindirizzamento finale degli ID dei lati.
@@ -333,6 +361,7 @@ namespace PolyhedralLibrary
 		
 		meshFinal.Cell1DsId.resize(dimension[1]);
 		meshFinal.Cell1DsExtrema = MatrixXi::Zero(dimension[1], 2);
+		meshFinal.Cell1DsOriginalFlag.resize(dimension[1]);
 		
 		meshFinal.Cell2DsId.resize(dimension[2]);
 		meshFinal.Cell2DsVertices.resize(dimension[2]);
@@ -360,6 +389,7 @@ namespace PolyhedralLibrary
 		// SPIGOLI
 		map<unsigned int, unsigned int> oldToNewEdgeIdMap; // Mappa per tradurre vecchi ID spigolo -> nuovi ID spigolo
 		vector<pair<unsigned int, unsigned int>> temp_edge_extrema; // Vettore temporaneo per gli estremi degli spigoli (con i nuovi ID vertici)
+		vector<bool> temp_edge_original_max_flag; // Temp per il nuovo flag
 	
 		unsigned int k2 = 0; // Contatore per i nuovi ID degli spigoli
 		for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
@@ -377,6 +407,7 @@ namespace PolyhedralLibrary
 					// Ordina per consistenza (min, max) per la chiave se usata in future mappe
 					temp_edge_extrema.push_back({min(new_v1_id, new_v2_id), max(new_v1_id, new_v2_id)});
 					oldToNewEdgeIdMap[i] = k2; // Mappa il vecchio ID spigolo al nuovo
+					temp_edge_original_max_flag.push_back(meshTriangulated.Cell1DsOriginalFlag[i]);
 					k2++;
 				} 
 			}
@@ -387,6 +418,7 @@ namespace PolyhedralLibrary
 			meshFinal.Cell1DsId[i] = i; // Nuovi ID consecutivi
 			meshFinal.Cell1DsExtrema(i, 0) = temp_edge_extrema[i].first;
 			meshFinal.Cell1DsExtrema(i, 1) = temp_edge_extrema[i].second;
+			meshFinal.Cell1DsOriginalFlag[i] = temp_edge_original_max_flag[i];
 		}
 		
 		// FACCE

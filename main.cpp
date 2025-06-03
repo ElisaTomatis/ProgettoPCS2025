@@ -178,27 +178,35 @@ int main(int argc, char *argv[]) {
 	*/
 	
 	int p = 3;
-	int q = 4;
-	int b = 3;
+	int q = 3;
+	int b = 2;
 	int c = 0;
 	
 	PolyhedralLibrary::PolyhedralMesh mesh;
     PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+    PolyhedralLibrary::PolyhedralMesh meshTriangulated2;
     PolyhedralLibrary::PolyhedralMesh meshFinal;
     PolyhedralLibrary::PolyhedralMesh meshDual;
     
-	PolyhedralLibrary::generateOctahedron(mesh);
+	PolyhedralLibrary::generateTetrahedron(mesh);
     vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
 	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+	vector<int> dimension2 = PolyhedralLibrary::CalculateDimension2(b, q);
+	
 	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	
 	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
     PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
 	PolyhedralLibrary::NewMesh(meshTriangulated, meshFinal, dimension);
-	PolyhedralLibrary::PopulateCell3D(meshFinal, dimension);
 	printMeshTriangulated(meshFinal);
-	PolyhedralLibrary::CalculateDual(meshFinal, meshDual);
-	PolyhedralLibrary::ProjectMeshToUnitSphere(meshDual);
-	PolyhedralLibrary::ExportParaview(meshDual);
+	
+	PolyhedralLibrary::triangulateAndStore2(meshFinal, meshTriangulated2, dimension2);
+	PolyhedralLibrary::PopulateCell3D(meshTriangulated2, dimension);
+	
+	printMeshTriangulated(meshTriangulated2);
+	//PolyhedralLibrary::CalculateDual(meshFinal, meshDual);
+	//PolyhedralLibrary::ProjectMeshToUnitSphere(meshDual);
+	PolyhedralLibrary::ExportParaview(meshTriangulated2);
 
     return 0;
 }

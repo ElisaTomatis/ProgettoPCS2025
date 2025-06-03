@@ -121,6 +121,11 @@ namespace PolyhedralLibrary
 			cout << row << " ";
 			cout << endl;
 		}
+		cout << "Cell1DsOriginalFlag:" << endl;
+		for (const auto& row : mesh.Cell1DsOriginalFlag) {
+			cout << row << " ";
+			cout << endl;
+		}
 		
 		// FACCE
 		cout << "Cell2DsId: "; 

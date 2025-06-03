@@ -20,6 +20,7 @@ struct PolyhedralMesh
     vector<unsigned int> Cell1DsId = {}; // id celle 1D
     MatrixXi Cell1DsExtrema = {}; // id dei vertici (partenza, arrivo) celle 1D
     vector<unsigned int> Cell1DsFlag= {}; // flag celle 1D
+    vector<bool> Cell1DsOriginalFlag = {}; 
     vector<unsigned int> Cell1DsMarker = {}; // marker celle 1D
     
     // FACCE
