@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
 	
 	int p = 3;
 	int q = 4;
-	int b = 1;
+	int b = 3;
 	int c = 0;
 	
 	PolyhedralLibrary::PolyhedralMesh mesh;
