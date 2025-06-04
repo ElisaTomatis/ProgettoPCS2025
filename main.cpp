@@ -9,7 +9,6 @@ using namespace PolyhedralLibrary;
 
 int main(int argc, char *argv[]) {
 	
-	/*
     // Definizione delle variabili per il cammino minimo, inizializzate a valori non validi
     unsigned int startVertexId = 0;
     unsigned int endVertexId = 0;
@@ -48,13 +47,9 @@ int main(int argc, char *argv[]) {
         cerr << "Errore: p e q devono essere 3, 4 o 5.\n";
         return 1;
     }
-    */
     
-    PolyhedralMesh mesh;
-    int p = 3;
-    int q = 3;
-    int b = 2;
-    int c = 2;
+	PolyhedralMesh mesh;
+	PolyhedralMesh meshFinal;
     
     if (b != c){
 	    
@@ -68,7 +63,7 @@ int main(int argc, char *argv[]) {
 			} else {
 				generateIcosahedron(mesh);
 			}
-			Triangulation(q, b, c, mesh);
+			meshFinal = Triangulation(q, b, c, mesh);
 	
 		} else if (q == 3 && p!= 3) {
 			if (p == 4){
@@ -77,12 +72,12 @@ int main(int argc, char *argv[]) {
 				generateIcosahedron(mesh);
 			}
 			invertiValori(p, q);
-			TriangulationDual(q, b, c, mesh);
+			meshFinal = TriangulationDual(q, b, c, mesh);
 		}
 	} else {
 		if (p == 3 && q == 3) {
 			generateTetrahedron(mesh);
-			Triangulation2(q, b, c, mesh);
+			meshFinal = Triangulation2(q, b, c, mesh);
 			
 		} else if (p == 3 && q != 3){
 			if (q == 4){
@@ -90,7 +85,7 @@ int main(int argc, char *argv[]) {
 			} else {
 				generateIcosahedron(mesh);
 			}
-			Triangulation2(q, b, c, mesh);
+			meshFinal = Triangulation2(q, b, c, mesh);
 	
 		} else if (q == 3 && p!= 3) {
 			if (p == 4){
@@ -99,10 +94,66 @@ int main(int argc, char *argv[]) {
 				generateIcosahedron(mesh);
 			}
 			invertiValori(p, q);
-			Triangulation2Dual(q, b, c, mesh);
+			meshFinal = Triangulation2Dual(q, b, c, mesh);
 		}
 	}
 	
+	if (calculatePath) {
+	MatrixXi adjMatrix = calculateAdjacencyMatrix(meshFinal);
+        
+        ShortestPathResult pathResult = findShortestPathDijkstra(
+            meshFinal, // Passa la mesh per riferimento non-const
+            adjMatrix,
+            startVertexId,
+            endVertexId
+        );
+
+        // Stampa i risultati
+        if (pathResult.numEdges > 0 || startVertexId == endVertexId) {
+            cout << "\n--- Risultati Cammino Minimo (BFS) ---\n";
+            cout << "Numero di lati nel cammino: " << pathResult.numEdges  << endl;
+            cout << "Lunghezza totale del cammino: " << pathResult.totalLength  << endl;
+
+            cout << "Vertici nel cammino (ID Reale): ";
+            for (unsigned int i = 0; i < meshFinal.Cell0DsId.size(); ++i) {
+                if (pathResult.verticesInPath[i]) {
+                    cout << meshFinal.Cell0DsId[i] << " ";
+                }
+            }
+            cout << endl;
+
+            cout << "Lati nel cammino (ID Reale): ";
+            for (unsigned int i = 0; i < meshFinal.Cell1DsId.size(); ++i) {
+                if (pathResult.edgesInPath[i]) {
+                    cout << meshFinal.Cell1DsId[i] << " ";
+                }
+            }
+            cout << endl;
+
+            // Esportazione Paraview con cammino
+			ProjectMeshToUnitSphere(meshFinal);
+			ExportParaview(meshFinal);		
+		
+        } else {
+            cout << "\nNessun cammino trovato tra il vertice " << startVertexId
+                 << " e il vertice " << endVertexId << ".\n";
+        }
+	} else {
+		// Esportazione Paraview senza cammino
+		ProjectMeshToUnitSphere(meshFinal);
+		ExportParaview(meshFinal);
+	}
+	
+	// Scrittura su TXT
+	WriteCell0Ds(mesh);
+	WriteCell1Ds(mesh);
+	WriteCell2Ds(mesh);
+	WriteCell3Ds(mesh);
+	
+    return 0;
+}
+
+
 	/*
 
 	// --- Selettore della mesh target per l'esportazione e il cammino minimo ---
@@ -178,8 +229,5 @@ int main(int argc, char *argv[]) {
 	PolyhedralLibrary::WriteCell3Ds(*targetMeshPtr);
 
 */
-    return 0;
-}
-
 	
 	

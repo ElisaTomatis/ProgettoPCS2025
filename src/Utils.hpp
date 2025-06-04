@@ -61,22 +61,22 @@ namespace PolyhedralLibrary
 	// Racchiude le funzioni per la triangolazione di classe I se p=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void Triangulation(int q, int b, int c, PolyhedralMesh& mesh);
+	PolyhedralMesh Triangulation(int q, int b, int c, PolyhedralMesh& mesh);
 	
 	// Racchiude le funzioni per la triangolazione di classe I se q=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh);
+	PolyhedralMesh TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh);
 	
 	// Racchiude le funzioni per la triangolazione di classe II se p=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void Triangulation2(int q, int b, int c, PolyhedralMesh& mesh);
+	PolyhedralMesh Triangulation2(int q, int b, int c, PolyhedralMesh& mesh);
 	
 	// Racchiude le funzioni per la triangolazione di classe II se q=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh);
+	PolyhedralMesh Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh);
 	
 	// Riempie le Celle3d dopo la triangolazione
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
@@ -182,11 +182,34 @@ namespace PolyhedralLibrary
 	
 	// ----------------------------------------------------------------------------------------------------------- //
 	
-	 // CAMMINO MINIMO
+	// CAMMINO MINIMO
+	 
+	struct ShortestPathResult {
+		unsigned int numEdges;
+		double totalLength;
+		vector<bool> verticesInPath;
+		vector<bool> edgesInPath;
 
-	double calculateDistanceById(const PolyhedralLibrary::PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
-	pair<unsigned int, double> findShortestPathBFS(PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
+		// Costruttore che inizializza i vettori con la dimensione corretta
+		ShortestPathResult(unsigned int nEdges = 0, double len = 0.0,
+                       unsigned int numV = 0, unsigned int numE = 0)
+        : numEdges(nEdges), totalLength(len),
+          verticesInPath(numV, false), edgesInPath(numE, false)
+		{}
+	};
+	
+	double calculateDistanceById(const PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
 	MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh);
+	
+	ShortestPathResult findShortestPathDijkstra(
+	    PolyhedralMesh& mesh,
+	    const MatrixXi& adjMatrix,
+	    unsigned int startVertexId_real,
+	    unsigned int endVertexId_real
+	);
+
+	// pair<unsigned int, double> findShortestPathBFS(PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
+	
 	
 	// ----------------------------------------------------------------------------------------------------------- //
 	

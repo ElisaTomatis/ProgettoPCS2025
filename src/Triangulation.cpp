@@ -10,7 +10,7 @@ using namespace Eigen;
 
 namespace PolyhedralLibrary
 {
-	void Triangulation(int q, int b, int c, PolyhedralMesh& mesh)
+	PolyhedralMesh Triangulation(int q, int b, int c, PolyhedralMesh& mesh)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshFinal;
@@ -22,11 +22,12 @@ namespace PolyhedralLibrary
     	RemoveDuplicatedEdges(meshTriangulated);
     	NewMesh(meshTriangulated, meshFinal, dimension);
     	PopulateCell3D(meshFinal, dimension);
-		ProjectMeshToUnitSphere(meshFinal);
-		ExportParaview(meshFinal);
+		// ProjectMeshToUnitSphere(meshFinal);
+		// ExportParaview(meshFinal);
+		return meshFinal;
     }
     
-    void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh)
+    PolyhedralMesh TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshFinal;
@@ -40,11 +41,12 @@ namespace PolyhedralLibrary
     	NewMesh(meshTriangulated, meshFinal, dimension);
     	CalculateDual(meshFinal, meshDual);
 		PopulateCell3D(meshDual, dimension);
-		ProjectMeshToUnitSphere(meshDual);
-		ExportParaview(meshDual);
+		// ProjectMeshToUnitSphere(meshDual);
+		// ExportParaview(meshDual);
+		return meshDual;
     }
     
-    void Triangulation2(int q, int b, int c, PolyhedralMesh& mesh)
+    PolyhedralMesh Triangulation2(int q, int b, int c, PolyhedralMesh& mesh)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshTriangulated2;
@@ -61,10 +63,11 @@ namespace PolyhedralLibrary
 		triangulateAndStore2(meshFinal, meshTriangulated2, dimension2);
 		PopulateCell3D(meshTriangulated2, dimension);
 		//ProjectMeshToUnitSphere(meshTriangulated2);
-		ExportParaview(meshTriangulated2);
+		//ExportParaview(meshTriangulated2);
+		return meshTriangulated2;
     }
     
-    void Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh)
+    PolyhedralMesh Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshTriangulated2;
@@ -82,8 +85,9 @@ namespace PolyhedralLibrary
 		triangulateAndStore2(meshFinal, meshTriangulated2, dimension2);
 		CalculateDual(meshTriangulated2, meshDual);
 		PopulateCell3D(meshDual, dimension);
-		ProjectMeshToUnitSphere(meshDual);
-		ExportParaview(meshDual);
+		//ProjectMeshToUnitSphere(meshDual);
+		// ExportParaview(meshDual);
+		return meshDual;
     }
 
 	void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension){

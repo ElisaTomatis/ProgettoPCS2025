@@ -17,7 +17,7 @@ namespace PolyhedralLibrary {
             file << mesh.Cell0DsId[i] << ";"
                  << mesh.Cell0DsCoordinates(0, i) << ";"
                  << mesh.Cell0DsCoordinates(1, i) << ";"
-                 << mesh.Cell0DsCoordinates(2, i) << ";";
+                 << mesh.Cell0DsCoordinates(2, i) << "\n";
     	}
     file.close();
     }
@@ -32,7 +32,7 @@ namespace PolyhedralLibrary {
         for (size_t i = 0; i < mesh.Cell1DsId.size(); ++i) {
             file << mesh.Cell1DsId[i] << ";"
                  << mesh.Cell1DsExtrema(i, 0) << ";"
-                 << mesh.Cell1DsExtrema(i, 1) << ";";
+                 << mesh.Cell1DsExtrema(i, 1) << "\n";
         }
         file.close();
     }
