@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 	    
 		if (p == 3 && q == 3) {
 			generateTetrahedron(mesh);
-			Triangulation(q, b, c, mesh);
+			meshFinal = Triangulation(q, b, c, mesh);
 			
 		} else if (p == 3 && q != 3){
 			if (q == 4){
