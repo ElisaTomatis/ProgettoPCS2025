@@ -13,8 +13,6 @@ int main(int argc, char *argv[]) {
     unsigned int startVertexId = 0;
     unsigned int endVertexId = 0;
     bool calculatePath = false; // Flag per indicare se calcolare il cammino minimo
-    
-    /*
 
     if (argc == 5) { // Caso: solo p, q, b, c
         cout << "Modalità: Generazione mesh.\n";
@@ -49,12 +47,6 @@ int main(int argc, char *argv[]) {
         cerr << "Errore: p e q devono essere 3, 4 o 5.\n";
         return 1;
     }
-    
-    */
-    int p = 3;
-    int q = 4;
-    int b = 2;
-    int c = 2;
     
 	PolyhedralMesh mesh;
 	PolyhedralMesh meshFinal;
