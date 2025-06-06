@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 
         // Stampa i risultati
         if (pathResult.numEdges > 0 || startVertexId == endVertexId) {
-            cout << "\n--- Risultati Cammino Minimo (BFS) ---\n";
+            cout << "\n--- Risultati Cammino Minimo ---\n";
             cout << "Numero di lati nel cammino: " << pathResult.numEdges  << endl;
             cout << "Lunghezza totale del cammino: " << pathResult.totalLength  << endl;
 
@@ -141,93 +141,18 @@ int main(int argc, char *argv[]) {
 	} else {
 		// Esportazione Paraview senza cammino
 		ProjectMeshToUnitSphere(meshFinal);
+		printMeshTriangulated(meshFinal);
 		ExportParaview(meshFinal);
 	}
 	
 	// Scrittura su TXT
-	WriteCell0Ds(mesh);
-	WriteCell1Ds(mesh);
-	WriteCell2Ds(mesh);
-	WriteCell3Ds(mesh);
+	WriteCell0Ds(meshFinal);
+	WriteCell1Ds(meshFinal);
+	WriteCell2Ds(meshFinal);
+	WriteCell3Ds(meshFinal);
 	
     return 0;
 }
 
-
-	/*
-
-	// --- Selettore della mesh target per l'esportazione e il cammino minimo ---
-    PolyhedralMesh* targetMeshPtr = nullptr;
-    if (q == 3 && p != 3) {
-        targetMeshPtr = &meshDual;
-        if (calculatePath) cout << "Calcolo cammino minimo sulla mesh Duale.\n";
-    } else {
-        targetMeshPtr = &meshTriangulated;
-        if (calculatePath) cout << "Calcolo cammino minimo sulla mesh Triangolata.\n";
-    }
-
-    if (targetMeshPtr->Cell0DsId.empty()) {
-        cerr << "Errore: La mesh target (triangolata o duale) è vuota. Impossibile proseguire.\n";
-        return 1;
-    }
-	
-	// --- Calcolo del cammino minimo BFS (condizionale) ---
-    if (calculatePath) {
-        MatrixXi adjMatrix = calculateAdjacencyMatrix(*targetMeshPtr);
-
-        vector<bool> isVertexInShortestPath;
-        vector<bool> isEdgeInShortestPath;
-        
-        pair<unsigned int, double> pathResult = findShortestPathBFS(
-            *targetMeshPtr,
-            adjMatrix,
-            startVertexId,
-            endVertexId,
-            isVertexInShortestPath,
-            isEdgeInShortestPath
-        );
-
-        // Stampa i risultati
-        if (pathResult.first > 0 || startVertexId == endVertexId) {
-            cout << "\n--- Risultati Cammino Minimo (BFS) ---\n";
-            cout << "Numero di lati nel cammino: " << pathResult.first << endl;
-            cout << "Lunghezza totale del cammino: " << pathResult.second << endl;
-
-            cout << "Vertici nel cammino (ID Reale): ";
-            for (unsigned int i = 0; i < targetMeshPtr->Cell0DsId.size(); ++i) {
-                if (isVertexInShortestPath[i]) {
-                    cout << targetMeshPtr->Cell0DsId[i] << " ";
-                }
-            }
-            cout << endl;
-
-            cout << "Lati nel cammino (ID Reale): ";
-            for (unsigned int i = 0; i < targetMeshPtr->Cell1DsId.size(); ++i) {
-                if (isEdgeInShortestPath[i]) {
-                    cout << targetMeshPtr->Cell1DsId[i] << " ";
-                }
-            }
-            cout << endl;
-
-            // Esportazione Paraview con cammino
-			std::string filename = "mesh_with_path.vtk";
-			PolyhedralLibrary::ExportParaview(*targetMeshPtr);		
-		
-        } else {
-            cout << "\nNessun cammino trovato tra il vertice " << startVertexId
-                 << " e il vertice " << endVertexId << ".\n";
-        }
-    } else {
-        cout << "\nCammino minimo non richiesto (solo 5 argomenti forniti).\n";
-		PolyhedralLibrary::ExportParaview(*targetMeshPtr);
-    }
-	
-    // Scrittura su TXT
-	PolyhedralLibrary::WriteCell0Ds(*targetMeshPtr);
-	PolyhedralLibrary::WriteCell1Ds(*targetMeshPtr);
-	PolyhedralLibrary::WriteCell2Ds(*targetMeshPtr);
-	PolyhedralLibrary::WriteCell3Ds(*targetMeshPtr);
-
-*/
 	
 	
