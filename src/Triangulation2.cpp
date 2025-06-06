@@ -123,49 +123,49 @@ namespace PolyhedralLibrary
 	// trova la faccia adiacente a face tramite edge, e poi restituire il baricentro di questa faccia adiacente
 	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId) {
 
-    // Per questo esempio, la ricostruiamo qui, ma è meglio farlo una volta sola. MODIFICA
-    map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
+		// Per questo esempio, la ricostruiamo qui, ma è meglio farlo una volta sola. MODIFICA
+		map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
 
-    // Ottieni i vertici che compongono l'edge per creare la chiave.
-    unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeId, 0);
-    unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeId, 1);
-    pair<unsigned int, unsigned int> edgeKey = {min(v1_id, v2_id), max(v1_id, v2_id)};
+		// Ottieni i vertici che compongono l'edge per creare la chiave.
+		unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeId, 0);
+		unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeId, 1);
+		pair<unsigned int, unsigned int> edgeKey = {min(v1_id, v2_id), max(v1_id, v2_id)};
 
-    // 2. Trova le facce associate a questo edge.
-    auto it = edgeToFacesMap.find(edgeKey);
-    if (it == edgeToFacesMap.end()) {
-        cerr << "Errore: Edge " << edgeId << " non trovato nella mappa delle facce adiacenti." << endl;
-        return Vector3d::Zero(); // Nessuna faccia associata a questo edge
-    }
+		// 2. Trova le facce associate a questo edge.
+		auto it = edgeToFacesMap.find(edgeKey);
+		if (it == edgeToFacesMap.end()) {
+			cerr << "Errore: Edge " << edgeId << " non trovato nella mappa delle facce adiacenti." << endl;
+			return Vector3d::Zero(); // Nessuna faccia associata a questo edge
+		}
 
-    const vector<unsigned int>& facesSharingEdge = it->second;
+		const vector<unsigned int>& facesSharingEdge = it->second;
 
-    if (facesSharingEdge.size() == 2) {
-        // 3. Ci sono due facce. Una è currentFaceId, l'altra è quella che cerchiamo.
-        unsigned int faceId1 = facesSharingEdge[0];
-        unsigned int faceId2 = facesSharingEdge[1];
+		if (facesSharingEdge.size() == 2) {
+			// 3. Ci sono due facce. Una è currentFaceId, l'altra è quella che cerchiamo.
+			unsigned int faceId1 = facesSharingEdge[0];
+			unsigned int faceId2 = facesSharingEdge[1];
 
-        unsigned int targetFaceId;
-        if (faceId1 == currentFaceId) {
-            targetFaceId = faceId2;
-        } else if (faceId2 == currentFaceId) {
-            targetFaceId = faceId1;
-        } else {
-            // Questo caso significa che currentFaceId non è una delle facce che condividono l'edge dato.
-            cerr << "Errore: Faccia corrente " << currentFaceId << " non condivide l'edge " << edgeId << "." << endl;
-            return Vector3d::Zero();
-        }
+			unsigned int targetFaceId;
+			if (faceId1 == currentFaceId) {
+				targetFaceId = faceId2;
+			} else if (faceId2 == currentFaceId) {
+				targetFaceId = faceId1;
+			} else {
+				// Questo caso significa che currentFaceId non è una delle facce che condividono l'edge dato.
+				cerr << "Errore: Faccia corrente " << currentFaceId << " non condivide l'edge " << edgeId << "." << endl;
+				return Vector3d::Zero();
+			}
 
-        // 4. Calcola e restituisci il baricentro della faccia adiacente.
-        return getFaceBarycenter(meshTriangulated, targetFaceId);
+			// 4. Calcola e restituisci il baricentro della faccia adiacente.
+			return getFaceBarycenter(meshTriangulated, targetFaceId);
 
-    } else if (facesSharingEdge.size() == 1) {
-        cerr << "Warning: Edge " << edgeId << " è un bordo della mesh. Nessuna faccia adiacente trovata." << endl;
-        return Vector3d::Zero(); 
-    } else {
-        cerr << "Errore: Edge " << edgeId << " è condiviso da " << facesSharingEdge.size() << " facce" << endl;
-        return Vector3d::Zero();
-    }
+		} else if (facesSharingEdge.size() == 1) {
+			cerr << "Warning: Edge " << edgeId << " è un bordo della mesh. Nessuna faccia adiacente trovata." << endl;
+			return Vector3d::Zero(); 
+		} else {
+			cerr << "Errore: Edge " << edgeId << " è condiviso da " << facesSharingEdge.size() << " facce" << endl;
+			return Vector3d::Zero();
+		}
 }
 
     void triangulateAndStore2(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, const vector<int>& dimension) {
