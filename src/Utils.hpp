@@ -189,6 +189,11 @@ namespace PolyhedralLibrary
 		double totalLength;
 		vector<bool> verticesInPath;
 		vector<bool> edgesInPath;
+		
+	// Costruttore con parametri per la dimensione dei vettori.
+		// I valori di default vanno qui nella dichiarazione.
+		ShortestPathResult(unsigned int nEdges = 0, double len = 0.0,
+						   unsigned int numVerticesTotal = 0, unsigned int numEdgesTotal = 0);
 	};
 	
 	double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2);
@@ -200,7 +205,7 @@ namespace PolyhedralLibrary
 	    unsigned int startVertexId_real,
 	    unsigned int endVertexId_real
 	);
-
+	
 	// pair<unsigned int, double> findShortestPathBFS(PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
 	
 	

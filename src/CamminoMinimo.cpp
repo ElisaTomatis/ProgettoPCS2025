@@ -268,11 +268,11 @@ using namespace Eigen;
 namespace PolyhedralLibrary{
 
 // IMPLEMENTAZIONE DEL COSTRUTTORE DI SHORTESTPATHRESULT
-	ShortestPathResult(unsigned int nEdges = 0, double len = 0.0,
-				   unsigned int numV = 0, unsigned int numE = 0)
-	: numEdges(nEdges), totalLength(len),
-	  verticesInPath(numV, false), edgesInPath(numE, false)
-	{}
+ShortestPathResult::ShortestPathResult(unsigned int nEdges, double len,
+                                       unsigned int numVerticesTotal, unsigned int numEdgesTotal)
+    : numEdges(nEdges), totalLength(len),
+      verticesInPath(numVerticesTotal, false), edgesInPath(numEdgesTotal, false)
+{}
 
 // Funzione per calcolare la distanza euclidea tra due punti.
 double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2) {
@@ -287,6 +287,7 @@ double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsig
 // Funzione per calcolare la matrice di adiacenza
 MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
     const unsigned int numVertices = mesh.Cell0DsCoordinates.cols();
+	MatrixXi adjMatrix = MatrixXi::Zero(numVertices, numVertices);
 
     // Itera su tutti i lati (Cell1Ds) della mesh
     for (unsigned int i = 0; i < mesh.Cell1DsId.size(); ++i) {
@@ -408,8 +409,8 @@ ShortestPathResult findShortestPathDijkstra(
 	
     // Se la distanza al vertice di arrivo è ancora infinito, significa che non è stato trovato alcun cammino
     if (dist[endVertexId] == numeric_limits<double>::infinity()) {
-        cout << "Nessun cammino trovato tra il vertice " << startVertexId_real
-                  << " e il vertice " << endVertexId_real << endl;
+        cout << "Nessun cammino trovato tra il vertice " << startVertexId
+                  << " e il vertice " << endVertexId << endl;
         return result;
     }
 	
