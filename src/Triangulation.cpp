@@ -55,6 +55,7 @@ namespace PolyhedralLibrary
 		RemoveDuplicatedVertices(meshTriangulated);
     	RemoveDuplicatedEdges(meshTriangulated);
     	NewMesh(meshTriangulated, meshFinal, dimension);
+    	printMeshTriangulated(meshFinal);
     	
     	vector<int> dimension2 = CalculateDimension2(b, q);
 		triangulateAndStore2(meshFinal, meshTriangulated2, dimension2);

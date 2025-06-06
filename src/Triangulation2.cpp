@@ -188,6 +188,24 @@ namespace PolyhedralLibrary
         
         for (unsigned faceId = 0; faceId < mesh.Cell2DsId.size() ; ++faceId){
 			const auto& faceVertices = mesh.Cell2DsVertices[faceId]; // id dei vertici della faccia originale
+			
+			unsigned int i=0;
+			cout << "Faccia" << faceId << endl;
+			cout << "\nCell2DsVertices:" << endl;
+			for (const auto& row : meshTriangulated.Cell2DsVertices) {
+				cout << "vertice " << i << endl;
+				for (auto v : row) cout << v << " ";
+				cout << endl;
+				i++;
+			}
+			unsigned int j = 0;
+			cout << "Cell2DsEdges:" << endl;
+			for (const auto& row : meshTriangulated.Cell2DsEdges) {
+				cout << "lato " << j << endl;
+				for (auto v : row) cout << v << " ";
+				cout << endl;
+				j++;
+			}
 				
 			Vector3d V0 = mesh.Cell0DsCoordinates.col(faceVertices[0]);
 			Vector3d V1 = mesh.Cell0DsCoordinates.col(faceVertices[1]);
