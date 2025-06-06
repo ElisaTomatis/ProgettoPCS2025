@@ -189,16 +189,9 @@ namespace PolyhedralLibrary
 		double totalLength;
 		vector<bool> verticesInPath;
 		vector<bool> edgesInPath;
-
-		// Costruttore che inizializza i vettori con la dimensione corretta
-		ShortestPathResult(unsigned int nEdges = 0, double len = 0.0,
-                       unsigned int numV = 0, unsigned int numE = 0)
-        : numEdges(nEdges), totalLength(len),
-          verticesInPath(numV, false), edgesInPath(numE, false)
-		{}
 	};
 	
-	double calculateDistanceById(const PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2);
+	double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2);
 	MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh);
 	
 	ShortestPathResult findShortestPathDijkstra(

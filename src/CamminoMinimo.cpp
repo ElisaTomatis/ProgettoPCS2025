@@ -267,25 +267,18 @@ using namespace std;
 using namespace Eigen; 
 namespace PolyhedralLibrary{
 
-// Funzione helper per calcolare la distanza euclidea tra due punti.
-// Prende la mesh, e gli ID REALI dei vertici. Usa la mappa per convertirli.
-double calculateDistanceById(PolyhedralMesh& mesh, const map<unsigned int, unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2) {
+// IMPLEMENTAZIONE DEL COSTRUTTORE DI SHORTESTPATHRESULT
+	ShortestPathResult(unsigned int nEdges = 0, double len = 0.0,
+				   unsigned int numV = 0, unsigned int numE = 0)
+	: numEdges(nEdges), totalLength(len),
+	  verticesInPath(numV, false), edgesInPath(numE, false)
+	{}
+
+// Funzione per calcolare la distanza euclidea tra due punti.
+double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2) {
     
-	// Converti gli ID reali in indici di colonna (0-based)
-    auto it1 = vertexIdToIndexMap.find(id1);
-    auto it2 = vertexIdToIndexMap.find(id2);
-
-    if (it1 == vertexIdToIndexMap.end() || it2 == vertexIdToIndexMap.end()) {
-        cerr << "Errore: ID vertice non trovato nella mappa durante il calcolo distanza.\n";
-        return 0.0; 
-    }
-
-    unsigned int idx1 = it1->second;
-    unsigned int idx2 = it2->second;
-
-    // Accedi alle coordinate tramite gli indici di colonna
-    VectorXd p1 = mesh.Cell0DsCoordinates.col(idx1);
-    VectorXd p2 = mesh.Cell0DsCoordinates.col(idx2);
+    VectorXd p1 = mesh.Cell0DsCoordinates.col(id1);
+    VectorXd p2 = mesh.Cell0DsCoordinates.col(id2);
 
     return (p1 - p2).norm(); // Calcola la norma (distanza euclidea)
 }
@@ -295,36 +288,14 @@ double calculateDistanceById(PolyhedralMesh& mesh, const map<unsigned int, unsig
 MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
     const unsigned int numVertices = mesh.Cell0DsCoordinates.cols();
 
-    // Inizializza la matrice di adiacenza con zeri
-    MatrixXi adjMatrix = MatrixXi::Zero(numVertices, numVertices);
-
-    // Mappa per convertire gli ID reali dei vertici in indici di colonna
-    map<unsigned int, unsigned int> vertexIdToIndexMap;
-    for (unsigned int i = 0; i < numVertices; ++i) {
-        vertexIdToIndexMap[mesh.Cell0DsId[i]] = i;
-    }
-
     // Itera su tutti i lati (Cell1Ds) della mesh
     for (unsigned int i = 0; i < mesh.Cell1DsId.size(); ++i) {
-        // Recupera gli ID reali dei due vertici che compongono il lato
-        unsigned int v1_real = mesh.Cell1DsExtrema(i, 0);
-        unsigned int v2_real = mesh.Cell1DsExtrema(i, 1);
 
-        // Converti gli ID reali in indici di colonna
-        auto it1 = vertexIdToIndexMap.find(v1_real);
-        auto it2 = vertexIdToIndexMap.find(v2_real);
-
-        if (it1 == vertexIdToIndexMap.end() || it2 == vertexIdToIndexMap.end()) {
-            cerr << "Errore: ID vertice non trovato nella mappa durante la costruzione della matrice di adiacenza.\n";
-            continue; // Salta questo lato e continua
-        }
-
-        unsigned int idx1 = it1->second;
-        unsigned int idx2 = it2->second;
-
-        // Imposta a 1 le celle corrispondenti nella matrice di adiacenza
-        adjMatrix(idx1, idx2) = 1;
-        adjMatrix(idx2, idx1) = 1;
+        unsigned int v1 = mesh.Cell1DsExtrema(i, 0);
+        unsigned int v2 = mesh.Cell1DsExtrema(i, 1);
+		
+        adjMatrix(v1, v2) = 1;
+        adjMatrix(v2, v1) = 1;
     }
 
     return adjMatrix;
@@ -333,8 +304,8 @@ MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
 ShortestPathResult findShortestPathDijkstra(
     PolyhedralMesh& mesh,
     const MatrixXi& adjMatrix,
-    unsigned int startVertexId_real,
-    unsigned int endVertexId_real
+    unsigned int startVertexId,
+    unsigned int endVertexId
 ) {
 	const unsigned int numVertices = mesh.Cell0DsCoordinates.cols(); // Numero totale di vertici
     const unsigned int numEdgesInMesh = mesh.Cell1DsId.size();     // Numero totale di lati nella mesh
@@ -342,32 +313,13 @@ ShortestPathResult findShortestPathDijkstra(
 	// Inizializza il risultato, passando le dimensioni per i vettori bool
     ShortestPathResult result(0, 0.0, numVertices, numEdgesInMesh);
 
-    // Mappa ID reale vertice -> Indice di colonna (0-based)
-    map<unsigned int, unsigned int> vertexIdToIndexMap;
-    for (unsigned int i = 0; i < mesh.Cell0DsId.size(); ++i) {
-        vertexIdToIndexMap[mesh.Cell0DsId[i]] = i;
-    }
-
-    // Converti gli ID reali di partenza/arrivo in indici di colonna
-    auto it_start = vertexIdToIndexMap.find(startVertexId_real);
-    auto it_end = vertexIdToIndexMap.find(endVertexId_real);
-
-    if (it_start == vertexIdToIndexMap.end() || it_end == vertexIdToIndexMap.end()) {
-        cerr << "Errore: ID vertice di partenza (" << startVertexId_real
-             << ") o arrivo (" << endVertexId_real << ") non valido (non trovato in Cell0DsId).\n";
-        return result; // Nessun cammino, 0 lati, 0 lunghezza
-    }
-
-    unsigned int startIdx = it_start->second; // Indice di colonna del vertice di partenza
-    unsigned int endIdx = it_end->second;     // Indice di colonna del vertice di arrivo
-
     // Caso banale: partenza e arrivo sono lo stesso vertice
-    if (startIdx == endIdx) {
+    if (startVertexId == endVertexId) {
         cout << "Partenza e arrivo coincidono. Cammino nullo." << endl;
-		result.verticesInPath[startIdx] = true; // Marca il vertice di partenza/arrivo
+		result.verticesInPath[startVertexId] = true; // Marca il vertice di partenza/arrivo
         mesh.Cell0DsMarker.assign(numVertices, 0); 
         mesh.Cell1DsMarker.assign(numEdgesInMesh, 0);
-        mesh.Cell0DsMarker[startIdx] = 1; // Marca il vertice sulla mesh
+        mesh.Cell0DsMarker[startVertexId] = 1; // Marca il vertice sulla mesh
         return result;
     }
 
@@ -376,16 +328,13 @@ ShortestPathResult findShortestPathDijkstra(
     map<pair<unsigned int, unsigned int>, pair<unsigned int, double>> edgeInfoMap;
     
 	for (unsigned int i = 0; i < numEdgesInMesh; ++i) {
-        unsigned int v1_real = mesh.Cell1DsExtrema(i, 0);
-        unsigned int v2_real = mesh.Cell1DsExtrema(i, 1);
+        unsigned int v1 = mesh.Cell1DsExtrema(i, 0);
+        unsigned int v2 = mesh.Cell1DsExtrema(i, 1);
 
-        unsigned int v1_idx = vertexIdToIndexMap[v1_real];
-        unsigned int v2_idx = vertexIdToIndexMap[v2_real];
-
-        double length = calculateDistanceById(mesh, vertexIdToIndexMap, v1_real, v2_real);
+        double length = calculateDistanceById(mesh, v1, v2);
 
         // Memorizziamo l'informazione usando gli INDICI dei vertici, garantendo ordine per la chiave della mappa
-        edgeInfoMap[{min(v1_idx, v2_idx), max(v1_idx, v2_idx)}] = {mesh.Cell1DsId[i], length};
+        edgeInfoMap[{min(v1, v2), max(v1, v2)}] = {mesh.Cell1DsId[i], length};
     }
 
     // Variabili Dijkstra
@@ -400,7 +349,7 @@ ShortestPathResult findShortestPathDijkstra(
     vector<unsigned int> predEdge(numVertices, -1);
 
     // visited[i]: true se il cammino più breve a 'i' è stato finalizzato
-    vector<bool> visited(numVertices, false); // Nuovo: per tracciare i vertici già elaborati
+    vector<bool> visited(numVertices, false); 
 
     // Coda di priorità: memorizza coppie {distanza, indice_vertice}
     // std::greater per creare un min-heap (estrae l'elemento con la distanza minore)
@@ -410,8 +359,8 @@ ShortestPathResult findShortestPathDijkstra(
 	// priority_queue<QueueElem, vector<QueueElem>, greater<QueueElem>> pq;
 
     // Imposta la distanza del vertice di partenza a 0 e aggiungilo alla coda
-    dist[startIdx] = 0.0;
-    pq.push({0.0, startIdx});
+    dist[startVertexId] = 0.0;
+    pq.push({0.0, startVertexId});
 
     // algoritmo Dijkstra
     while (!pq.empty()) {
@@ -429,7 +378,7 @@ ShortestPathResult findShortestPathDijkstra(
         visited[u] = true; // Marca il vertice come visitato/finalizzato
 
         // Se abbiamo raggiunto il vertice di arrivo, possiamo terminare l'algoritmo
-        if (u == endIdx) {
+        if (u == endVertexId) {
             break;
         }
 
@@ -458,7 +407,7 @@ ShortestPathResult findShortestPathDijkstra(
     }
 	
     // Se la distanza al vertice di arrivo è ancora infinito, significa che non è stato trovato alcun cammino
-    if (dist[endIdx] == numeric_limits<double>::infinity()) {
+    if (dist[endVertexId] == numeric_limits<double>::infinity()) {
         cout << "Nessun cammino trovato tra il vertice " << startVertexId_real
                   << " e il vertice " << endVertexId_real << endl;
         return result;
@@ -472,11 +421,11 @@ ShortestPathResult findShortestPathDijkstra(
     mesh.Cell0DsMarker.assign(numVertices, 0); // Inizializza i marker a 0
     mesh.Cell1DsMarker.assign(numEdgesInMesh, 0);
 	
-	result.totalLength = dist[endIdx];
+	result.totalLength = dist[endVertexId];
 
-    unsigned int current_idx = endIdx; // Partiamo dall'indice del vertice di arrivo
+    unsigned int current_idx = endVertexId; // Partiamo dall'indice del vertice di arrivo
 	
-	while (current_idx != startIdx) {
+	while (current_idx != startVertexId) {
         // Marca il vertice corrente come parte del cammino minimo
         result.verticesInPath[current_idx] = true;
         mesh.Cell0DsMarker[current_idx] = 1;
@@ -514,8 +463,8 @@ ShortestPathResult findShortestPathDijkstra(
     }
 	
     // Marca anche il vertice di partenza come parte del cammino
-    mesh.Cell0DsMarker[startIdx] = 1;
-	result.verticesInPath[startIdx] = true;
+    mesh.Cell0DsMarker[startVertexId] = 1;
+	result.verticesInPath[startVertexId] = true;
 	
 	return result;
 	

@@ -88,3 +88,118 @@ package Gedim <<Frame>>
 
 ExportParaview ..> Gedim  : uses
 @enduml
+
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+@startuml
+!theme materia-outline
+
+title Polyhedral Structure and Geodesic/Goldberg Polyhedra
+
+package PolyhedronLibrary <<Folder>> {
+
+class PolyhedralMesh {
+        ' Celle 0D (Vertici)
+        + Cell0DsId : std::vector<unsigned int>
+        + Cell0DsCoordinates : Eigen::MatrixXd
+        + Cell0DsFlag : std::vector<std::vector<unsigned int>>
+        + Cell0DsMarker : std::vector<unsigned int>
+
+        ' Celle 1D (Lati)
+        + Cell1DsId : std::vector<unsigned int>
+        + Cell1DsExtrema : Eigen::MatrixXi
+        + Cell1DsFlag : std::vector<unsigned int>
+        + Cell1DsMarker : std::vector<unsigned int>
+
+        ' Celle 2D (Facce)
+        + Cell2DsId : std::vector<unsigned int>
+        + Cell2DsVertices : std::vector<std::vector<unsigned int>>
+        + Cell2DsEdges : std::vector<std::vector<unsigned int>>
+
+        ' Cella 3D (Poliedro)
+        + Cell3DsId : unsigned int
+        + NumCells0Ds : unsigned int
+        + NumCells1Ds : unsigned int
+        + NumCells2Ds : unsigned int
+        + Cell3DsVertices : std::vector<unsigned int>
+        + Cell3DsEdges : std::vector<unsigned int>
+        + Cell3DsFaces : std::vector<unsigned int>
+    }
+
+class ShortestPathResult {
+        + numEdges : unsigned int
+        + totalLength : double
+        + verticesInPath : std::vector<bool>
+        + edgesInPath : std::vector<bool>
+        + ShortestPathResult(nEdges: unsigned int = 0, len: double = 0.0, numV: unsigned int = 0, numE: unsigned int = 0)
+    }
+
+
+
+class Utils {
+        + void invertiValori(int& p, int& q)
+        + std::vector<int> ComputePolyhedronVEF(int q, int b, int c)
+        + std::vector<int> CalculateDuplicated(int q, int b, int c, const std::vector<int>& dimension)
+        + std::vector<int> CalculateDimension2(int b, int q)
+        + void RemoveDuplicatedVertices(PolyhedralMesh& meshTriangulated)
+        + void RemoveDuplicatedEdges(PolyhedralMesh& meshTriangulated)
+        + void NewMesh(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const std::vector<int>& dimension)
+        + PolyhedralMesh Triangulation(int q, int b, int c, PolyhedralMesh& mesh)
+        + PolyhedralMesh TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh)
+        + PolyhedralMesh Triangulation2(int q, int b, int c, PolyhedralMesh& mesh)
+        + PolyhedralMesh Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh)
+        + void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, unsigned int b, unsigned int c, const std::vector<int>& dimension)
+        + void FindAddEdge(unsigned int a, unsigned int b, PolyhedralMesh& meshTriangulated, unsigned int& edgeID, unsigned int triangleID)
+        + unsigned int FindAddVertice(const Eigen::Vector3d& coord, PolyhedralMesh& meshTriangulated, unsigned int& k1)
+        + unsigned int FindAddEdge2(unsigned int a, unsigned int b, PolyhedralMesh& meshTriangulated, unsigned int& k2)
+        + void FindAddFace(const std::vector<unsigned int>& new_face_vertices, const std::vector<unsigned int>& new_face_edges, PolyhedralMesh& meshTriangulated, unsigned int& k3)
+        + std::vector<unsigned int> get_cyclic_normalized(const std::vector<unsigned int>& current_edges)
+        + std::vector<unsigned int> NormalizeFaceEdges(const std::vector<unsigned int>& face_edges)
+        + void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
+        + Eigen::Vector3d getFaceBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int faceId)
+        + std::map<std::pair<unsigned int,unsigned int>, std::vector<unsigned int>> buildEdgeToFacesMap(const PolyhedralMesh& meshTriangulated)
+        + std::map<unsigned int, std::vector<unsigned int>> buildVertexToFacesMap(const PolyhedralMesh& meshTriangulated)
+        + std::map<unsigned int, std::vector<unsigned int>> buildVertexToEdgesMap(const PolyhedralMesh& meshTriangulated)
+        + void ProjectMeshToUnitSphere(PolyhedralMesh& meshTriangulated)
+        + double calculateDistanceById(const PolyhedralMesh& mesh, const std::map<unsigned int,unsigned int>& vertexIdToIndexMap, unsigned int id1, unsigned int id2)
+        + Eigen::MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh)
+        + ShortestPathResult findShortestPathDijkstra(PolyhedralMesh& mesh, const Eigen::MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real)
+        + void ExportParaview(const PolyhedralMesh& meshTriangulated)
+        + void printMeshTriangulated(const PolyhedralMesh& meshTriangulated)
+        + void WriteCell0Ds(const PolyhedralMesh& mesh)
+        + void WriteCell1Ds(const PolyhedralMesh& mesh)
+        + void WriteCell2Ds(const PolyhedralMesh& mesh)
+        + void WriteCell3Ds(const PolyhedralMesh& mesh)
+ 
+.. TESTUTILS ..
+        TestComputePolyhedronVEF
+        TestCalculateDuplicated
+        TestTriangulationTetrahedron
+        TestOrderedEdges
+        TestNotNullArea
+        TestNotNullEdges
+        DualTest
+
+}
+
+ ' Relazione di uso
+    PolyhedralMesh "1" o-left- "uses" Utils : contains output of
+
+class ExportParaview {
+        + void ExportParaview(const PolyhedralMesh& meshTriangulated)
+        + void printMeshTriangulated(const PolyhedralMesh& meshTriangulated
+}
+}
+
+
+package Gedim <<Frame>>
+{
+
+}
+
+
+' ExportParaview relies upon Gedim
+ExportParaview..> Gedim  : uses
+
+@enduml
