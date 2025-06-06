@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 	    
 		if (p == 3 && q == 3) {
 			generateTetrahedron(mesh);
-			meshFinal = Triangulation(q, b, c, mesh);
+			Triangulation(q, b, c, mesh, meshFinal);
 			
 		} else if (p == 3 && q != 3){
 			if (q == 4){
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 			} else {
 				generateIcosahedron(mesh);
 			}
-			meshFinal = Triangulation(q, b, c, mesh);
+			Triangulation(q, b, c, mesh, meshFinal);
 	
 		} else if (q == 3 && p!= 3) {
 			if (p == 4){
@@ -72,12 +72,12 @@ int main(int argc, char *argv[]) {
 				generateIcosahedron(mesh);
 			}
 			invertiValori(p, q);
-			meshFinal = TriangulationDual(q, b, c, mesh);
+			TriangulationDual(q, b, c, mesh, meshFinal);
 		}
 	} else {
 		if (p == 3 && q == 3) {
 			generateTetrahedron(mesh);
-			meshFinal = Triangulation2(q, b, c, mesh);
+			Triangulation2(q, b, c, mesh, meshFinal);
 			
 		} else if (p == 3 && q != 3){
 			if (q == 4){
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 			} else {
 				generateIcosahedron(mesh);
 			}
-			meshFinal = Triangulation2(q, b, c, mesh);
+			Triangulation2(q, b, c, mesh, meshFinal);
 	
 		} else if (q == 3 && p!= 3) {
 			if (p == 4){
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 				generateIcosahedron(mesh);
 			}
 			invertiValori(p, q);
-			meshFinal = Triangulation2Dual(q, b, c, mesh);
+			Triangulation2Dual(q, b, c, mesh, meshFinal);
 		}
 	}
 	

@@ -61,22 +61,22 @@ namespace PolyhedralLibrary
 	// Racchiude le funzioni per la triangolazione di classe I se p=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	PolyhedralMesh Triangulation(int q, int b, int c, PolyhedralMesh& mesh);
+	void Triangulation(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal);
 	
 	// Racchiude le funzioni per la triangolazione di classe I se q=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	PolyhedralMesh TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh);
+	void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Racchiude le funzioni per la triangolazione di classe II se p=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	PolyhedralMesh Triangulation2(int q, int b, int c, PolyhedralMesh& mesh);
+	void Triangulation2(int q, int b, int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Racchiude le funzioni per la triangolazione di classe II se q=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	PolyhedralMesh Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh);
+	void Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Riempie le Celle3d dopo la triangolazione
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
@@ -190,10 +190,9 @@ namespace PolyhedralLibrary
 		vector<bool> verticesInPath;
 		vector<bool> edgesInPath;
 		
-	// Costruttore con parametri per la dimensione dei vettori.
-		// I valori di default vanno qui nella dichiarazione.
-		ShortestPathResult(unsigned int nEdges = 0, double len = 0.0,
-						   unsigned int numVerticesTotal = 0, unsigned int numEdgesTotal = 0);
+		// Costruttore con parametri per la dimensione dei vettori.
+		ShortestPathResult(unsigned int nEdges, double len,
+						   unsigned int numVerticesTotal, unsigned int numEdgesTotal);
 	};
 	
 	double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2);

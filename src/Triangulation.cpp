@@ -10,10 +10,9 @@ using namespace Eigen;
 
 namespace PolyhedralLibrary
 {
-	PolyhedralMesh Triangulation(int q, int b, int c, PolyhedralMesh& mesh)
+	void Triangulation(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal)
 	{
 		PolyhedralMesh meshTriangulated;
-		PolyhedralMesh meshFinal;
 
 		vector<int> dimension = ComputePolyhedronVEF(q, b, c);
 		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
@@ -24,14 +23,13 @@ namespace PolyhedralLibrary
     	PopulateCell3D(meshFinal, dimension);
 		// ProjectMeshToUnitSphere(meshFinal);
 		// ExportParaview(meshFinal);
-		return meshFinal;
+		return;
     }
     
-    PolyhedralMesh TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh)
+    void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshDual)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshFinal;
-		PolyhedralMesh meshDual;
 		
 		vector<int> dimension = ComputePolyhedronVEF(q, b, c);
 		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
@@ -43,13 +41,12 @@ namespace PolyhedralLibrary
 		PopulateCell3D(meshDual, dimension);
 		// ProjectMeshToUnitSphere(meshDual);
 		// ExportParaview(meshDual);
-		return meshDual;
+		return;
     }
     
-    PolyhedralMesh Triangulation2(int q, int b, int c, PolyhedralMesh& mesh)
+    void Triangulation2(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated2)
 	{
 		PolyhedralMesh meshTriangulated;
-		PolyhedralMesh meshTriangulated2;
 		PolyhedralMesh meshFinal;
 		
 		vector<int> dimension = ComputePolyhedronVEF(q, b, 0);
@@ -64,15 +61,14 @@ namespace PolyhedralLibrary
 		PopulateCell3D(meshTriangulated2, dimension);
 		//ProjectMeshToUnitSphere(meshTriangulated2);
 		//ExportParaview(meshTriangulated2);
-		return meshTriangulated2;
+		return;
     }
     
-    PolyhedralMesh Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh)
+    void Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshDual)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshTriangulated2;
 		PolyhedralMesh meshFinal;
-		PolyhedralMesh meshDual;
     
 		vector<int> dimension = ComputePolyhedronVEF(q, b, 0);
 		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, 0, dimension);
@@ -87,7 +83,7 @@ namespace PolyhedralLibrary
 		PopulateCell3D(meshDual, dimension);
 		//ProjectMeshToUnitSphere(meshDual);
 		// ExportParaview(meshDual);
-		return meshDual;
+		return;
     }
 
 	void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension){
