@@ -110,25 +110,9 @@ int main(int argc, char *argv[]) {
 
         // Stampa i risultati
         if (pathResult.numEdges > 0 || startVertexId == endVertexId) {
-            cout << "\n--- Risultati Cammino Minimo ---\n";
+            cout << "\n--- Cammino Minimo ---\n";
             cout << "Numero di lati nel cammino: " << pathResult.numEdges  << endl;
             cout << "Lunghezza totale del cammino: " << pathResult.totalLength  << endl;
-
-            cout << "Vertici nel cammino (ID Reale): ";
-            for (unsigned int i = 0; i < meshFinal.Cell0DsId.size(); ++i) {
-                if (pathResult.verticesInPath[i]) {
-                    cout << meshFinal.Cell0DsId[i] << " ";
-                }
-            }
-            cout << endl;
-
-            cout << "Lati nel cammino (ID Reale): ";
-            for (unsigned int i = 0; i < meshFinal.Cell1DsId.size(); ++i) {
-                if (pathResult.edgesInPath[i]) {
-                    cout << meshFinal.Cell1DsId[i] << " ";
-                }
-            }
-            cout << endl;
 
             // Esportazione Paraview con cammino
 			ProjectMeshToUnitSphere(meshFinal);
