@@ -115,7 +115,8 @@ namespace PolyhedralLibrary
 		meshTriangulated.Cell1DsExtrema(k2, 0) = a;
 		meshTriangulated.Cell1DsExtrema(k2, 1) = b;
 		meshTriangulated.Cell1DsId[k2] = k2;
-
+		cout << a << " , "<< b <<endl;
+		cout << "k2:" << k2 <<endl;
 		return k2++; // restituisci il vecchio valore di k2, poi incrementalo
 	}
 	
@@ -189,9 +190,10 @@ namespace PolyhedralLibrary
         for (unsigned faceId = 0; faceId < mesh.Cell2DsId.size() ; ++faceId){
 			const auto& faceVertices = mesh.Cell2DsVertices[faceId]; // id dei vertici della faccia originale
 			
+			
 			unsigned int i=0;
 			cout << "Faccia" << faceId << endl;
-			cout << "\nCell2DsVertices:" << endl;
+			/* cout << "\nCell2DsVertices:" << endl;
 			for (const auto& row : meshTriangulated.Cell2DsVertices) {
 				cout << "vertice " << i << endl;
 				for (auto v : row) cout << v << " ";
@@ -205,7 +207,7 @@ namespace PolyhedralLibrary
 				for (auto v : row) cout << v << " ";
 				cout << endl;
 				j++;
-			}
+			}*/
 				
 			Vector3d V0 = mesh.Cell0DsCoordinates.col(faceVertices[0]);
 			Vector3d V1 = mesh.Cell0DsCoordinates.col(faceVertices[1]);
