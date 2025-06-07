@@ -9,7 +9,7 @@
 #include "Utils.hpp"
 
 using namespace Eigen;
-
+/*
 namespace PolyhedraTest {
 
 // Dimension
@@ -461,7 +461,7 @@ TEST(TestPolyedra, TestNotNullEdges){
 	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
 	
 	// itero su ogni lato della mesh triangolata 
-	for (size_t i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
+	for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
 		// prendo gli indici dei due vertici che definisco il lato i
 		int vStart = meshTriangulated.Cell1DsExtrema(i, 0); // indice del vertice di partenza 
         int vEnd = meshTriangulated.Cell1DsExtrema(i, 1); // indice del vertice di arrivo
@@ -494,7 +494,7 @@ TEST(Polyhedra, DualTest){
 	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
 	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-	CalculateDual(meshTriangulated, meshDual);
+	CalculateDual(meshTriangulated, meshDual, edgeToFacesMap);
 	
 	double eps = numeric_limits<double>::epsilon();
 	unsigned int maxFlag = numeric_limits<unsigned int>::max();

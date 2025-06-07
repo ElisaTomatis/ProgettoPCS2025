@@ -69,14 +69,14 @@ namespace PolyhedralLibrary
 	void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Racchiude le funzioni per la triangolazione di classe II se p=3
-	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
+	// q, b : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void Triangulation2(int q, int b, int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
+	void Triangulation2(int q, int b, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Racchiude le funzioni per la triangolazione di classe II se q=3
-	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
+	// q, b : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void Triangulation2Dual(int q, int b, int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
+	void Triangulation2Dual(int q, int b, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Riempie le Celle3d dopo la triangolazione
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
@@ -113,7 +113,8 @@ namespace PolyhedralLibrary
 	 // meshTriangulated : una struct PolyhedralMesh, quella triangolata
 	 // b,c : parametri passati dall'utente che identificano il poliedro
 	 // dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato
-	void triangulateAndStore2(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, const vector<int>& dimension);
+	 // edgeToFacesMap : mappa che associa ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
+	void triangulateAndStore2(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, const vector<int>& dimension, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap);
 							  
 	// Aggiunge un vertice alla mesh triangolata se non è già presente e restituisce il suo id
 	// coord : coordinate del punto che vorremmo aggiungere
@@ -133,7 +134,8 @@ namespace PolyhedralLibrary
 	// meshTriangulated : una struct PolyhedralMesh
 	// edgeId : id del lato
 	// currentFacdeId : faccia che stiamo considerando
-	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId);
+	// edgeToFacesMap : mappa che associa ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
+	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap);
 	
 	// Aggiunge una faccia alla mesh triangolata se non è già presente
 	// new_face_vertices : id dei vertici della faccia che vorremmo aggiungere
@@ -157,7 +159,8 @@ namespace PolyhedralLibrary
 	// Calcola il duale di un poliedro
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
 	// meshDual : una struct PolyhedralMesh, quella duale
-	void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual);
+	// edgeToFacesMap : mappa che associa ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
+	void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap);
 	
 	// Calcola il baricentro di una faccia
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
@@ -185,19 +188,32 @@ namespace PolyhedralLibrary
 	// CAMMINO MINIMO
 	 
 	struct ShortestPathResult {
-		unsigned int numEdges;
-		double totalLength;
-		vector<bool> verticesInPath;
-		vector<bool> edgesInPath;
+		unsigned int numEdges; // numero di lati del cammino
+		double totalLength; // lunghezza totale del cammino
+		vector<bool> verticesInPath; // verticesInPath[i] = true se il vertice i appartiene al cammino minimo
+		vector<bool> edgesInPath; // edgesInPath [j] = true se il lato j appartiene al cammino minimo
 		
 		// Costruttore con parametri per la dimensione dei vettori.
-		ShortestPathResult(unsigned int nEdges, double len,
+		ShortestPathResult(unsigned int nEdges, double j,
 						   unsigned int numVerticesTotal, unsigned int numEdgesTotal);
 	};
 	
+	// Calcola la distanza euclidea tra due punti
+	// mesh : una struct PolyhedralMesh
+	// id1, id2 : id dei vertici di cui vogliamo calcolare la distanza 
 	double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2);
+	
+	// Calcola la matrice di adiancenza
+	// djacencyMatrix[i,j] = 1 se esiste un lato tra il vertice i e il vertice j
+	// mesh : una struct PolyhedralMesh
 	MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh);
 	
+	// Calcola il cammino minimo con l'algoritmo Dijkstra
+	// Resituisce un oggetto ShortestPathResult che contiene le informazioni sul cammino minimo trovato
+	// mesh : una struct PolyhedralMesh
+	// adjMatrix : matrice di adiacenza che indica la connettività tra i vertici
+	// startVertexId_real : id del vertice di partenza
+	// endVertexId_real : id del vertice di arrivo
 	ShortestPathResult findShortestPathDijkstra(
 	    PolyhedralMesh& mesh,
 	    const MatrixXi& adjMatrix,

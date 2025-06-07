@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
 	} else {
 		if (p == 3 && q == 3) {
 			generateTetrahedron(mesh);
-			Triangulation2(q, b, c, mesh, meshFinal);
+			Triangulation2(q, b, mesh, meshFinal);
 			
 		} else if (p == 3 && q != 3){
 			if (q == 4){
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 			} else {
 				generateIcosahedron(mesh);
 			}
-			Triangulation2(q, b, c, mesh, meshFinal);
+			Triangulation2(q, b, mesh, meshFinal);
 	
 		} else if (q == 3 && p!= 3) {
 			if (p == 4){
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
 				generateIcosahedron(mesh);
 			}
 			invertiValori(p, q);
-			Triangulation2Dual(q, b, c, mesh, meshFinal);
+			Triangulation2Dual(q, b, mesh, meshFinal);
 		}
 	}
 	
@@ -125,7 +125,6 @@ int main(int argc, char *argv[]) {
 	} else {
 		// Esportazione Paraview senza cammino
 		ProjectMeshToUnitSphere(meshFinal);
-		printMeshTriangulated(meshFinal);
 		ExportParaview(meshFinal);
 	}
 	

@@ -81,7 +81,7 @@ namespace PolyhedralLibrary
 			k3++; // Restituisci il vecchio valore di k3, poi incrementalo per la prossima faccia
 		}
 	}
-	
+
 	
 	unsigned int FindAddVertice(const Vector3d& coord, PolyhedralMesh& meshTriangulated, unsigned int& k1)
 	{
@@ -115,17 +115,17 @@ namespace PolyhedralLibrary
 		meshTriangulated.Cell1DsExtrema(k2, 0) = a;
 		meshTriangulated.Cell1DsExtrema(k2, 1) = b;
 		meshTriangulated.Cell1DsId[k2] = k2;
-		cout << a << " , "<< b <<endl;
-		cout << "k2:" << k2 <<endl;
 		return k2++; // restituisci il vecchio valore di k2, poi incrementalo
 	}
 	
 	
 	// trova la faccia adiacente a face tramite edge, e poi restituire il baricentro di questa faccia adiacente
-	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId) {
+	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap) {
 
+		/*
 		// Per questo esempio, la ricostruiamo qui, ma è meglio farlo una volta sola. MODIFICA
 		map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
+		*/
 
 		// Ottieni i vertici che compongono l'edge per creare la chiave.
 		unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeId, 0);
@@ -169,7 +169,7 @@ namespace PolyhedralLibrary
 		}
 }
 
-    void triangulateAndStore2(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, const vector<int>& dimension) {
+    void triangulateAndStore2(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, const vector<int>& dimension, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap) {
 
         meshTriangulated.Cell0DsId.resize(dimension[0]);
         meshTriangulated.Cell0DsCoordinates = MatrixXd::Zero(3, dimension[0]);
@@ -189,25 +189,6 @@ namespace PolyhedralLibrary
         
         for (unsigned faceId = 0; faceId < mesh.Cell2DsId.size() ; ++faceId){
 			const auto& faceVertices = mesh.Cell2DsVertices[faceId]; // id dei vertici della faccia originale
-			
-			
-			unsigned int i=0;
-			cout << "Faccia" << faceId << endl;
-			/* cout << "\nCell2DsVertices:" << endl;
-			for (const auto& row : meshTriangulated.Cell2DsVertices) {
-				cout << "vertice " << i << endl;
-				for (auto v : row) cout << v << " ";
-				cout << endl;
-				i++;
-			}
-			unsigned int j = 0;
-			cout << "Cell2DsEdges:" << endl;
-			for (const auto& row : meshTriangulated.Cell2DsEdges) {
-				cout << "lato " << j << endl;
-				for (auto v : row) cout << v << " ";
-				cout << endl;
-				j++;
-			}*/
 				
 			Vector3d V0 = mesh.Cell0DsCoordinates.col(faceVertices[0]);
 			Vector3d V1 = mesh.Cell0DsCoordinates.col(faceVertices[1]);
@@ -263,7 +244,7 @@ namespace PolyhedralLibrary
 				} else {
 					
 				// TRIANGOLO A SINISTRA
-				Vector3d bar2_coord = FindNearBarycenter(mesh, faceEdges[e], faceId);
+				Vector3d bar2_coord = FindNearBarycenter(mesh, faceEdges[e], faceId, edgeToFacesMap);
 				unsigned int vertex2 = FindAddVertice(mesh.Cell0DsCoordinates.col(faceVertices[e]), meshTriangulated, k1);
 				unsigned int bar1 = FindAddVertice(barycenter, meshTriangulated, k1);
 				unsigned int bar2 = FindAddVertice(bar2_coord, meshTriangulated, k1);

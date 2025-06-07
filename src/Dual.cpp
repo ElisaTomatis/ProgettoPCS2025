@@ -61,7 +61,7 @@ map<unsigned int, vector<unsigned int>> buildVertexToEdgesMap(const PolyhedralMe
 }
 
 
-void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
+void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap)
 {
 	// VERTICI
 	// i vertici del duale sono i baricentri delle facce originali
@@ -74,8 +74,11 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
     }
     
     // SPIGOLI
+    
+    /*
     map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
     // mappa che associa ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
+    */
     
     vector<pair<unsigned int, unsigned int>> dualEdgesExtremaVector;
     // Ogni spigolo interno del poliedro originale (condiviso da due facce) genera uno spigolo nel poliedro duale che connette i baricentri di quelle due facce.

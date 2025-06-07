@@ -69,12 +69,12 @@ namespace PolyhedralLibrary
 		}
 		else if (q == 4) {
 			V = 6 + 12 * (2 * b - 1) + static_cast<int>(round(8 * ((3.0 * b * b) / 2.0 - (3.0 * b) / 2.0 + 1)));
-			E = 12 * 2 * b + static_cast<int>(round(8 * ((3.0 * b * b) / 2.0 + (3.0 * b) / 2.0)));
+			E = 12 * 2 * b + static_cast<int>(round(8 * ((9.0 * b * b) / 2.0 + (3.0 * b) / 2.0)));
 			F = 8 * (3 * b * b + 3 * b);
 		}
 		else {
 			V = 12 + 30 * (2 * b - 1) + static_cast<int>(round(20 * ((3.0 * b * b) / 2.0 - (3.0 * b) / 2.0 + 1)));
-			E = 30 * 2 * b + static_cast<int>(round(20 * ((3.0 * b * b) / 2.0 + (3.0 * b) / 2.0)));
+			E = 30 * 2 * b + static_cast<int>(round(20 * ((9.0 * b * b) / 2.0 + (3.0 * b) / 2.0)));
 			F = 20 * (3 * b * b + 3 * b);
 		}
 

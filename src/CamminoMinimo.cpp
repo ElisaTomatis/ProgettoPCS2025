@@ -310,6 +310,17 @@ ShortestPathResult findShortestPathDijkstra(
 ) {
 	const unsigned int numVertices = mesh.Cell0DsCoordinates.cols(); // Numero totale di vertici
     const unsigned int numEdgesInMesh = mesh.Cell1DsId.size();     // Numero totale di lati nella mesh
+    
+    if (startVertexId >= numVertices) {
+        cerr << "Errore: startVertexId (" << startVertexId << ") è fuori dal range valido di vertici [0, " << numVertices - 1 << "]." << endl;
+        // Restituisci un risultato vuoto per indicare un errore
+        return ShortestPathResult(0, 0.0, numVertices, numEdgesInMesh);
+    }
+    if (endVertexId >= numVertices) {
+        cerr << "Errore: endVertexId (" << endVertexId << ") è fuori dal range valido di vertici [0, " << numVertices - 1 << "]." << endl;
+        // Restituisci un risultato vuoto per indicare un errore
+        return ShortestPathResult(0, 0.0, numVertices, numEdgesInMesh);
+    }
 
 	// Inizializza il risultato, passando le dimensioni per i vettori bool
     ShortestPathResult result(0, 0.0, numVertices, numEdgesInMesh);
@@ -346,7 +357,7 @@ ShortestPathResult findShortestPathDijkstra(
     // predVertex[i]: indice del vertice precedente nel cammino minimo a i
     vector<unsigned int> predVertex(numVertices, -1); // Usiamo -1 per indicare nessun predecessore
 	
-    // predEdge[i]: ID REALE del Cell1D usato per raggiungere i dal suo predecessore
+    // predEdge[i]: ID del Cell1D usato per raggiungere i dal suo predecessore
     vector<unsigned int> predEdge(numVertices, -1);
 
     // visited[i]: true se il cammino più breve a 'i' è stato finalizzato
@@ -366,10 +377,8 @@ ShortestPathResult findShortestPathDijkstra(
     // algoritmo Dijkstra
     while (!pq.empty()) {
         // Estrai il vertice 'u' con la distanza minima corrente dalla coda
-        // double current_distance = pq.top().first;
-        // unsigned int u = pq.top().second;
-		auto [current_distance, u] = pq.top();
-        pq.pop();
+		auto [current_distance, u] = pq.top(); // accedo all'elemento
+        pq.pop(); // rimuovo l'elemento
 
         // Se il vertice è già stato visitato, significa che abbiamo già trovato
         // il cammino più breve per esso, quindi ignoriamo questa istanza.
@@ -422,7 +431,7 @@ ShortestPathResult findShortestPathDijkstra(
     mesh.Cell0DsMarker.assign(numVertices, 0); // Inizializza i marker a 0
     mesh.Cell1DsMarker.assign(numEdgesInMesh, 0);
 	
-	result.totalLength = dist[endVertexId];
+	result.totalLength = dist[endVertexId]; // distanza totale
 
     unsigned int current_idx = endVertexId; // Partiamo dall'indice del vertice di arrivo
 	
@@ -432,8 +441,10 @@ ShortestPathResult findShortestPathDijkstra(
         mesh.Cell0DsMarker[current_idx] = 1;
 
         unsigned int prev_vertex_idx = predVertex[current_idx]; // Indice del vertice precedente nel cammino
-        unsigned int edge_used_id = predEdge[current_idx];      // ID REALE del lato usato per raggiungere current_idx
+        unsigned int edge_used_id = predEdge[current_idx];      // ID del lato usato per raggiungere current_idx
 
+		
+		/*
         // Trova l'INDICE del lato all'interno dei vettori Cell1DsId/Extrema
         bool foundEdgeInMesh = false;
         for (unsigned int i = 0; i < numEdgesInMesh; ++i) {
@@ -459,7 +470,11 @@ ShortestPathResult findShortestPathDijkstra(
             mesh.Cell1DsMarker.assign(numEdgesInMesh, 0);
             return ShortestPathResult(0, 0.0, numVertices, numEdgesInMesh);
         }
-
+        */
+        mesh.Cell1DsMarker[edge_used_id] = 1;
+		result.edgesInPath[edge_used_id] = true;
+        result.numEdges++;
+        
         current_idx = prev_vertex_idx; // Spostati al vertice precedente e continua la ricostruzione
     }
 	
