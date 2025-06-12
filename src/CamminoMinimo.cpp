@@ -268,10 +268,8 @@ using namespace Eigen;
 namespace PolyhedralLibrary{
 
 // IMPLEMENTAZIONE DEL COSTRUTTORE DI SHORTESTPATHRESULT
-ShortestPathResult::ShortestPathResult(unsigned int nEdges, double len,
-                                       unsigned int numVerticesTotal, unsigned int numEdgesTotal)
-    : numEdges(nEdges), totalLength(len),
-      verticesInPath(numVerticesTotal, false), edgesInPath(numEdgesTotal, false)
+ShortestPathResult::ShortestPathResult(unsigned int nEdges, double len)
+    : numEdges(nEdges), totalLength(len)
 {}
 
 // Funzione per calcolare la distanza euclidea tra due punti.
@@ -314,16 +312,16 @@ ShortestPathResult findShortestPathDijkstra(
     if (startVertexId >= numVertices) {
         cerr << "Errore: startVertexId (" << startVertexId << ") è fuori dal range valido di vertici [0, " << numVertices - 1 << "]." << endl;
         // Restituisci un risultato vuoto per indicare un errore
-        return ShortestPathResult(0, 0.0, numVertices, numEdgesInMesh);
+        return ShortestPathResult(0, 0.0);
     }
     if (endVertexId >= numVertices) {
         cerr << "Errore: endVertexId (" << endVertexId << ") è fuori dal range valido di vertici [0, " << numVertices - 1 << "]." << endl;
         // Restituisci un risultato vuoto per indicare un errore
-        return ShortestPathResult(0, 0.0, numVertices, numEdgesInMesh);
+        return ShortestPathResult(0, 0.0);
     }
 
-	// Inizializza il risultato, passando le dimensioni per i vettori bool
-    ShortestPathResult result(0, 0.0, numVertices, numEdgesInMesh);
+	// Inizializza il risultato
+    ShortestPathResult result(0, 0.0);
 
     // Caso banale: partenza e arrivo sono lo stesso vertice
     if (startVertexId == endVertexId) {
@@ -336,7 +334,7 @@ ShortestPathResult findShortestPathDijkstra(
     }
 
     // Mappa per collegare una coppia di vertici (tramite INDICI)
-    // all'ID reale del lato e alla sua lunghezza.
+    // all'ID del lato e alla sua lunghezza.
     map<pair<unsigned int, unsigned int>, pair<unsigned int, double>> edgeInfoMap;
     
 	for (unsigned int i = 0; i < numEdgesInMesh; ++i) {
@@ -420,7 +418,9 @@ ShortestPathResult findShortestPathDijkstra(
     if (dist[endVertexId] == numeric_limits<double>::infinity()) {
         cout << "Nessun cammino trovato tra il vertice " << startVertexId
                   << " e il vertice " << endVertexId << endl;
-        return result;
+        mesh.Cell0DsMarker.assign(numVertices, 0);
+        mesh.Cell1DsMarker.assign(numEdgesInMesh, 0);
+		return result;
     }
 	
 	
@@ -437,53 +437,21 @@ ShortestPathResult findShortestPathDijkstra(
 	
 	while (current_idx != startVertexId) {
         // Marca il vertice corrente come parte del cammino minimo
-        result.verticesInPath[current_idx] = true;
         mesh.Cell0DsMarker[current_idx] = 1;
 
         unsigned int prev_vertex_idx = predVertex[current_idx]; // Indice del vertice precedente nel cammino
         unsigned int edge_used_id = predEdge[current_idx];      // ID del lato usato per raggiungere current_idx
 
-		
-		/*
-        // Trova l'INDICE del lato all'interno dei vettori Cell1DsId/Extrema
-        bool foundEdgeInMesh = false;
-        for (unsigned int i = 0; i < numEdgesInMesh; ++i) {
-            if (mesh.Cell1DsId[i] == edge_used_id) {
-                // Marca il lato come parte del cammino minimo usando il suo INDICE nel vettore
-                
-				// mesh.Cell1DsMarker[edge_used_id] = 1; // CORREZIONE: usa 'i' (indice), non 'edge_used_id' (ID reale)
-				mesh.Cell1DsMarker[i] = 1;
-				
-				result.edgesInPath[i] = true;
-                result.numEdges++;
-                
-				foundEdgeInMesh = true;
-                break;
-            }
-        }
-        if (!foundEdgeInMesh) {
-            // errore grave: un lato dovrebbe sempre essere trovato se il predecessore esiste
-            cerr << "Errore critico durante la ricostruzione: L'ID del lato (" << edge_used_id
-                      << ") per il segmento (indici " << prev_vertex_idx << "->" << current_idx << ") non è stato trovato in Cell1DsId.\n";
-			// Restituisce un risultato vuoto e azzera i marker della mesh per coerenza in caso di errore grave
-            mesh.Cell0DsMarker.assign(numVertices, 0);
-            mesh.Cell1DsMarker.assign(numEdgesInMesh, 0);
-            return ShortestPathResult(0, 0.0, numVertices, numEdgesInMesh);
-        }
-        */
         mesh.Cell1DsMarker[edge_used_id] = 1;
-		result.edgesInPath[edge_used_id] = true;
         result.numEdges++;
         
         current_idx = prev_vertex_idx; // Spostati al vertice precedente e continua la ricostruzione
     }
 	
     // Marca anche il vertice di partenza come parte del cammino
-    mesh.Cell0DsMarker[startVertexId] = 1;
-	result.verticesInPath[startVertexId] = true;
+    mesh.Cell0DsMarker[startVertexId] = 1;	
 	
 	return result;
-	
 }
 
 }

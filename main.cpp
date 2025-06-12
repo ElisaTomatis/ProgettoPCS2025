@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 	MatrixXi adjMatrix = calculateAdjacencyMatrix(meshFinal);
         
         ShortestPathResult pathResult = findShortestPathDijkstra(
-            meshFinal, // Passa la mesh per riferimento non-const
+            meshFinal,
             adjMatrix,
             startVertexId,
             endVertexId
