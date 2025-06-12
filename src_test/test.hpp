@@ -494,6 +494,8 @@ TEST(Polyhedra, DualTest){
 	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
 	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	map <pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
+	
 	CalculateDual(meshTriangulated, meshDual, edgeToFacesMap);
 	
 	double eps = numeric_limits<double>::epsilon();
@@ -645,5 +647,37 @@ TEST(Polyhedra, DualTest){
 		}		
 	}	 
 }
+
+
+// CAMMINO MINIMO
+TEST(Polyhedra, ShortestPath){
+	
+	PolyhedralMesh mesh;
+	PolyhedralMesh meshTriangulated;
+	PolyhedralMesh meshFinal;
+	generateTetrahedron(mesh);
+	
+	int q = 3;
+	int b = 2;
+	int c = 0;
+	
+	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	RemoveDuplicatedEdges(meshTriangulated);
+	RemoveDuplicatedVertices(meshTriangulated);
+	NewMesh(meshTriangulated, meshFinal, dimension);
+	
+	ShortestPathResult expected(0, 0.0);
+	ShortestPathResult result(0, 0.0);
+	MatrixXi adjMatrix = calculateAdjacencyMatrix(meshFinal);
+	ShortestPathResult result = findShortestPathDijkstra(meshFinal, adjMatrix, startVertexId, endVertexId);
+	
+	EXPECT_EQ(result, expected);
+	
+) 
+	
+}
+
 }
 */
