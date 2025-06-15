@@ -190,12 +190,9 @@ namespace PolyhedralLibrary
 	struct ShortestPathResult {
 		unsigned int numEdges; // numero di lati del cammino
 		double totalLength; // lunghezza totale del cammino
-		vector<bool> verticesInPath; // verticesInPath[i] = true se il vertice i appartiene al cammino minimo
-		vector<bool> edgesInPath; // edgesInPath [j] = true se il lato j appartiene al cammino minimo
 		
 		// Costruttore con parametri per la dimensione dei vettori.
-		ShortestPathResult(unsigned int nEdges, double j,
-						   unsigned int numVerticesTotal, unsigned int numEdgesTotal);
+		ShortestPathResult(unsigned int nEdges, double j);
 	};
 	
 	// Calcola la distanza euclidea tra due punti

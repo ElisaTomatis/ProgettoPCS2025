@@ -326,7 +326,6 @@ ShortestPathResult findShortestPathDijkstra(
     // Caso banale: partenza e arrivo sono lo stesso vertice
     if (startVertexId == endVertexId) {
         cout << "Partenza e arrivo coincidono. Cammino nullo." << endl;
-		result.verticesInPath[startVertexId] = true; // Marca il vertice di partenza/arrivo
         mesh.Cell0DsMarker.assign(numVertices, 0); 
         mesh.Cell1DsMarker.assign(numEdgesInMesh, 0);
         mesh.Cell0DsMarker[startVertexId] = 1; // Marca il vertice sulla mesh
