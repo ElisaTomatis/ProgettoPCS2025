@@ -9,7 +9,7 @@
 #include "Utils.hpp"
 
 using namespace Eigen;
-/*
+
 namespace PolyhedraTest {
 
 // Dimension
@@ -478,6 +478,7 @@ TEST(TestPolyedra, TestNotNullEdges){
 	}
 }
 
+/*
 TEST(Polyhedra, DualTest){
     // mesh ottenuta utilizzando la funzione di triangolazione
 	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
@@ -646,11 +647,11 @@ TEST(Polyhedra, DualTest){
             EXPECT_TRUE(condition2);
 		}		
 	}	 
-}
+}*/
 
 
 // CAMMINO MINIMO
-TEST(Polyhedra, ShortestPath){
+TEST(TestPolyhedra, ShortestPath){
 	
 	PolyhedralMesh mesh;
 	PolyhedralMesh meshTriangulated;
@@ -661,6 +662,9 @@ TEST(Polyhedra, ShortestPath){
 	int b = 2;
 	int c = 0;
 	
+	int startVertexId = 0;
+	int endVertexId = 7;	
+	
 	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
 	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
 	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
@@ -668,16 +672,18 @@ TEST(Polyhedra, ShortestPath){
 	RemoveDuplicatedVertices(meshTriangulated);
 	NewMesh(meshTriangulated, meshFinal, dimension);
 	
-	ShortestPathResult expected(0, 0.0);
-	ShortestPathResult result(0, 0.0);
+	ShortestPathResult expected(2, 1.63299);
 	MatrixXi adjMatrix = calculateAdjacencyMatrix(meshFinal);
 	ShortestPathResult result = findShortestPathDijkstra(meshFinal, adjMatrix, startVertexId, endVertexId);
 	
-	EXPECT_EQ(result, expected);
-	
-) 
-	
-}
+	EXPECT_NEAR(result.numEdges, expected.numEdges, 1e-5) 
+		<< "La lunghezza del percorso più breve non corrisponde all'atteso."
+		<< " Atteso: " << expected.numEdges << ", Trovato: " << result.numEdges;
+		
+	EXPECT_NEAR(result.totalLength, expected.totalLength, 1e-5) 
+        << "La lunghezza del percorso più breve non corrisponde all'atteso."
+        << " Atteso: " << expected.totalLength << ", Trovato: " << result.totalLength;
+	 
+	}
 
 }
-*/
