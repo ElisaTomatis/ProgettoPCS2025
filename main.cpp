@@ -128,6 +128,8 @@ int main(int argc, char *argv[]) {
 		ExportParaview(meshFinal);
 	}
 	
+	printMeshTriangulated(meshFinal);
+	
 	// Scrittura su TXT
 	WriteCell0Ds(meshFinal);
 	WriteCell1Ds(meshFinal);

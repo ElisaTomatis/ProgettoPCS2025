@@ -150,10 +150,13 @@ namespace PolyhedralLibrary
 		
 		cout << "Cell3DsVertices: "; 
 		for (auto id : mesh.Cell3DsVertices) cout << id << " ";
+		cout << endl;
 		cout << "Cell3DsEdges: "; 
 		for (auto id : mesh.Cell3DsEdges) cout << id << " ";
+		cout << endl;
 		cout << "Cell3DsFaces: "; 
 		for (auto id : mesh.Cell3DsFaces) cout << id << " ";
+		cout << endl;
 	
 		cout << "\n--- Fine struttura ---" << endl;
 	}
