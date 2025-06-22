@@ -478,10 +478,11 @@ TEST(TestPolyedra, TestNotNullEdges){
 	}
 }
 
-/*
-TEST(Polyhedra, DualTest){
-    // mesh ottenuta utilizzando la funzione di triangolazione
-	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+
+
+TEST(TestPolyedra, TestNotNullEdgesDual){
+	
+	double eps = numeric_limits<double>::epsilon();
 	PolyhedralLibrary::PolyhedralMesh mesh;
 	PolyhedralLibrary::PolyhedralMesh meshDual;
 	PolyhedralLibrary::generateTetrahedron(mesh);
@@ -490,19 +491,77 @@ TEST(Polyhedra, DualTest){
 	int b = 2;
 	int c = 0;
 	
-	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-	map <pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
+	TriangulationDual(q, b, c, mesh, meshDual);
 	
-	CalculateDual(meshTriangulated, meshDual, edgeToFacesMap);
+	
+	// itero su ogni lato della mesh triangolata 
+	for (unsigned int i = 0; i < meshDual.Cell1DsExtrema.rows(); ++i) {
+		// prendo gli indici dei due vertici che definisco il lato i
+		int vStart = meshDual.Cell1DsExtrema(i, 0); // indice del vertice di partenza 
+        int vEnd = meshDual.Cell1DsExtrema(i, 1); // indice del vertice di arrivo
+		
+		// prendo le coordinate dei due vertici
+		Vector3d startPoint = meshDual.Cell0DsCoordinates.col(vStart);
+        Vector3d endPoint = meshDual.Cell0DsCoordinates.col(vEnd);
+		
+		// calcolo la norma della lunghezza del lato
+		double length = (endPoint - startPoint).norm();
+		
+		EXPECT_GT(length, eps) << "Lato con lunghezza nulla o quasi nulla all'edge " << i;
+		
+	}
+}
+
+TEST(TestPolyedra, TestNotNullEdgesTriangulation2){
+	
+	double eps = numeric_limits<double>::epsilon();
+	PolyhedralLibrary::PolyhedralMesh mesh;
+	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+	PolyhedralLibrary::generateTetrahedron(mesh);
+	
+	int q = 3;
+	int b = 2;
+	
+	Triangulation2(q, b, mesh, meshTriangulated);
+	
+	
+	// itero su ogni lato della mesh triangolata 
+	for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
+		// prendo gli indici dei due vertici che definisco il lato i
+		int vStart = meshTriangulated.Cell1DsExtrema(i, 0); // indice del vertice di partenza 
+        int vEnd = meshTriangulated.Cell1DsExtrema(i, 1); // indice del vertice di arrivo
+		
+		// prendo le coordinate dei due vertici
+		Vector3d startPoint = meshTriangulated.Cell0DsCoordinates.col(vStart);
+        Vector3d endPoint = meshTriangulated.Cell0DsCoordinates.col(vEnd);
+		
+		// calcolo la norma della lunghezza del lato
+		double length = (endPoint - startPoint).norm();
+		
+		EXPECT_GT(length, eps) << "Lato con lunghezza nulla o quasi nulla all'edge " << i;
+		
+	}
+}
+
+
+
+/*
+TEST(Polyhedra, DualTest){
+
+	PolyhedralLibrary::PolyhedralMesh mesh;
+	PolyhedralLibrary::PolyhedralMesh meshDual;
+	PolyhedralLibrary::generateTetrahedron(mesh);
+	
+	int q = 3;
+	int b = 2;
+	int c = 0;
+	
+	TriangulationDual(q, b, c, mesh, meshDual);
 	
 	double eps = numeric_limits<double>::epsilon();
 	unsigned int maxFlag = numeric_limits<unsigned int>::max();
 
-	size_t expectedVerticesDual   = meshTriangulated.Cell2DsId.size(); // 16 facce triangolate → 16 vertici nel duale
+	size_t expectedVerticesDual   = meshDual.Cell2DsId.size(); // 16 facce triangolate → 16 vertici nel duale
     size_t expectedEdgesDual      = meshDual.Cell1DsId.size();         // Calcolato dinamicamente, può essere 24 per subdivisionLevel=2
    
     // numero di vertici (id)
@@ -528,19 +587,19 @@ TEST(Polyhedra, DualTest){
 	
 	// verifico che il calcolo del baricentro sia corretto
 	// Per ogni faccia della mesh triangolata
-    for (size_t faceId = 0; faceId < meshTriangulated.Cell2DsId.size(); ++faceId) {
+    for (size_t faceId = 0; faceId < meshDual.Cell2DsId.size(); ++faceId) {
         double sumX = 0.0;
         double sumY = 0.0;
         double sumZ = 0.0;
 		
         // accedo alla lista dei vertici che compongono la faccia
-        const vector<unsigned int>& faceVertices = meshTriangulated.Cell2DsVertices[faceId];
+        const vector<unsigned int>& faceVertices = meshDual.Cell2DsVertices[faceId];
 
         // sommo le coordinate dei vertici della faccia
         for (unsigned int v_id : faceVertices) {
-            sumX += meshTriangulated.Cell0DsCoordinates(0, v_id); // coordinata x del vertice v_id
-            sumY += meshTriangulated.Cell0DsCoordinates(1, v_id); // coordinata y del vertice v_id
-            sumZ += meshTriangulated.Cell0DsCoordinates(2, v_id); // coordinata z del vertice v_id
+            sumX += meshDual.Cell0DsCoordinates(0, v_id); // coordinata x del vertice v_id
+            sumY += meshDual.Cell0DsCoordinates(1, v_id); // coordinata y del vertice v_id
+            sumZ += meshDual.Cell0DsCoordinates(2, v_id); // coordinata z del vertice v_id
         }
 
         // calcolo il baricentro
@@ -557,18 +616,6 @@ TEST(Polyhedra, DualTest){
         EXPECT_NEAR(baryX, X, eps);
         EXPECT_NEAR(baryY, Y, eps);
         EXPECT_NEAR(baryZ, Z, eps);
-    }
-
-	
-	// verifico che la proiezione sulla sfera sia corretta 
-	// verifico che la distanza di ogni vertice dall'origine sia circa 1
-	
-	// proietto il duale sulla sfera unitaria
-    PolyhedralLibrary::ProjectMeshToUnitSphere(meshDual);
-
-	for (int i = 0; i < meshDual.Cell0DsCoordinates.cols(); ++i) {
-    double norm = meshDual.Cell0DsCoordinates.col(i).norm(); // calcolo la distanza del vertice dall'origine considerando la norma
-    EXPECT_NEAR(norm, 1.0, eps);
     }
 
     // verifico che i lati siano costruiti nel modo corretto ---> devono connettere i baricentri
@@ -647,11 +694,13 @@ TEST(Polyhedra, DualTest){
             EXPECT_TRUE(condition2);
 		}		
 	}	 
-}*/
+}
+*/
+
 
 
 // CAMMINO MINIMO
-TEST(TestPolyhedra, ShortestPath){
+TEST(TestPolyedra, ShortestPath){
 	
 	PolyhedralMesh mesh;
 	PolyhedralMesh meshTriangulated;
