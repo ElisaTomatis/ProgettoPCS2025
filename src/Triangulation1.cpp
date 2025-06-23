@@ -136,8 +136,6 @@ namespace PolyhedralLibrary
 					unsigned int v3 = vertexGrid[i + 1][j + 1];
 		
 					vector<unsigned int> verts1 = {v1, v2, v3};
-						
-					// meshTriangulated.Cell2DsVertices.push_back(verts1);
 					meshTriangulated.Cell2DsVertices[k3]=verts1;
 						
 					meshTriangulated.Cell2DsId[k3]=k3;
@@ -155,7 +153,7 @@ namespace PolyhedralLibrary
 					unsigned int v6 = vertexGrid[i][j + 1];
 		
 					vector<unsigned int> verts2 = {v4, v5, v6};
-					//meshTriangulated.Cell2DsVertices.push_back(verts2);
+
 					meshTriangulated.Cell2DsVertices[k3]=verts2;
 					meshTriangulated.Cell2DsId[k3]=k3;
 						
@@ -174,7 +172,7 @@ namespace PolyhedralLibrary
 	
 				vector<unsigned int> verts = {v1, v2, v3};
 				meshTriangulated.Cell2DsVertices[k3]=verts;
-				// meshTriangulated.Cell2DsVertices.push_back(verts);
+
 				meshTriangulated.Cell2DsId[k3]=k3;
 					
 				for (unsigned int e = 0; e < 3; ++e) {

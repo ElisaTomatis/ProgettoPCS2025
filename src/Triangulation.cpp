@@ -20,7 +20,7 @@ namespace PolyhedralLibrary
 		RemoveDuplicatedVertices(meshTriangulated);
     	RemoveDuplicatedEdges(meshTriangulated);
     	NewMesh(meshTriangulated, meshFinal, dimension);
-    	PopulateCell3D(meshFinal, dimension);
+    	PopulateCell3D(meshFinal);
     }
     
     void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshDual)
@@ -36,7 +36,7 @@ namespace PolyhedralLibrary
     	NewMesh(meshTriangulated, meshFinal, dimension);
     	map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshFinal);
     	CalculateDual(meshFinal, meshDual, edgeToFacesMap);
-		PopulateCell3D(meshDual, dimension);
+		PopulateCell3D(meshDual);
     }
     
     void Triangulation2(int q, int b, PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated2)
@@ -51,38 +51,19 @@ namespace PolyhedralLibrary
     	RemoveDuplicatedEdges(meshTriangulated);
     	NewMesh(meshTriangulated, meshFinal, dimension);
     	
+    	printMeshTriangulated(meshFinal);
     	vector<int> dimension2 = CalculateDimension2(b, q);
     	map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshFinal);
 		triangulateAndStore2(meshFinal, meshTriangulated2, dimension2, edgeToFacesMap);
-		PopulateCell3D(meshTriangulated2, dimension);
-    }
-    
-    void Triangulation2Dual(int q, int b, PolyhedralMesh& mesh, PolyhedralMesh& meshDual)
-	{
-		PolyhedralMesh meshTriangulated;
-		PolyhedralMesh meshTriangulated2;
-		PolyhedralMesh meshFinal;
-    
-		vector<int> dimension = ComputePolyhedronVEF(q, b, 0);
-		vector<int> dimensionDuplicated = CalculateDuplicated(q, b, 0, dimension);
-		triangulateAndStore(mesh, meshTriangulated, b, 0, dimensionDuplicated);
-		RemoveDuplicatedVertices(meshTriangulated);
-    	RemoveDuplicatedEdges(meshTriangulated);
-    	NewMesh(meshTriangulated, meshFinal, dimension);
-    	
-    	vector<int> dimension2 = CalculateDimension2(b, q);
-    	map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshFinal);
-		triangulateAndStore2(meshFinal, meshTriangulated2, dimension2, edgeToFacesMap);
-		CalculateDual(meshTriangulated2, meshDual, edgeToFacesMap);
-		PopulateCell3D(meshDual, dimension);
+		PopulateCell3D(meshTriangulated2);
     }
 
-	void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension){
+	void PopulateCell3D(PolyhedralMesh& meshTriangulated){
 		
 		meshTriangulated.Cell3DsId = {0};
-		meshTriangulated.NumCells0Ds = dimension[0];
-		meshTriangulated.NumCells1Ds = dimension[1];
-		meshTriangulated.NumCells2Ds = dimension[2];
+		meshTriangulated.NumCells0Ds = meshTriangulated.Cell0DsId.size();
+		meshTriangulated.NumCells1Ds = meshTriangulated.Cell1DsId.size();
+		meshTriangulated.NumCells2Ds = meshTriangulated.Cell2DsId.size();
 
 		for (unsigned int i = 0; i < meshTriangulated.Cell0DsId.size(); i++){
 			meshTriangulated.Cell3DsVertices.push_back(meshTriangulated.Cell0DsId[i]);

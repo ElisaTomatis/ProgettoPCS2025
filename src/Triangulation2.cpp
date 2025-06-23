@@ -12,7 +12,7 @@ using namespace Eigen;
 
 namespace PolyhedralLibrary
 {
-	// Funzione helper per trovare la forma normalizzata ciclicamente
+	// Funzione per trovare la forma normalizzata ciclicamente
 	// cioè, ruotare la sequenza in modo che inizi con l'elemento più piccolo
 	vector<unsigned int> get_cyclic_normalized(const vector<unsigned int>& current_edges) {
 		if (current_edges.empty() || current_edges.size() == 1) {
@@ -39,9 +39,8 @@ namespace PolyhedralLibrary
 		// Ottieni la forma normalizzata ciclicamente anche della sequenza inversa
 		vector<unsigned int> normalized_reversed = get_cyclic_normalized(reversed_edges);
 	
-		// 4. Confronta le due forme normalizzate lessicograficamente e restituisci la minore
-		// Se normalized_original è "minore" di normalized_reversed (come in un dizionario),
-		// allora restituisci la prima, altrimenti la seconda.
+		// Confronta le due forme normalizzate e restituisci la minore
+		// confronta gli elementi uno a uno
 		if (normalized_original < normalized_reversed) {
 			return normalized_original;
 		} else {
@@ -54,12 +53,12 @@ namespace PolyhedralLibrary
 							   PolyhedralMesh& meshTriangulated,
 							   unsigned int& k3)
 	{
-		// Normalizza la sequenza degli spigoli per una ricerca robusta
+		// Normalizza la sequenza degli spigoli
 		vector<unsigned int> normalized_new_edges = NormalizeFaceEdges(new_face_edges);
 	
 		// Itero attraverso le facce esistenti per trovare un duplicato
 		bool found = false;
-		// mi serve perchè se no incrementerei k3 tutte le volte anche quando la facciua esiste già
+		// mi serve perchè se no incrementerei k3 tutte le volte anche quando la faccia esiste già
 		for (unsigned int i = 0; i < meshTriangulated.Cell2DsId.size(); ++i) {
 			// Normalizza gli spigoli della faccia corrente per il confronto
 			vector<unsigned int> normalized_existing_edges = NormalizeFaceEdges(meshTriangulated.Cell2DsEdges[i]);
@@ -122,17 +121,12 @@ namespace PolyhedralLibrary
 	// trova la faccia adiacente a face tramite edge, e poi restituire il baricentro di questa faccia adiacente
 	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap) {
 
-		/*
-		// Per questo esempio, la ricostruiamo qui, ma è meglio farlo una volta sola. MODIFICA
-		map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
-		*/
-
-		// Ottieni i vertici che compongono l'edge per creare la chiave.
+		// Ottieni i vertici che compongono il lato
 		unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeId, 0);
 		unsigned int v2_id = meshTriangulated.Cell1DsExtrema(edgeId, 1);
 		pair<unsigned int, unsigned int> edgeKey = {min(v1_id, v2_id), max(v1_id, v2_id)};
 
-		// 2. Trova le facce associate a questo edge.
+		// Trova le facce associate a questo lato
 		auto it = edgeToFacesMap.find(edgeKey);
 		if (it == edgeToFacesMap.end()) {
 			cerr << "Errore: Edge " << edgeId << " non trovato nella mappa delle facce adiacenti." << endl;
@@ -142,7 +136,7 @@ namespace PolyhedralLibrary
 		const vector<unsigned int>& facesSharingEdge = it->second;
 
 		if (facesSharingEdge.size() == 2) {
-			// 3. Ci sono due facce. Una è currentFaceId, l'altra è quella che cerchiamo.
+			// Ci sono due facce. Una è currentFaceId, l'altra è quella che cerchiamo.
 			unsigned int faceId1 = facesSharingEdge[0];
 			unsigned int faceId2 = facesSharingEdge[1];
 
@@ -157,7 +151,7 @@ namespace PolyhedralLibrary
 				return Vector3d::Zero();
 			}
 
-			// 4. Calcola e restituisci il baricentro della faccia adiacente.
+			// Calcola e restituisci il baricentro della faccia adiacente.
 			return getFaceBarycenter(meshTriangulated, targetFaceId);
 
 		} else if (facesSharingEdge.size() == 1) {

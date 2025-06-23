@@ -116,30 +116,27 @@ namespace PolyhedralLibrary
 {
     double tol = 1e-12;
     unsigned int maxFlag = numeric_limits<unsigned int>::max();
-    size_t n = meshTriangulated.Cell0DsCoordinates.cols();
+    size_t n = meshTriangulated.Cell0DsCoordinates.cols(); 
 
-    // Inizializza una mappa per tenere traccia del reindirizzamento finale degli ID dei vertici.
+    // Vettore per tenere traccia del reindirizzamento finale degli ID dei vertici.
     // Inizialmente, ogni vertice punta a se stesso.
     vector<unsigned int> id_remap(n);
     for (unsigned int k = 0; k < n; ++k) {
         id_remap[k] = k;
     }
 
-    // Un vettore per tracciare se un vertice è già stato identificato come un "master" (maxFlag)
-    // o se è stato reindirizzato da un altro vertice e quindi non ha bisogno di essere processato
-    // come un potenziale master.
+    // Vettore che tiene traccia di quali vertici sono ancora candidati a essere non duplicati. 
+    // Se un vertice viene identificato come duplicato di un altro, la sua flag is_master_candidate viene impostata a false
     vector<bool> is_master_candidate(n, true);
 
     for (size_t i = 0; i < n; ++i) {
         // Se il vertice 'i' è già stato marcato per essere tenuto (maxFlag)
         // o se è già stato reindirizzato da un vertice precedente nel ciclo
-        // (il che significa che è un duplicato e non un master), salta.
+        // (il che significa che è un duplicato), salta.
         if (meshTriangulated.Cell0DsFlag[i][0] == maxFlag || !is_master_candidate[i])
             continue;
 
         for (size_t j = i + 1; j < n; ++j) {
-            // Se il vertice 'j' è già stato marcato per essere tenuto (maxFlag)
-            // o se è già stato reindirizzato da un vertice precedente, salta.
             if (meshTriangulated.Cell0DsFlag[j][0] == maxFlag || !is_master_candidate[j])
                 continue;
 
@@ -156,18 +153,15 @@ namespace PolyhedralLibrary
 
             if (commonSide) {
                 if ((meshTriangulated.Cell0DsCoordinates.col(i) - meshTriangulated.Cell0DsCoordinates.col(j)).norm() < tol) {
-                    // Trovato un duplicato! Il vertice 'i' è un duplicato di 'j'.
-                    // Vogliamo mantenere 'j' e reindirizzare 'i' a 'j'.
+                    // Il vertice 'i' è un duplicato di 'j', vogliamo mantenere 'j' e reindirizzare 'i' a 'j'.
 
-                    // Marca 'i' come NON un potenziale master.
+                    // Marchiamo 'i' come duplicato
                     is_master_candidate[i] = false;
 
-                    // Reindirizza 'i' a 'j'.
-                    // Questo è il cuore della gestione dei duplicati:
+                    // Reindirizziamo 'i' a 'j'.
                     // tutti i vertici che precedentemente puntavano a 'i'
                     // ora devono puntare a 'j'.
                     // E 'i' stesso punterà a 'j'.
-                    // Qui stiamo implementando il "Find" della Union-Find per la risoluzione.
                     unsigned int root_i = i;
                     while (id_remap[root_i] != root_i) {
                         root_i = id_remap[root_i];
@@ -177,27 +171,22 @@ namespace PolyhedralLibrary
                         root_j = id_remap[root_j];
                     }
 
-                    // Se i "root" sono diversi, uniscili.
-                    // In questo caso, stiamo dicendo che 'root_i' dovrebbe puntare a 'root_j'.
-                    // Questo assicura che anche le catene di duplicati si risolvano correttamente.
                     if (root_i != root_j) {
                          id_remap[root_i] = root_j;
                     }
-                    // Inoltre, assicurati che il vertice 'i' (e i suoi precedenti duplicati)
-                    // puntino a 'j' o al suo master.
+                    // vertice 'i' (e i suoi precedenti duplicati)
+                    // puntano a 'j' o al suo master.
                     id_remap[i] = root_j;
 
-                    // Assegna le coordinate di 'j' a 'i' (e a qualsiasi altro duplicato di 'i'
-                    // che viene risolto in questa iterazione). Questo è per coerenza.
+                    // Assegna le coordinate di 'j' a 'i'
                     meshTriangulated.Cell0DsCoordinates.col(i) = meshTriangulated.Cell0DsCoordinates.col(j);
                 }
             }
         }
     }
 
-    // Fase 2: Applicare il remapping finale a tutti i vertici
+    // Applichiamo il remapping finale a tutti i vertici
     // Dobbiamo propagare le catene di reindirizzamento.
-    // Un semplice loop while risolve le catene di Union-Find.
     for (unsigned int k = 0; k < n; ++k) {
         unsigned int current_id = k;
         while (id_remap[current_id] != current_id) {
@@ -206,7 +195,7 @@ namespace PolyhedralLibrary
         id_remap[k] = current_id; // Imposta il reindirizzamento finale per k
     }
 
-    // Fase 3: Aggiornare le strutture della mesh in base al remapping finale
+    // Aggiorniamo le strutture della mesh in base al remapping finale
     for (int edgeId = 0; edgeId < meshTriangulated.Cell1DsExtrema.rows(); ++edgeId) {
 		meshTriangulated.Cell1DsExtrema(edgeId, 0) = id_remap[meshTriangulated.Cell1DsExtrema(edgeId, 0)];
 		meshTriangulated.Cell1DsExtrema(edgeId, 1) = id_remap[meshTriangulated.Cell1DsExtrema(edgeId, 1)];
@@ -218,7 +207,7 @@ namespace PolyhedralLibrary
         }
     }
 
-    // Aggiorna Cell0DsId e Cell0DsFlag in base al remapping.
+    // Aggiorniamo Cell0DsId e Cell0DsFlag in base al remapping.
     // I vertici che sono "master" avranno il loro id_remap[k] == k.
     // I vertici che sono duplicati avranno id_remap[k] != k.
     for (unsigned int k = 0; k < n; ++k) {
@@ -234,32 +223,27 @@ namespace PolyhedralLibrary
 {
     double tol = 1e-12;
     unsigned int maxFlag = numeric_limits<unsigned int>::max();
-    size_t n = meshTriangulated.Cell1DsExtrema.rows(); // Numero di lati
+    size_t n = meshTriangulated.Cell1DsExtrema.rows();
     
     if (meshTriangulated.Cell1DsOriginalFlag.empty() || meshTriangulated.Cell1DsOriginalFlag.size() != n) {
         meshTriangulated.Cell1DsOriginalFlag.resize(n);
     }
+    
     for (size_t k = 0; k < n; ++k) {
         meshTriangulated.Cell1DsOriginalFlag[k] = (meshTriangulated.Cell1DsFlag[k] == maxFlag);
     }
-    // Ogni elemento in Cell1DsOriginalMaxFlag sarà true se il lato corrispondente aveva 
-    // Cell1DsFlag[k] == maxFlag all'inizio della funzione, e false altrimenti.
-    // true: lato in centro, false: lato di bordo
 
-    // FASE 1: Inizializzazione delle strutture di reindirizzamento
-    // Inizializza una mappa (vettore) per tenere traccia del reindirizzamento finale degli ID dei lati.
+    // Vettore per tenere traccia del reindirizzamento finale degli ID dei lati.
     // Inizialmente, ogni lato punta a se stesso.
     vector<unsigned int> id_remap(n);
     for (unsigned int k = 0; k < n; ++k) {
         id_remap[k] = k;
     }
 
-    // Un vettore per tracciare se un lato è già stato identificato come un "master" (maxFlag)
-    // o se è stato reindirizzato da un altro lato e quindi non ha bisogno di essere processato
-    // come un potenziale master.
+    // Vettore che tiene traccia di quali lati sono ancora candidati a essere non duplicati. 
+    // Se un lato viene identificato come duplicato di un altro, la sua flag is_master_candidate viene impostata a false
     vector<bool> is_master_candidate(n, true);
 
-    // FASE 2: Identificazione dei duplicati e costruzione delle relazioni di reindirizzamento (Union-Find)
     for (size_t i = 0; i < n; ++i) {
         // Se il lato corrente 'i' è già stato marcato per essere tenuto (maxFlag)
         // o se è già stato reindirizzato da un lato precedente nel ciclo, salta.
@@ -267,20 +251,16 @@ namespace PolyhedralLibrary
             continue;
 
         for (size_t j = i + 1; j < n; ++j) {
-            // Se il lato 'j' è già stato marcato per essere tenuto (maxFlag)
-            // o se è già stato reindirizzato da un lato precedente, salta.
             if (meshTriangulated.Cell1DsFlag[j] == maxFlag || !is_master_candidate[j])
                 continue;
 
-            // Il tuo criterio per considerare due lati duplicati era che avessero lo stesso flag
-            // E che i loro estremi (vertici) fossero gli stessi (o invertiti) entro una tolleranza.
             if (meshTriangulated.Cell1DsFlag[i] == meshTriangulated.Cell1DsFlag[j]) {
                 int i0 = meshTriangulated.Cell1DsExtrema(i, 0); // Primo estremo del lato i
                 int i1 = meshTriangulated.Cell1DsExtrema(i, 1); // Secondo estremo del lato i
                 int j0 = meshTriangulated.Cell1DsExtrema(j, 0); // Primo estremo del lato j
                 int j1 = meshTriangulated.Cell1DsExtrema(j, 1); // Secondo estremo del lato j
 
-                // Controlla se i vertici estremi corrispondono in ordine diretto o inverso
+                // Controlliamo se i vertici estremi corrispondono in ordine diretto o inverso
                 bool match_direct = ((meshTriangulated.Cell0DsCoordinates.col(i0) - meshTriangulated.Cell0DsCoordinates.col(j0)).norm() < tol &&
                                      (meshTriangulated.Cell0DsCoordinates.col(i1) - meshTriangulated.Cell0DsCoordinates.col(j1)).norm() < tol);
 
@@ -288,12 +268,10 @@ namespace PolyhedralLibrary
                                       (meshTriangulated.Cell0DsCoordinates.col(i1) - meshTriangulated.Cell0DsCoordinates.col(j0)).norm() < tol);
 
                 if (match_direct || match_inverse) {
-                    // Trovato un duplicato! Il lato 'i' è un duplicato del lato 'j'.
-                    // Vogliamo mantenere 'j' e reindirizzare 'i' a 'j'.
+                    //  Il lato 'i' è un duplicato del lato 'j', vogliamo mantenere 'j' e reindirizzare 'i' a 'j'.
 
-                    is_master_candidate[i] = false; // Marca 'i' come NON un potenziale master.
+                    is_master_candidate[i] = false; // Marca 'i' duplicato.
 
-                    // Trova il "root" (master finale) per 'i' e 'j' nella struttura id_remap
                     unsigned int root_i = i;
                     while (id_remap[root_i] != root_i) {
                         root_i = id_remap[root_i];
@@ -303,11 +281,8 @@ namespace PolyhedralLibrary
                         root_j = id_remap[root_j];
                     }
 
-                    // Se i "root" sono diversi, uniscili.
-                    // Stiamo dicendo che il master di 'i' ora deve puntare al master di 'j'.
-                    // Questo garantisce che tutte le catene di duplicati si risolvano correttamente.
                     if (root_i != root_j) {
-                         id_remap[root_i] = root_j; // Unisci le due componenti
+                         id_remap[root_i] = root_j;
                     }
                     // Assicurati che il lato 'i' stesso (e i suoi precedenti duplicati)
                     // puntino a 'j' o al suo master.
@@ -319,19 +294,16 @@ namespace PolyhedralLibrary
         }
     }
 
-    // FASE 3: Propagare le catene di reindirizzamento (Path Compression)
-    // Questo ciclo assicura che ogni lato punti direttamente al suo master finale.
     for (unsigned int k = 0; k < n; ++k) {
         unsigned int current_id = k;
         while (id_remap[current_id] != current_id) {
             current_id = id_remap[current_id];
-            // Optional: Path compression during traversal for future faster lookups
-            id_remap[k] = current_id; // This line (if uncommented) would implement path compression during the first traversal
+            id_remap[k] = current_id;
         }
-        id_remap[k] = current_id; // Imposta il reindirizzamento finale per k
+        id_remap[k] = current_id;
     }
 
-    // FASE 4: Aggiornare le strutture della mesh in base al remapping finale
+    // Aggiorniamo le strutture della mesh in base al remapping finale
     // Aggiorna i riferimenti ai lati nelle facce (Cell2DsEdges)
     for (unsigned int faceId = 0; faceId < meshTriangulated.Cell2DsId.size(); ++faceId) {
         for (unsigned int& edgeOriginalId : meshTriangulated.Cell2DsEdges[faceId]) {
@@ -339,16 +311,13 @@ namespace PolyhedralLibrary
         }
     }
 
-    // Aggiorna Cell1DsId e Cell1DsFlag in base al remapping.
+    // Aggiorniamo Cell1DsId e Cell1DsFlag in base al remapping.
     for (unsigned int k = 0; k < n; ++k) {
-        meshTriangulated.Cell1DsId[k] = id_remap[k]; // Ogni lato punta al suo master ID
+        meshTriangulated.Cell1DsId[k] = id_remap[k];
         if (id_remap[k] == k) {
-            // Questo lato è un master o non è stato reindirizzato
             meshTriangulated.Cell1DsFlag[k] = maxFlag;
         } else {
-            // Questo lato è un duplicato e punterà a un master.
-            // Il suo flag non viene impostato a maxFlag.
-            // Potresti voler assegnare un flag specifico per i lati duplicati qui se necessario.
+            // Questo lato è un duplicato e punterà a un master
         }
     }
 }
@@ -389,7 +358,6 @@ namespace PolyhedralLibrary
 		// SPIGOLI
 		map<unsigned int, unsigned int> oldToNewEdgeIdMap; // Mappa per tradurre vecchi ID spigolo -> nuovi ID spigolo
 		vector<pair<unsigned int, unsigned int>> temp_edge_extrema; // Vettore temporaneo per gli estremi degli spigoli (con i nuovi ID vertici)
-		vector<bool> temp_edge_original_max_flag; // Temp per il nuovo flag
 	
 		unsigned int k2 = 0; // Contatore per i nuovi ID degli spigoli
 		for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
@@ -404,10 +372,8 @@ namespace PolyhedralLibrary
 					unsigned int new_v1_id = oldToNewVertexIdMap[old_v1_id];
 					unsigned int new_v2_id = oldToNewVertexIdMap[old_v2_id];
 	
-					// Ordina per consistenza (min, max) per la chiave se usata in future mappe
 					temp_edge_extrema.push_back({min(new_v1_id, new_v2_id), max(new_v1_id, new_v2_id)});
 					oldToNewEdgeIdMap[i] = k2; // Mappa il vecchio ID spigolo al nuovo
-					temp_edge_original_max_flag.push_back(meshTriangulated.Cell1DsOriginalFlag[i]);
 					k2++;
 				} 
 			}
@@ -418,7 +384,6 @@ namespace PolyhedralLibrary
 			meshFinal.Cell1DsId[i] = i; // Nuovi ID consecutivi
 			meshFinal.Cell1DsExtrema(i, 0) = temp_edge_extrema[i].first;
 			meshFinal.Cell1DsExtrema(i, 1) = temp_edge_extrema[i].second;
-			meshFinal.Cell1DsOriginalFlag[i] = temp_edge_original_max_flag[i];
 		}
 		
 		// FACCE

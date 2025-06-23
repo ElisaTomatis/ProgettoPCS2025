@@ -75,11 +75,6 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, m
     
     // SPIGOLI
     
-    /*
-    map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshTriangulated);
-    // mappa che associa ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
-    */
-    
     vector<pair<unsigned int, unsigned int>> dualEdgesExtremaVector;
     // Ogni spigolo interno del poliedro originale (condiviso da due facce) genera uno spigolo nel poliedro duale che connette i baricentri di quelle due facce.
     // Useremo un vettore temporaneo e poi lo convertiremo in Eigen::MatrixXi.
@@ -95,7 +90,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, m
 		}
 	}
 
-	// questa struttura intermedia mi serve perchè non so a prescindere le dimensioni di meshDual.Cell1DsExtrema
+	// Questa struttura intermedia mi serve perchè non so a prescindere le dimensioni di meshDual.Cell1DsExtrema
 	// il numero di spigoli duali è pari al numero di spigoli interni della mesh originale
 		
 	meshDual.Cell1DsId.resize(dualEdgesExtremaVector.size());
@@ -143,7 +138,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, m
         // Scegliamo uno spigolo incidente qualsiasi e una delle facce che lo contiene come punto di partenza.
         unsigned int currentEdgeOriginalId = incidentEdges[0]; // lato di partenza
 
-        // Trova le due facce che condividono questo spigolo originale.
+        // Troviamo le due facce che condividono questo spigolo originale.
         pair<unsigned int, unsigned int> currentEdgeKey = {
             min(meshTriangulated.Cell1DsExtrema(currentEdgeOriginalId, 0), meshTriangulated.Cell1DsExtrema(currentEdgeOriginalId, 1)),
             max(meshTriangulated.Cell1DsExtrema(currentEdgeOriginalId, 0), meshTriangulated.Cell1DsExtrema(currentEdgeOriginalId, 1))
@@ -153,36 +148,52 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, m
         // L'operatore [], se la chiave non esiste, inserirà automaticamente una nuova coppia chiave-valore nella mappa, 
         // con il valore predefinito per il tipo di valore
 
-        // Assicurati che lo spigolo sia condiviso da esattamente due facce
+        // Ci assicuriamo che lo spigolo sia condiviso da esattamente due facce
         if (facesSharingStartEdge.size() != 2) {
              cerr << "Errore: Spigolo originale " << currentEdgeOriginalId << " non condiviso da esattamente due facce" << endl;
              continue; // Salta, non possiamo costruire la faccia duale correttamente
         }
 
-        // Scegli una delle due facce come punto di partenza per il ciclo
+        // Scelgiamo una delle due facce come punto di partenza per il ciclo
         unsigned int startFaceId = facesSharingStartEdge[0];
-        unsigned int currentDualVertexId = startFaceId; // Il primo vertice della faccia duale (id della faccia originale)
+        unsigned int previousDualVertexId = startFaceId; // Il primo vertice della faccia duale (id della faccia originale)
 
-        // Aggiungi il primo vertice duale della faccia che stiamo costruendo
-        orderedDualFaceVertices.push_back(currentDualVertexId);
+        // Aggiungiamo il primo vertice duale della faccia che stiamo costruendo
+        orderedDualFaceVertices.push_back(previousDualVertexId);
 
-        // Percorri il ciclo attorno al vertice originale
+        // Percorriamo il ciclo attorno al vertice originale
         for (size_t i = 0; i < incidentEdges.size(); ++i) { // Il numero di spigoli incidenti è il numero di lati della faccia duale
-            // Trova le due facce che condividono l'attuale spigolo `currentEdgeOriginalId`
+            // Troviamo le due facce che condividono l'attuale spigolo `currentEdgeOriginalId`
             vector<unsigned int> currentEdgeFaces = edgeToFacesMap.at(currentEdgeKey);
 
             unsigned int face1 = currentEdgeFaces[0];
             unsigned int face2 = currentEdgeFaces[1];
 
-            // La faccia "precedente" è currentDualVertexId. Trova la faccia "successiva".
+            // La faccia "precedente" è previousDualVertexId. Troviamo la faccia "successiva".
             unsigned int nextDualVertexId;
-            if (face1 == currentDualVertexId) {
+            if (face1 == previousDualVertexId) {
                 nextDualVertexId = face2;
-            } else if (face2 == currentDualVertexId) {
+            } else if (face2 == previousDualVertexId) {
                 nextDualVertexId = face1;
             } else {
                 // Questa situazione non dovrebbe accadere se la logica di navigazione è corretta
                 cerr << "Errore logico: Faccia corrente non trovata tra le facce che condividono lo spigolo." << endl;
+                break;
+            }
+            
+            // Troviamo e aggiungiamo lo spigolo duale tra il vertice duale corrente e il successivo
+            pair<unsigned int, unsigned int> dualEdgeToFind = {min(previousDualVertexId, nextDualVertexId), max(previousDualVertexId, nextDualVertexId)};
+            auto it_dual_edge = dualEdgeToIdMap.find(dualEdgeToFind);
+
+            if (it_dual_edge != dualEdgeToIdMap.end()) {
+                dualFaceEdges.push_back(it_dual_edge->second); 
+                // lo spigolo viene trovato e quindi aggiunto a dualFaceEdges
+            } else {
+                cerr << "Errore: Spigolo duale non trovato per facce (vertici duali) "
+                          << previousDualVertexId << " e " << nextDualVertexId << " attorno al vertice originale "
+                          << vertexOriginalId << endl;
+                          // Significa che non esiste uno spigolo nella mesh originale che colleghi le due facce currentDualVertexId e
+                          // nextDualVertexId (che sono i vertici della nostra faccia duale) e che passi attraverso vertexOriginalId
                 break;
             }
 
@@ -197,28 +208,23 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, m
                     break;
                 }
             }
-
-            // Aggiungi il prossimo vertice duale (id della faccia originale)
-            orderedDualFaceVertices.push_back(nextDualVertexId);
 			
-			// Abbiamo aggiunto i primi due vertici duali, ora dobbiamo creare lo spigolo
-            // Trova e aggiungi lo spigolo duale tra il vertice duale corrente e il successivo
-            pair<unsigned int, unsigned int> dualEdgeToFind = {min(currentDualVertexId, nextDualVertexId), max(currentDualVertexId, nextDualVertexId)};
-            auto it_dual_edge = dualEdgeToIdMap.find(dualEdgeToFind);
-
-            if (it_dual_edge != dualEdgeToIdMap.end()) {
-                dualFaceEdges.push_back(it_dual_edge->second); 
-                // lo spigolo viene trovato e quindi aggiunto a dualFaceEdges
-            } else {
-                cerr << "Errore: Spigolo duale non trovato per facce (vertici duali) "
-                          << currentDualVertexId << " e " << nextDualVertexId << " attorno al vertice originale "
-                          << vertexOriginalId << endl;
-                          // Significa che non esiste uno spigolo nella mesh originale che colleghi le due facce currentDualVertexId e
-                          // nextDualVertexId (che sono i vertici della nostra faccia duale) e che passi attraverso vertexOriginalId
-                break;
+			// Aggiungiamo il prossimo vertice duale (id della faccia originale)
+			bool alreadyAdded = false;
+            for(unsigned int v : orderedDualFaceVertices) {
+                if (v == nextDualVertexId) {
+                    alreadyAdded = true;
+                    break;
+                }
             }
-
-            // Trova il prossimo spigolo originale incidente a vertexOriginalId (vertice originale attorno al quale stiamo costruendo la faccia duale)
+            if (!alreadyAdded) {
+                orderedDualFaceVertices.push_back(nextDualVertexId);
+            }
+            
+            // Aggiorniamo previousDualVertexId per la prossima iterazione
+            previousDualVertexId = nextDualVertexId;
+			
+            // Troviamo il prossimo spigolo originale incidente a vertexOriginalId (vertice originale attorno al quale stiamo costruendo la faccia duale)
             // che connette currentDualVertexId (la faccia precedente) con nextDualVertexId (la faccia successiva).
             // Dobbiamo trovare lo spigolo della faccia `nextDualVertexId` che è incidente a `vertexOriginalId`
             // e che non è `currentEdgeOriginalId`.
@@ -227,14 +233,13 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, m
             for (unsigned int edgeOfNextFace : nextFaceEdges) {
                 if (edgeOfNextFace == currentEdgeOriginalId) continue; // Non prendere lo spigolo da cui siamo venuti
 
-                // Controlla se edgeOfNextFace contiene vertexOriginalId
+                // Controlliamo se edgeOfNextFace contiene vertexOriginalId
                 unsigned int v_e1 = meshTriangulated.Cell1DsExtrema(edgeOfNextFace, 0);
                 unsigned int v_e2 = meshTriangulated.Cell1DsExtrema(edgeOfNextFace, 1);
 
                 if (v_e1 == vertexOriginalId || v_e2 == vertexOriginalId) {
                     currentEdgeOriginalId = edgeOfNextFace; // Questo è il prossimo spigolo da percorrere
                     currentEdgeKey = {min(v_e1, v_e2), max(v_e1, v_e2)};
-                    currentDualVertexId = nextDualVertexId; // La faccia attuale per il prossimo passo diventa la successiva
                     foundNextEdgeForCycle = true;
                     break;
                 }
@@ -245,8 +250,7 @@ void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual, m
             }
         } // Fine del ciclo di costruzione della singola faccia duale
 
-        // Assegna la faccia duale costruita
-        // Assicurati che orderedDualFaceVertices non sia vuoto o abbia elementi duplicati a causa di break anticipati
+        // Assegniamo la faccia duale costruita
         if (!orderedDualFaceVertices.empty()) {
             meshDual.Cell2DsId[dualFaceIdCounter] = dualFaceIdCounter;
             meshDual.Cell2DsVertices[dualFaceIdCounter] = orderedDualFaceVertices;

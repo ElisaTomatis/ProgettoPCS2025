@@ -8,7 +8,7 @@ using namespace Eigen;
 using namespace PolyhedralLibrary;
 
 int main(int argc, char *argv[]) {
-	
+	/*
     // Definizione delle variabili per il cammino minimo, inizializzate a valori non validi
     unsigned int startVertexId = 0;
     unsigned int endVertexId = 0;
@@ -32,22 +32,34 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    // Parsing dei primi 4 argomenti, sempre presenti
     int p = stoi(argv[1]);
     int q = stoi(argv[2]);
     int b = stoi(argv[3]);
     int c = stoi(argv[4]);
 
+	if (!((p == 3 || q == 3) && (p >= 3 && p <= 5) && (q >= 3 && q <= 5))) {
+		cerr << "Errore: Almeno uno tra p e q deve essere 3. Entrambi devono essere tra 3, 4 o 5.\n";
+		return 1;
+	}
+	
+	if (!((b == c) || (b == 0) || (c == 0))) {
+		cerr << "Errore: i parametri 'b' e 'c' devono essere uguali, oppure uno dei due deve essere zero.\n";
+		return 1;
+	}
+	
+	if ((b == c) && (p!=3)){
+		cerr << "Errore: la triangolazione di classe II è possibile solo per i poliedri geodetici";
+	}
+	
     cout << "Hai inserito: p=" << p << ", q=" << q << ", b=" << b << ", c=" << c << "\n";
     if (calculatePath) {
         cout << "Cammino minimo da vertice ID: " << startVertexId << " a vertice ID: " << endVertexId << "\n";
     }
-
-    if ((p != 3 && p != 4 && p != 5) || (q != 3 && q != 4 && q != 5)) {
-        cerr << "Errore: p e q devono essere 3, 4 o 5.\n";
-        return 1;
-    }
-    
+*/
+    int p = 3;
+    int q = 3;
+    int b = 2;
+    int c = 2;
 	PolyhedralMesh mesh;
 	PolyhedralMesh meshFinal;
     
@@ -86,18 +98,9 @@ int main(int argc, char *argv[]) {
 				generateIcosahedron(mesh);
 			}
 			Triangulation2(q, b, mesh, meshFinal);
-	
-		} else if (q == 3 && p!= 3) {
-			if (p == 4){
-				generateOctahedron(mesh);
-			} else {
-				generateIcosahedron(mesh);
-			}
-			invertiValori(p, q);
-			Triangulation2Dual(q, b, mesh, meshFinal);
 		}
-	}
-	
+	} 
+	/*
 	if (calculatePath) {
 	MatrixXi adjMatrix = calculateAdjacencyMatrix(meshFinal);
         
@@ -127,17 +130,15 @@ int main(int argc, char *argv[]) {
 		ProjectMeshToUnitSphere(meshFinal);
 		ExportParaview(meshFinal);
 	}
-	
-	printMeshTriangulated(meshFinal);
-	
+
 	// Scrittura su TXT
 	WriteCell0Ds(meshFinal);
 	WriteCell1Ds(meshFinal);
 	WriteCell2Ds(meshFinal);
 	WriteCell3Ds(meshFinal);
-	
+	*/
     return 0;
+    
 }
-
 	
 	

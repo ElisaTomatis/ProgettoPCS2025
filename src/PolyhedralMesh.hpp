@@ -30,9 +30,9 @@ struct PolyhedralMesh
     
     // POLIEDRI
     unsigned int Cell3DsId = 0; // id celle 3D
-   	unsigned int NumCells0Ds = 0;
-   	unsigned int NumCells1Ds = 0;
-   	unsigned int NumCells2Ds = 0;
+   	unsigned int NumCells0Ds = 0; // numero di vertici
+   	unsigned int NumCells1Ds = 0; // numero di lati
+   	unsigned int NumCells2Ds = 0; // numero di facce
     vector<unsigned int> Cell3DsVertices = {}; // id dei vertici celle 3D
     vector<unsigned int> Cell3DsEdges = {}; // id dei lati celle 3D
     vector<unsigned int> Cell3DsFaces = {}; // id delle facce celle 3D   

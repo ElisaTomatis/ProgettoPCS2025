@@ -9,6 +9,7 @@
 #include "Utils.hpp"
 
 using namespace Eigen;
+using namespace PolyhedralLibrary;
 
 namespace PolyhedraTest {
 
@@ -21,19 +22,19 @@ TEST(TestPolyedra, TestComputePolyhedronVEF)
 	// caso 1: p=3, q=3
 	int q1 = 3;
 	vector<int> expected1 = {10, 24, 16};
-	vector<int> result1 = PolyhedralLibrary::ComputePolyhedronVEF(q1, b, c);
+	vector<int> result1 = ComputePolyhedronVEF(q1, b, c);
 	EXPECT_EQ(expected1, result1);
 	
 	// caso 2: p=3, q=4
 	int q2 = 4;
 	vector<int> expected2 = {18, 48, 32};
-	vector<int> result2 = PolyhedralLibrary::ComputePolyhedronVEF(q2, b, c);
+	vector<int> result2 = ComputePolyhedronVEF(q2, b, c);
 	EXPECT_EQ(expected2, result2);
 	
     // caso 3: p=3, q=5
 	int q3 = 5;
 	vector<int> expected3 = {42, 120, 80};
-	vector<int> result3 = PolyhedralLibrary::ComputePolyhedronVEF(q3, b, c);
+	vector<int> result3 = ComputePolyhedronVEF(q3, b, c);
 	EXPECT_EQ(expected3, result3);
 }
 
@@ -46,21 +47,21 @@ TEST(TestPolyedra, TestCalculateDuplicated)
 	int q1 = 3;
 	vector<int> dimension1 = {10, 24, 16};
 	vector<int> expected1 = {24, 36, 16};
-	vector<int> result1 = PolyhedralLibrary::CalculateDuplicated(q1, b, c, dimension1);
+	vector<int> result1 = CalculateDuplicated(q1, b, c, dimension1);
 	EXPECT_EQ(expected1, result1);
 	
 	// caso 2: p=3, q=4
 	int q2 = 4;
 	vector<int> dimension2 = {18, 48, 32};
 	vector<int> expected2 = {48, 72, 32};
-	vector<int> result2 = PolyhedralLibrary::CalculateDuplicated(q2, b, c, dimension2);
+	vector<int> result2 = CalculateDuplicated(q2, b, c, dimension2);
 	EXPECT_EQ(expected2, result2);
 	
 	// caso 3: p=3, q=5
 	int q3 = 5;
 	vector<int> dimension3 = {42, 120, 80};
 	vector<int> expected3 = {120, 180 , 80};
-	vector<int> result3 = PolyhedralLibrary::CalculateDuplicated(q3, b, c, dimension3);
+	vector<int> result3 = CalculateDuplicated(q3, b, c, dimension3);
 	EXPECT_EQ(expected3, result3);
 }
 
@@ -68,7 +69,7 @@ TEST(TestPolyedra, TestCalculateDuplicated)
 // Triangulation
 TEST(TestPolyedra, TestTriangulationTetrahedron)
 {
-	PolyhedralLibrary::PolyhedralMesh meshExpected;
+	PolyhedralMesh meshExpected;
 	PolyhedralMesh meshFinal;
 
 	// VERTICI
@@ -76,24 +77,21 @@ TEST(TestPolyedra, TestTriangulationTetrahedron)
 
 	meshExpected.Cell0DsCoordinates = MatrixXd(3, 10);
 	
-	meshExpected.Cell0DsCoordinates.col(0)  <<  0, 0, 1;
+	meshExpected.Cell0DsCoordinates.col(0)  <<  0, 0, 0.57735;
 	meshExpected.Cell0DsCoordinates.col(1)  <<  -0.57735, -0.57735,  0.57735;
-	meshExpected.Cell0DsCoordinates.col(2)  <<  0, -1, 0;
-	meshExpected.Cell0DsCoordinates.col(3)  <<  -1, 0, 0;
+	meshExpected.Cell0DsCoordinates.col(2)  <<  0, -0.57735, 0;
+	meshExpected.Cell0DsCoordinates.col(3)  <<  -0.57735, 0, 0;
 	meshExpected.Cell0DsCoordinates.col(4)  <<  -0.57735,  0.57735, -0.57735;
-	meshExpected.Cell0DsCoordinates.col(5)  <<  0, 0, -1;
-	meshExpected.Cell0DsCoordinates.col(6)  <<  0, 1, 0;
+	meshExpected.Cell0DsCoordinates.col(5)  <<  0, 0, -0.57735;
+	meshExpected.Cell0DsCoordinates.col(6)  <<  0, 0.57735, 0;
 	meshExpected.Cell0DsCoordinates.col(7)  <<  0.57735,  -0.57735, -0.57735;
-	meshExpected.Cell0DsCoordinates.col(8)  <<  1, 0, 0;
+	meshExpected.Cell0DsCoordinates.col(8)  <<  0.57735, 0, 0;
 	meshExpected.Cell0DsCoordinates.col(9)  <<  0.57735, 0.57735, 0.57735;
-
-	
 
 	meshExpected.Cell0DsFlag = {};
 
 	// LATI/SPIGOLI
 	meshExpected.Cell1DsId ={0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
-
 
 	meshExpected.Cell1DsExtrema = MatrixXi(24, 2);
 	meshExpected.Cell1DsExtrema << 
@@ -178,21 +176,21 @@ TEST(TestPolyedra, TestTriangulationTetrahedron)
 
 	
 	// mesh ottenuta utilizzando la funzione di triangolazione
-	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh meshTriangulated;
+	PolyhedralMesh mesh;
+	generateTetrahedron(mesh);
 	
 	int q = 3;
 	int b = 2;
 	int c = 0;
 	
-	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	vector<int> dimension = ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
+	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	RemoveDuplicatedEdges(meshTriangulated);
+	RemoveDuplicatedVertices(meshTriangulated);
 	NewMesh(meshTriangulated, meshFinal, dimension);
-    PopulateCell3D(meshFinal, dimension);
+    PopulateCell3D(meshFinal);
 	
 	
 	
@@ -202,8 +200,7 @@ TEST(TestPolyedra, TestTriangulationTetrahedron)
     EXPECT_EQ(meshExpected.Cell0DsId, meshFinal.Cell0DsId);
 
     // Coordinate vertici
-    //EXPECT_TRUE(meshExpected.Cell0DsCoordinates.isApprox(meshFinal.Cell0DsCoordinates, 1e-6));
-
+    EXPECT_TRUE(meshExpected.Cell0DsCoordinates.isApprox(meshFinal.Cell0DsCoordinates, 1e-6));
 
     // Id spigoli
     EXPECT_EQ(meshExpected.Cell1DsId, meshFinal.Cell1DsId);
@@ -240,20 +237,20 @@ TEST(TestPolyedra, TestTriangulationTetrahedron)
 TEST(TestPolyedra, TestOrderedEdges)
 { 
    // mesh ottenuta utilizzando la funzione di triangolazione
-	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh meshTriangulated;
+	PolyhedralMesh mesh;
+	generateTetrahedron(mesh);
 	
 	int q = 3;
 	int b = 2;
 	int c = 0; 
 	unsigned int maxFlag = numeric_limits<unsigned int>::max();
 	
-	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
-	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
+	vector<int> dimension = ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
+	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	RemoveDuplicatedVertices(meshTriangulated);
+	RemoveDuplicatedEdges(meshTriangulated);
 	
 	
 	// per ogni faccia i lati sono ordinati in modo che la fine dell'arco e coincida con l'inizio dell'arco successivo (e+1)%E
@@ -263,7 +260,7 @@ TEST(TestPolyedra, TestOrderedEdges)
     for (size_t f = 0; f < meshTriangulated.Cell2DsId.size(); ++f) {
 		const auto& edges = meshTriangulated.Cell2DsEdges[f]; // lista dei lati di una faccia
         const auto& vertices = meshTriangulated.Cell2DsVertices[f]; // lista dei vertici di una faccia 
-        size_t E = edges.size(); // numero di vertici dela faccia
+        size_t E = edges.size(); // numero di vertici della faccia
         
 		
 		ASSERT_EQ(vertices.size(), E) << "Numero di vertici e di lati non corrispondono per faccia " << f;
@@ -326,19 +323,19 @@ TEST(TestPolyedra, TestNotNullArea)
 	double eps = numeric_limits<double>::epsilon();
 
 	// mesh ottenuta utilizzando la funzione di triangolazione
-	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh meshTriangulated;
+	PolyhedralMesh mesh;
+	generateTetrahedron(mesh);
 	
 	int q = 3;
 	int b = 2;
 	int c = 0;
 	
-	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	vector<int> dimension = ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
+	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	RemoveDuplicatedEdges(meshTriangulated);
+	RemoveDuplicatedVertices(meshTriangulated);
 	
 	// ciclo su tutti i triangoli
 	for (size_t i = 0; i < meshTriangulated.Cell2DsVertices.size(); ++i) {
@@ -362,19 +359,19 @@ TEST(TestPolyedra, TestNotNullEdges){
 	double eps = numeric_limits<double>::epsilon();
 
 	// mesh ottenuta utilizzando la funzione di triangolazione
-	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh meshTriangulated;
+	PolyhedralMesh mesh;
+	generateTetrahedron(mesh);
 	
 	int q = 3;
 	int b = 2;
 	int c = 0;
 	
-	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	vector<int> dimension = ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
+	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	RemoveDuplicatedEdges(meshTriangulated);
+	RemoveDuplicatedVertices(meshTriangulated);
 	
 	// itero su ogni lato della mesh triangolata 
 	for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
@@ -399,9 +396,9 @@ TEST(TestPolyedra, TestNotNullEdges){
 TEST(TestPolyedra, TestNotNullEdgesDual){
 	
 	double eps = numeric_limits<double>::epsilon();
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::PolyhedralMesh meshDual;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh mesh;
+	PolyhedralMesh meshDual;
+	generateTetrahedron(mesh);
 	
 	int q = 3;
 	int b = 2;
@@ -431,9 +428,9 @@ TEST(TestPolyedra, TestNotNullEdgesDual){
 TEST(TestPolyedra, TestNotNullEdgesTri2){
 	
 	double eps = numeric_limits<double>::epsilon();
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh mesh;
+	PolyhedralMesh meshTriangulated;
+	generateTetrahedron(mesh);
 	
 	int q = 3;
 	int b = 2;
@@ -464,8 +461,8 @@ TEST(TestPolyedra, TestNotNullAreaTri2)
 {
 	double eps = numeric_limits<double>::epsilon();
 
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh mesh;
+	generateTetrahedron(mesh);
 	
 	PolyhedralMesh meshTriangulated;
 	PolyhedralMesh meshFinal;
@@ -503,28 +500,25 @@ TEST(TestPolyedra, TestNotNullAreaTri2)
 }
 
 
-
 TEST(Polyedra, DualTest){
 	
 	// mesh ottenuta utilizzando la funzione di triangolazioneMore actions
-	PolyhedralLibrary::PolyhedralMesh meshTriangulated;
+	PolyhedralMesh meshTriangulated;
 
-	PolyhedralLibrary::PolyhedralMesh mesh;
-	PolyhedralLibrary::PolyhedralMesh meshFinal;
-	PolyhedralLibrary::PolyhedralMesh meshDual;
-	PolyhedralLibrary::generateTetrahedron(mesh);
+	PolyhedralMesh mesh;
+	PolyhedralMesh meshFinal;
+	PolyhedralMesh meshDual;
+	generateTetrahedron(mesh);
 	
 	int q = 3;
 	int b = 2;
 	int c = 0;
 	
-	// TriangulationDual(q, b, c, mesh, meshDual);
-	
-	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
-	PolyhedralLibrary::triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
-	PolyhedralLibrary::RemoveDuplicatedEdges(meshTriangulated);
-	PolyhedralLibrary::RemoveDuplicatedVertices(meshTriangulated);
+	vector<int> dimension = ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
+	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
+	RemoveDuplicatedEdges(meshTriangulated);
+	RemoveDuplicatedVertices(meshTriangulated);
 	NewMesh(meshTriangulated, meshFinal, dimension);
 	map <pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap = buildEdgeToFacesMap(meshFinal);
 	
@@ -534,7 +528,7 @@ TEST(Polyedra, DualTest){
 	unsigned int maxFlag = numeric_limits<unsigned int>::max();
 
 	size_t expectedVerticesDual   = meshFinal.Cell2DsId.size(); // 16 facce triangolate → 16 vertici nel duale
-    size_t expectedEdgesDual      = meshFinal.Cell1DsId.size();         // Calcolato dinamicamente, può essere 24 per subdivisionLevel=2
+    size_t expectedEdgesDual      = meshFinal.Cell1DsId.size(); // Calcolato dinamicamente, può essere 24 per subdivisionLevel=2
    
     // numero di vertici (id)
 	// numero di lati(id)
@@ -547,14 +541,14 @@ TEST(Polyedra, DualTest){
 	
 	// verifico se ogni faccia duale ha almento 3 vertici
 	for (const auto& dualFace : meshDual.Cell2DsVertices) {
-    EXPECT_GE(dualFace.size(), 3);
+    	EXPECT_GE(dualFace.size(), 3);
     }
 	
 	// controllo che uno spigolo non connetta un vertice a se stesso
 	for (int i = 0; i < meshDual.Cell1DsExtrema.rows(); ++i) {
-    int a = meshDual.Cell1DsExtrema(i, 0);
-    int b = meshDual.Cell1DsExtrema(i, 1);
-    EXPECT_NE(a, b); // Mi verifica che a e b siano diversi 
+		int a = meshDual.Cell1DsExtrema(i, 0);
+		int b = meshDual.Cell1DsExtrema(i, 1);
+		EXPECT_NE(a, b); // Mi verifica che a e b siano diversi 
     }
 	
 	// verifico che il calcolo del baricentro sia corretto
@@ -775,8 +769,8 @@ TEST(TestPolyedra, ShortestPath){
 	int startVertexId = 0;
 	int endVertexId = 7;	
 	
-	vector<int> dimension = PolyhedralLibrary::ComputePolyhedronVEF(q, b, c);
-	vector<int> dimensionDuplicated = PolyhedralLibrary::CalculateDuplicated(q, b, c, dimension);
+	vector<int> dimension = ComputePolyhedronVEF(q, b, c);
+	vector<int> dimensionDuplicated = CalculateDuplicated(q, b, c, dimension);
 	triangulateAndStore(mesh, meshTriangulated, b, c, dimensionDuplicated);
 	RemoveDuplicatedEdges(meshTriangulated);
 	RemoveDuplicatedVertices(meshTriangulated);

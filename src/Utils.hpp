@@ -73,15 +73,9 @@ namespace PolyhedralLibrary
 	// mesh: una struct PolyhedralMesh
 	void Triangulation2(int q, int b, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
-	// Racchiude le funzioni per la triangolazione di classe II se q=3
-	// q, b : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
-	// mesh: una struct PolyhedralMesh
-	void Triangulation2Dual(int q, int b, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
-	
 	// Riempie le Celle3d dopo la triangolazione
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
-	// dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato
-	void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension);
+	void PopulateCell3D(PolyhedralMesh& meshTriangulated);
 	
 	// ----------------------------------------------------------------------------------------------------------- //
 	
