@@ -10,7 +10,7 @@ using namespace Eigen;
 namespace PolyhedralLibrary {
 	
 // Funzione per ottenere il baricentro di una faccia
-Vector3d getFaceBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int faceId) {
+Vector3d getFaceBarycenter(const PolyhedralMesh& meshTriangulated, const unsigned int faceId) {
     Vector3d barycenter = Vector3d::Zero();
     const auto& faceVertices = meshTriangulated.Cell2DsVertices[faceId];
     for (unsigned int v_id : faceVertices) {

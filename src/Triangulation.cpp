@@ -10,7 +10,7 @@ using namespace Eigen;
 
 namespace PolyhedralLibrary
 {
-	void Triangulation(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal)
+	void Triangulation(const int q, const int b, const int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal)
 	{
 		PolyhedralMesh meshTriangulated;
 
@@ -23,7 +23,7 @@ namespace PolyhedralLibrary
     	PopulateCell3D(meshFinal);
     }
     
-    void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshDual)
+    void TriangulationDual(const int q, const int b, const int c, PolyhedralMesh& mesh, PolyhedralMesh& meshDual)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshFinal;
@@ -39,7 +39,7 @@ namespace PolyhedralLibrary
 		PopulateCell3D(meshDual);
     }
     
-    void Triangulation2(int q, int b, PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated2)
+    void Triangulation2(const int q, const int b, PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated2)
 	{
 		PolyhedralMesh meshTriangulated;
 		PolyhedralMesh meshFinal;

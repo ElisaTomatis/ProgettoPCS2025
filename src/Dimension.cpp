@@ -22,7 +22,7 @@ namespace PolyhedralLibrary
 		b = temp;
 	}
 	
-	vector<int> ComputePolyhedronVEF(int q, int b, int c)
+	vector<int> ComputePolyhedronVEF(const int q, const int b, const int c)
 	{
 		vector<int> result(3); // inizializza un vettore con 3 valori, tutti -1 
 	
@@ -55,7 +55,7 @@ namespace PolyhedralLibrary
 		return result;  // Restituisce il vettore con i valori di V, E, F
 	}
 	
-	vector<int> CalculateDimension2(int b, int q)
+	vector<int> CalculateDimension2(const int b, const int q)
 	{
 		vector<int> result(3);
 		int V = 0;
@@ -85,7 +85,7 @@ namespace PolyhedralLibrary
 		return result;
 	}
 
-	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension)
+	vector<int> CalculateDuplicated(const int q, const int b, const int c, const vector<int>& dimension)
 	{
 		vector<int> result(3);
 		int subdivisionLevel = 0;
@@ -322,7 +322,7 @@ namespace PolyhedralLibrary
     }
 }
 	
-	void NewMesh(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension)
+	void NewMesh(const PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension)
 	{
 		unsigned int maxFlag = numeric_limits<unsigned int>::max();
 		meshFinal.Cell0DsId.resize(dimension[0]);

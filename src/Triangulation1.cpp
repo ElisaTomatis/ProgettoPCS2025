@@ -11,10 +11,10 @@ using namespace Eigen;
 namespace PolyhedralLibrary
 {
 	void FindAddEdge(
-		int a, int b,
+		const int a, const int b,
 		PolyhedralMesh& meshTriangulated,
 		unsigned int& k2,
-		unsigned int k3)
+		const unsigned int k3)
 	{
 		bool found = false;
 	
@@ -59,7 +59,7 @@ namespace PolyhedralLibrary
 	}
 	
 	// Funzione principale per la triangolazione e salvataggio nella mesh
-	void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, unsigned int b, unsigned int c, const vector<int>& dimensionDuplicated) {
+	void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, const unsigned int b, const unsigned int c, const vector<int>& dimensionDuplicated) {
 		
 		unsigned int subdivisionLevel = b+c;
 		

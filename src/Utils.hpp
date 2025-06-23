@@ -17,16 +17,16 @@ namespace PolyhedralLibrary
 	
 	// Calcola il numero di vertici, lati e facce del poliedro triangolato con la triangolazione I
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
-	vector<int> ComputePolyhedronVEF(int q, int b, int c);
+	vector<int> ComputePolyhedronVEF(const int q, const int b, const int c);
 	
 	// Calcola il numero di vertici, lati e facce del poliedro triangolato (considerati i duplicati)
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato (senza duplicati)
-	vector<int> CalculateDuplicated(int q, int b, int c, const vector<int>& dimension);
+	vector<int> CalculateDuplicated(const int q, const int b, const int c, const vector<int>& dimension);
 	
 	// Calcola il numero di vertici, lati e facce del poliedro triangolato con la triangolazione II
 	// q, b : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
-	vector<int> CalculateDimension2(int b, int q);
+	vector<int> CalculateDimension2(const int b, const int q);
 	
 	// Assegna un flag ai vertici che devono essere tenuti (non duplicati)
 	// meshTriangulated : una struct PolyhedralMesh triangolata
@@ -40,7 +40,7 @@ namespace PolyhedralLibrary
 	// meshTriangulated : una struct PolyhedralMesh (con i duplicati)
 	// meshFinal : una struct PolyhedralMesh (senza i duplicati)
 	// dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato (senza duplicati)
-	void NewMesh(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension);
+	void NewMesh(const PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension);
 	
 	// ----------------------------------------------------------------------------------------------------------- // 
 	
@@ -59,17 +59,17 @@ namespace PolyhedralLibrary
 	// Racchiude le funzioni per la triangolazione di classe I se p=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void Triangulation(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal);
+	void Triangulation(const int q, const int b, const int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal);
 	
 	// Racchiude le funzioni per la triangolazione di classe I se q=3
 	// q, b, c : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
+	void TriangulationDual(const int q, const int b, const int c, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Racchiude le funzioni per la triangolazione di classe II se p=3
 	// q, b : parametri passati dall'utente che identificano il poliedro e la sua triangolazione
 	// mesh: una struct PolyhedralMesh
-	void Triangulation2(int q, int b, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
+	void Triangulation2(const int q, const int b, PolyhedralMesh& mesh,  PolyhedralMesh& meshFinal);
 	
 	// Riempie le Celle3d dopo la triangolazione
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
@@ -85,7 +85,7 @@ namespace PolyhedralLibrary
 	// b,c  : parametri passati dall'utente che identificano il poliedro
 	// dimension : vettore che contiene il numero di vertici, lati e facce del poliedro triangolato
 	void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated,
-							  unsigned int b, unsigned int c, const vector<int>& dimension);
+							  const unsigned int b, const unsigned int c, const vector<int>& dimension);
 	
 	 // Aggiunge un lato alla mesh triangolata se non è già presente
 	 // a : id del primo estremo (vertice) del lato
@@ -93,8 +93,8 @@ namespace PolyhedralLibrary
 	 // meshTriangulated : una struct PolyhedralMesh, quella triangolata
 	 // edgeId : id del nuovo lato
 	 // triangleId : id della faccia a cui appartiene
-	void FindAddEdge(unsigned int a, unsigned int b, PolyhedralMesh& meshTriangulated,
-					 unsigned int& edgeID, unsigned int triangleID);
+	void FindAddEdge(const unsigned int a, const unsigned int b, PolyhedralMesh& meshTriangulated,
+					 unsigned int& edgeID, const unsigned int triangleID);
 	
 	// ----------------------------------------------------------------------------------------------------------- //
 	
@@ -119,7 +119,7 @@ namespace PolyhedralLibrary
 	// b : id del secondo estremo (vertice) del lato
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
 	// k2 : prossimo id per i lati disponibile
-	unsigned int FindAddEdge2(unsigned int a, unsigned int b, PolyhedralMesh& meshTriangulated, unsigned int& k2);
+	unsigned int FindAddEdge2(const unsigned int a, const unsigned int b, PolyhedralMesh& meshTriangulated, unsigned int& k2);
 	
 	// A partire da un lato e una faccia che stiamo considerando, trova l'altra faccia adiacente
 	// al lato e restituisce il suo baricentro
@@ -127,7 +127,7 @@ namespace PolyhedralLibrary
 	// edgeId : id del lato
 	// currentFacdeId : faccia che stiamo considerando
 	// edgeToFacesMap : mappa che associa ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
-	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap);
+	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, const unsigned int edgeId, const unsigned int currentFaceId, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap);
 	
 	// Aggiunge una faccia alla mesh triangolata se non è già presente
 	// new_face_vertices : id dei vertici della faccia che vorremmo aggiungere
@@ -157,7 +157,7 @@ namespace PolyhedralLibrary
 	// Calcola il baricentro di una faccia
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
 	// faceId : id della faccia di cui vogliamo calcolare il baricentro
-	Vector3d getFaceBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int faceId);
+	Vector3d getFaceBarycenter(const PolyhedralMesh& meshTriangulated, const unsigned int faceId);
 	
 	// Crea una mappa che associa ad ogni spigolo del poliedro originale l'elenco di tutte le facce che contengono quello spigolo
 	// meshTriangulated : una struct PolyhedralMesh, quella triangolata
@@ -190,7 +190,7 @@ namespace PolyhedralLibrary
 	// Calcola la distanza euclidea tra due punti
 	// mesh : una struct PolyhedralMesh
 	// id1, id2 : id dei vertici di cui vogliamo calcolare la distanza 
-	double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2);
+	double calculateDistanceById(const PolyhedralMesh& mesh, const unsigned int id1, const unsigned int id2);
 	
 	// Calcola la matrice di adiancenza
 	// djacencyMatrix[i,j] = 1 se esiste un lato tra il vertice i e il vertice j
@@ -206,11 +206,9 @@ namespace PolyhedralLibrary
 	ShortestPathResult findShortestPathDijkstra(
 	    PolyhedralMesh& mesh,
 	    const MatrixXi& adjMatrix,
-	    unsigned int startVertexId_real,
-	    unsigned int endVertexId_real
+	    const unsigned int startVertexId_real,
+	    const unsigned int endVertexId_real
 	);
-	
-	// pair<unsigned int, double> findShortestPathBFS(PolyhedralLibrary::PolyhedralMesh& mesh, const MatrixXi& adjMatrix, unsigned int startVertexId_real, unsigned int endVertexId_real, vector<bool>& isVertexInShortestPath, vector<bool>& isEdgeInShortestPath);
 	
 	
 	// ----------------------------------------------------------------------------------------------------------- //

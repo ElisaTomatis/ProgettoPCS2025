@@ -21,7 +21,7 @@ ShortestPathResult::ShortestPathResult(unsigned int nEdges, double len)
 {}
 
 // Funzione per calcolare la distanza euclidea tra due punti.
-double calculateDistanceById(const PolyhedralMesh& mesh, unsigned int id1, unsigned int id2) {
+double calculateDistanceById(const PolyhedralMesh& mesh, const unsigned int id1, const unsigned int id2) {
     
     VectorXd p1 = mesh.Cell0DsCoordinates.col(id1);
     VectorXd p2 = mesh.Cell0DsCoordinates.col(id2);
@@ -51,8 +51,8 @@ MatrixXi calculateAdjacencyMatrix(const PolyhedralMesh& mesh) {
 ShortestPathResult findShortestPathDijkstra(
     PolyhedralMesh& mesh,
     const MatrixXi& adjMatrix,
-    unsigned int startVertexId,
-    unsigned int endVertexId
+    const unsigned int startVertexId,
+    const unsigned int endVertexId
 ) {
 	const unsigned int numVertices = mesh.Cell0DsCoordinates.cols(); // Numero totale di vertici
     const unsigned int numEdgesInMesh = mesh.Cell1DsId.size();     // Numero totale di lati nella mesh

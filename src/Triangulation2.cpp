@@ -98,7 +98,7 @@ namespace PolyhedralLibrary
 	}
 	
 	
-	unsigned int FindAddEdge2(unsigned int a, unsigned int b, PolyhedralMesh& meshTriangulated, unsigned int& k2)
+	unsigned int FindAddEdge2(const unsigned int a, const unsigned int b, PolyhedralMesh& meshTriangulated, unsigned int& k2)
 	{
 		// Controllo se l'edge (a,b) o (b,a) esiste già
 		for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
@@ -119,7 +119,7 @@ namespace PolyhedralLibrary
 	
 	
 	// trova la faccia adiacente a face tramite edge, e poi restituire il baricentro di questa faccia adiacente
-	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, unsigned int edgeId, unsigned int currentFaceId, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap) {
+	Vector3d FindNearBarycenter(const PolyhedralMesh& meshTriangulated, const unsigned int edgeId, const unsigned int currentFaceId, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap) {
 
 		// Ottieni i vertici che compongono il lato
 		unsigned int v1_id = meshTriangulated.Cell1DsExtrema(edgeId, 0);
