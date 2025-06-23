@@ -358,7 +358,8 @@ namespace PolyhedralLibrary
 		// SPIGOLI
 		map<unsigned int, unsigned int> oldToNewEdgeIdMap; // Mappa per tradurre vecchi ID spigolo -> nuovi ID spigolo
 		vector<pair<unsigned int, unsigned int>> temp_edge_extrema; // Vettore temporaneo per gli estremi degli spigoli (con i nuovi ID vertici)
-	
+		vector<bool> temp_edge_original_max_flag; // Temp per il nuovo flag
+		
 		unsigned int k2 = 0; // Contatore per i nuovi ID degli spigoli
 		for (unsigned int i = 0; i < meshTriangulated.Cell1DsExtrema.rows(); ++i) {
 			if (meshTriangulated.Cell1DsFlag[i] == maxFlag) {
@@ -374,6 +375,7 @@ namespace PolyhedralLibrary
 	
 					temp_edge_extrema.push_back({min(new_v1_id, new_v2_id), max(new_v1_id, new_v2_id)});
 					oldToNewEdgeIdMap[i] = k2; // Mappa il vecchio ID spigolo al nuovo
+					temp_edge_original_max_flag.push_back(meshTriangulated.Cell1DsOriginalFlag[i]);
 					k2++;
 				} 
 			}
@@ -384,10 +386,11 @@ namespace PolyhedralLibrary
 			meshFinal.Cell1DsId[i] = i; // Nuovi ID consecutivi
 			meshFinal.Cell1DsExtrema(i, 0) = temp_edge_extrema[i].first;
 			meshFinal.Cell1DsExtrema(i, 1) = temp_edge_extrema[i].second;
+			
+			meshFinal.Cell1DsOriginalFlag[i] = temp_edge_original_max_flag[i];
 		}
 		
 		// FACCE
-		
 		vector<vector<unsigned int>> temp_face_vertices; // Vettore temporaneo per i vertici delle facce (con i nuovi ID vertici)
 		vector<vector<unsigned int>> temp_face_edges; // Vettore temporaneo per gli spigoli delle facce (con i nuovi ID spigoli)
 		
