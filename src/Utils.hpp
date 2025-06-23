@@ -49,9 +49,7 @@ namespace PolyhedralLibrary
 	// Riempiono la struct PolyhedralMesh con i dati dei poliedri non triangolati
 	// mesh: una struct PolyhedralMesh
 	void generateTetrahedron(PolyhedralMesh& mesh);
-	void generateCube(PolyhedralMesh& mesh);
 	void generateOctahedron(PolyhedralMesh& mesh);
-	void generateDodecahedron(PolyhedralMesh& mesh);
 	void generateIcosahedron(PolyhedralMesh& mesh);
 	
 	// ----------------------------------------------------------------------------------------------------------- //

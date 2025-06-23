@@ -20,6 +20,7 @@ package PolyhedronLibrary <<Folder>> {
         + Cell1DsExtrema : Eigen::MatrixXi
         + Cell1DsFlag : std::vector<unsigned int>
         + Cell1DsMarker : std::vector<unsigned int>
+        + Cell1DOriginalFlag : std::vector<bool>
 
         + Cell2DsId : std::vector<unsigned int>
         + Cell2DsVertices : std::vector<std::vector<unsigned int>>
@@ -44,15 +45,13 @@ package PolyhedronLibrary <<Folder>> {
         + void NewMesh(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshFinal, const vector<int>& dimension)
 
         + void generateTetrahedron(PolyhedralMesh& mesh)
-        + void generateCube(PolyhedralMesh& mesh)
         + void generateOctahedron(PolyhedralMesh& mesh)
-        + void generateDodecahedron(PolyhedralMesh& mesh)
         + void generateIcosahedron(PolyhedralMesh& mesh)
 
         + void Triangulation(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal)
         + void TriangulationDual(int q, int b, int c, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal)
         + void Triangulation2(int q, int b, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal)
-        + void Triangulation2Dual(int q, int b, PolyhedralMesh& mesh, PolyhedralMesh& meshFinal)
+        + void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension)
 
         + void triangulateAndStore(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, unsigned int b, unsigned int c, const vector<int>& dimension)
         + void triangulateAndStore2(PolyhedralMesh& mesh, PolyhedralMesh& meshTriangulated, const vector<int>& dimension, map<pair<unsigned int, unsigned int>, vector<unsigned int>> edgeToFacesMap)
@@ -63,7 +62,6 @@ package PolyhedronLibrary <<Folder>> {
 
         + void CalculateDual(PolyhedralMesh& meshTriangulated, PolyhedralMesh& meshDual)
         + map<pair<unsigned int, unsigned int>, vector<unsigned int>> buildEdgeToFacesMap(const PolyhedralMesh& meshTriangulated)
-        + void PopulateCell3D(PolyhedralMesh& meshTriangulated, const vector<int>& dimension)
         + void ProjectMeshToUnitSphere(PolyhedralMesh& mesh)
 
         + void WriteCell0Ds(const PolyhedralMesh& mesh)
