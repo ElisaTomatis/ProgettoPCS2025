@@ -8,7 +8,7 @@ using namespace Eigen;
 using namespace PolyhedralLibrary;
 
 int main(int argc, char *argv[]) {
-	/*
+
     // Definizione delle variabili per il cammino minimo, inizializzate a valori non validi
     unsigned int startVertexId = 0;
     unsigned int endVertexId = 0;
@@ -48,18 +48,15 @@ int main(int argc, char *argv[]) {
 	}
 	
 	if ((b == c) && (p!=3)){
-		cerr << "Errore: la triangolazione di classe II è possibile solo per i poliedri geodetici";
+		cerr << "Errore: la triangolazione di classe II è possibile solo per i poliedri geodetici.\n";
+		return 1;
 	}
 	
-    cout << "Hai inserito: p=" << p << ", q=" << q << ", b=" << b << ", c=" << c << "\n";
+    cout << "Hai inserito: p=" << p << ", q=" << q << ", b=" << b << ", c=" << c << ".\n";
     if (calculatePath) {
-        cout << "Cammino minimo da vertice ID: " << startVertexId << " a vertice ID: " << endVertexId << "\n";
+        cout << "Cammino minimo da vertice ID: " << startVertexId << " a vertice ID: " << endVertexId << ".\n";
     }
-*/
-    int p = 3;
-    int q = 3;
-    int b = 2;
-    int c = 2;
+
 	PolyhedralMesh mesh;
 	PolyhedralMesh meshFinal;
     
@@ -100,7 +97,7 @@ int main(int argc, char *argv[]) {
 			Triangulation2(q, b, mesh, meshFinal);
 		}
 	} 
-	/*
+
 	if (calculatePath) {
 	MatrixXi adjMatrix = calculateAdjacencyMatrix(meshFinal);
         
@@ -136,7 +133,7 @@ int main(int argc, char *argv[]) {
 	WriteCell1Ds(meshFinal);
 	WriteCell2Ds(meshFinal);
 	WriteCell3Ds(meshFinal);
-	*/
+
     return 0;
     
 }
